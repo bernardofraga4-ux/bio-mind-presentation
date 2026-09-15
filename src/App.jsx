@@ -7,7 +7,7 @@ import {
   Users, BotMessageSquare, Search, MoreVertical, Banknote,
   Bell, FileText, Stethoscope, Briefcase, ChevronRight, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
-  Zap, Settings, Mail, MapPin, Globe
+  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, Sparkles, User, Fingerprint
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -62,7 +62,7 @@ const HeroSection = () => {
       </div>
 
       <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
-        <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase">Descubra</span>
+        <span translate="no" className="notranslate text-[10px] md:text-xs font-bold tracking-widest uppercase">Descubra</span>
         <div className="w-px h-8 md:h-12 bg-black"></div>
       </div>
     </section>
@@ -115,10 +115,10 @@ const HowItWorksSection = () => (
         className="text-center mb-16 md:mb-24"
       >
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-6">
-          Como a mágica acontece.
+          O verdadeiro poder de um Agente.
         </h2>
-        <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-          Sem intervenção humana constante. O ecossistema Bio Mind opera como um cérebro invisível, conectando cada ponto da jornada do paciente.
+        <p className="text-lg md:text-xl text-gray-500 max-w-3xl mx-auto font-light leading-relaxed">
+          Esqueça os horários comerciais e os altos custos de pessoal dedicado apenas a tarefas braçais. Um Agente de IA oferece <strong>suporte 24 horas por dia, 7 dias por semana</strong>, mantendo o histórico inteligente de cada conversa e reduzindo o tempo de resposta a meros segundos.
         </p>
       </motion.div>
 
@@ -345,15 +345,15 @@ const CRMPacientes = () => (
             <tr className="bg-white border-b border-gray-100 text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">
               <th className="p-3 md:p-4">Paciente & Contato</th>
               <th className="p-3 md:p-4">Identificação</th>
-              <th className="p-3 md:p-4">Convênio</th>
-              <th className="p-3 md:p-4">Ações</th>
+              <th className="p-3 md:p-4">Preenchimento</th>
+              <th className="p-3 md:p-4 text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {[
-              { n: 'Ana Clara Souza', t: '(11) 98888-7777', cpf: '123.456.789-00', c: 'Amil' },
-              { n: 'Roberto Almeida', t: '(11) 99999-6666', cpf: '098.765.432-11', c: 'Particular' },
-              { n: 'Fernanda Lima', t: '(11) 97777-5555', cpf: '111.222.333-44', c: 'Sobam' }
+              { n: 'Ana Clara Souza', t: '(11) 98888-7777', cpf: '123.456.789-00', origin: 'IA Nexus', color: 'bg-emerald-100 text-emerald-700' },
+              { n: 'Roberto Almeida', t: '(11) 99999-6666', cpf: '098.765.432-11', origin: 'Recepção', color: 'bg-gray-100 text-gray-700' },
+              { n: 'Fernanda Lima', t: '(11) 97777-5555', cpf: '111.222.333-44', origin: 'IA Nexus', color: 'bg-emerald-100 text-emerald-700' }
             ].map((p, i) => (
               <tr key={i} className="hover:bg-gray-50 transition-colors">
                 <td className="p-3 md:p-4">
@@ -361,8 +361,20 @@ const CRMPacientes = () => (
                   <p className="text-[10px] md:text-xs text-gray-500">{p.t}</p>
                 </td>
                 <td className="p-3 md:p-4 text-xs md:text-sm text-gray-700">{p.cpf}</td>
-                <td className="p-3 md:p-4"><span className="px-2 py-1 bg-gray-100 text-gray-700 text-[10px] md:text-xs font-bold rounded-md">{p.c}</span></td>
-                <td className="p-3 md:p-4"><button className="text-blue-600 text-[10px] md:text-sm font-bold hover:underline">Ver Ficha</button></td>
+                <td className="p-3 md:p-4">
+                  <span className={`px-2 flex w-max items-center gap-1.5 py-1 ${p.color} text-[10px] md:text-xs font-bold rounded-md`}>
+                    {p.origin === 'IA Nexus' ? <Sparkles className="w-3 h-3"/> : <User className="w-3 h-3"/>}
+                    {p.origin}
+                  </span>
+                </td>
+                <td className="p-3 md:p-4">
+                  <div className="flex items-center justify-end gap-3">
+                    <button className="text-blue-600 text-[10px] md:text-sm font-bold hover:underline">Ver Ficha</button>
+                    <button className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-colors" title="Imprimir Ficha">
+                      <Printer className="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -428,6 +440,7 @@ const CRMFaturamento = () => (
 const InteractiveCRM = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAI, setShowAI] = useState(false);
+  const [chatMode, setChatMode] = useState('paciente');
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -466,7 +479,7 @@ const InteractiveCRM = () => {
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
                 <div className="w-3 h-3 bg-black rounded-sm"></div>
               </div>
-              <span className="font-black text-xl tracking-tighter text-white">BIO MIND</span>
+              <span className="font-black text-xl tracking-tighter text-white"><span translate="no" className="notranslate">BIO MIND</span></span>
             </div>
             
             <nav className="flex flex-row md:flex-col gap-2 md:gap-1 w-max md:w-auto p-2 md:p-0">
@@ -496,7 +509,7 @@ const InteractiveCRM = () => {
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <BotMessageSquare className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="font-bold text-xs md:text-sm">Nexus</span>
+                  <span className="font-bold text-xs md:text-sm">Abrir Nexus</span>
                 </div>
                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white animate-pulse"></div>
               </button>
@@ -542,61 +555,135 @@ const InteractiveCRM = () => {
               </AnimatePresence>
             </div>
 
-            {/* AI Assistant Drawer */}
+            {/* AI Assistant Drawer (WhatsApp Simulator) */}
             <AnimatePresence>
               {showAI && (
                 <motion.div 
                   initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }}
                   transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                  className="absolute top-0 right-0 w-full sm:w-96 h-full bg-white md:border-l border-gray-200 shadow-2xl flex flex-col z-30"
+                  className="absolute top-0 right-0 w-full sm:w-[450px] h-full bg-[#EFEAE2] md:border-l border-gray-200 shadow-2xl flex flex-col z-30 overflow-hidden"
                 >
-                  <div className="p-4 md:p-6 border-b border-gray-100 flex items-center justify-between bg-black text-white">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-md">
-                        <BotMessageSquare className="w-4 h-4 md:w-5 md:h-5 text-emerald-400" />
+                  <div className="p-4 border-b border-gray-200 flex flex-col gap-3 bg-[#00A884] text-white">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
+                          <BotMessageSquare className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm md:text-base">Nexus Omnichannel</h4>
+                          <span className="text-[10px] text-white/80 font-medium">Simulação de WhatsApp</span>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-sm md:text-base">Agente Nexus</h4>
-                        <span className="text-[8px] md:text-[10px] text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                          Online & Ouvindo
-                        </span>
-                      </div>
-                    </div>
-                    <button onClick={() => setShowAI(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                      <X className="w-4 h-4 md:w-5 md:h-5 text-gray-400 hover:text-white" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 md:gap-6 bg-[#FAFAFA]">
-                    <div className="flex gap-2 md:gap-3">
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-black flex items-center justify-center flex-shrink-0">
-                         <BotMessageSquare className="w-3 h-3 md:w-4 md:h-4 text-white" />
-                      </div>
-                      <div className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl rounded-tl-sm text-xs md:text-sm text-gray-700 shadow-sm border border-gray-100">
-                        Olá! Identifiquei que há 4 faturamentos do Dr. Gabriel pendentes de emissão de Nota Fiscal hoje. Deseja que eu emita todas em lote?
-                      </div>
+                      <button onClick={() => setShowAI(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <X className="w-5 h-5 text-white/80 hover:text-white" />
+                      </button>
                     </div>
                     
-                    <div className="space-y-2 mt-2 md:mt-4">
-                      <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest px-1 mb-2 md:mb-3">Comandos Rápidos</p>
-                      {['Emitir NFs pendentes', 'Resumo Diário da Agenda', 'Exibir pacientes em atraso'].map((action, i) => (
-                        <button key={i} className="w-full text-left px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg md:rounded-xl hover:border-emerald-500 hover:text-emerald-600 transition-colors shadow-sm">
-                          {action}
-                        </button>
-                      ))}
+                    <div className="flex bg-black/10 rounded-lg p-1">
+                      <button onClick={() => setChatMode('paciente')} className={`flex-1 text-xs font-bold py-1.5 rounded-md transition-colors ${chatMode === 'paciente' ? 'bg-white text-[#00A884]' : 'text-white hover:bg-white/5'}`}>
+                        Com Paciente
+                      </button>
+                      <button onClick={() => setChatMode('gestao')} className={`flex-1 text-xs font-bold py-1.5 rounded-md transition-colors ${chatMode === 'gestao' ? 'bg-white text-[#00A884]' : 'text-white hover:bg-white/5'}`}>
+                        Com Gestão
+                      </button>
                     </div>
                   </div>
+                  
+                  <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4 bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center">
+                    
+                    {chatMode === 'paciente' ? (
+                      <>
+                        <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
+                        <div className="flex justify-end">
+                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+                            Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.
+                            <span className="text-[9px] text-gray-500 block text-right mt-1">08:14</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
+                            Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.
+                            <br/><br/>
+                            Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?
+                            <span className="text-[9px] text-gray-400 block text-right mt-1">08:15</span>
+                          </div>
+                        </div>
 
-                  <div className="p-3 md:p-4 border-t border-gray-100 bg-white">
+                        <div className="flex justify-end mt-2">
+                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+                            Nossa, muito obrigada! Pode confirmar sim. 🙏
+                            <span className="text-[9px] text-gray-500 block text-right mt-1">08:16</span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
+                            <span>Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.</span>
+                            <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2">
+                              <CalendarDays className="w-4 h-4 text-emerald-500" />
+                              <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
+                            </div>
+                            <span className="text-[9px] text-gray-400 block text-right mt-1">08:16</span>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Protocolo Interno</span></div>
+                        
+                        <div className="flex justify-end">
+                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+                            Nexus, como está minha agenda hoje de tarde?
+                            <span className="text-[9px] text-gray-500 block text-right mt-1">11:42</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
+                            Dr. Gabriel, para acessar dados da clínica via WhatsApp externo, por favor valide sua identidade.
+                            <div className="mt-2 flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
+                              <Fingerprint className="w-4 h-4 text-gray-500" />
+                              <span className="text-xs font-bold text-gray-700">Digite seu PIN de 4 dígitos.</span>
+                            </div>
+                            <span className="text-[9px] text-gray-400 block text-right mt-1">11:42</span>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end mt-2">
+                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+                            1234
+                            <span className="text-[9px] text-gray-500 block text-right mt-1">11:43</span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
+                            <span className="flex items-center gap-1 text-emerald-600 text-xs font-bold"><ShieldAlert className="w-3 h-3"/> Autenticado</span>
+                            <span>Você tem <strong>3 pacientes</strong> marcados para a tarde.</span>
+                            <div className="text-xs text-gray-600 space-y-1 mt-1 bg-gray-50 p-2 border border-gray-100 rounded">
+                              <p><strong>14:00</strong> - Roberto Almeida (Amil)</p>
+                              <p><strong>15:30</strong> - Fernanda Lima (Particular)</p>
+                              <p><strong>16:00</strong> - Carlos Santos (Retorno)</p>
+                            </div>
+                            <span className="text-[9px] text-gray-400 block text-right mt-1">11:43</span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+
+                  <div className="p-3 bg-[#F0F2F5]">
                     <div className="relative">
                       <input 
                         type="text" 
-                        placeholder="Comande o Agente..." 
-                        className="w-full bg-gray-50 border border-gray-200 rounded-full py-3 md:py-4 pl-4 md:pl-5 pr-10 md:pr-12 text-xs md:text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                        placeholder="Mensagem..." 
+                        disabled
+                        className="w-full bg-white border border-transparent rounded-full py-2.5 pl-4 pr-10 text-sm focus:outline-none"
                       />
-                      <button className="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 p-2 bg-black text-white rounded-full hover:bg-emerald-500 transition-colors">
-                        <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+                      <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-[#00A884] text-white rounded-full">
+                        <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -689,7 +776,7 @@ const PremiumFooter = () => (
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
               <div className="w-2.5 h-2.5 bg-black rounded-sm"></div>
             </div>
-            BIO MIND
+            <span translate="no" className="notranslate">BIO MIND</span>
           </div>
           <p className="text-gray-400 text-sm font-light leading-relaxed max-w-xs">
             A vanguarda da inteligência artificial aplicada à gestão clínica. Substituímos softwares mortos por ecossistemas vivos.
@@ -753,7 +840,7 @@ function App() {
             <div className="w-6 h-6 md:w-8 md:h-8 bg-black rounded-md md:rounded-lg flex items-center justify-center shadow-lg">
               <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-sm"></div>
             </div>
-            BIO MIND
+            <span translate="no" className="notranslate">BIO MIND</span>
           </div>
           {/* Menu links agem como scrollers nas respectivas seções */}
           <nav className="hidden md:flex gap-10 text-sm font-bold text-gray-400 uppercase tracking-widest">
