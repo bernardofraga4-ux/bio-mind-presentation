@@ -7,7 +7,7 @@ import {
   Users, BotMessageSquare, Search, MoreVertical, Banknote,
   Bell, FileText, Stethoscope, Briefcase, ChevronRight, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
-  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, Sparkles, User, Fingerprint
+  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, Sparkles, User, Fingerprint, Plug, Cloud
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -437,6 +437,181 @@ const CRMFaturamento = () => (
   </motion.div>
 );
 
+const CRMComunicacao = () => (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    {/* Sidebar Left */}
+    <div className="w-1/3 min-w-[250px] border-r border-gray-100 flex flex-col">
+      <div className="p-3 border-b border-gray-100 flex gap-4">
+        <button className="text-xs font-bold text-emerald-600 border-b-2 border-emerald-600 pb-1">Conversas Ativas</button>
+        <button className="text-xs font-bold text-gray-400 hover:text-gray-600 pb-1">Mensagens Programadas</button>
+      </div>
+      <div className="p-3 flex gap-2">
+        <button className="flex-1 bg-gray-100 text-gray-800 text-xs font-bold py-1.5 rounded-lg border border-gray-200">Pacientes</button>
+        <button className="flex-1 text-gray-500 hover:bg-gray-50 text-xs font-bold py-1.5 rounded-lg">Profissionais</button>
+      </div>
+      <div className="px-3 pb-3">
+        <div className="relative">
+          <Search className="w-3 h-3 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input type="text" placeholder="Buscar contato..." className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        {[
+          { name: 'Ana Clara', time: '08:16', msg: 'Pode confirmar sim. 🙏', active: true, initials: 'AC', color: 'bg-emerald-100 text-emerald-700' },
+          { name: 'Multi Saúde', time: '15:02', msg: '30 minutos R$130,00 com desconto', active: false, initials: 'MS', color: 'bg-blue-100 text-blue-700' },
+          { name: 'Monique', time: '15:00', msg: 'Ta bom', active: false, initials: 'MO', color: 'bg-purple-100 text-purple-700' },
+          { name: 'Luiza Rodrigues', time: '15:00', msg: 'Boa tarde! Aconteceu um imprevisto', active: false, initials: 'LR', color: 'bg-orange-100 text-orange-700' },
+          { name: 'Dr Julio Samos', time: '14:51', msg: 'Ok', active: false, initials: 'DS', color: 'bg-gray-100 text-gray-700' }
+        ].map((chat, i) => (
+          <div key={i} className={`p-3 flex items-start gap-3 cursor-pointer hover:bg-gray-50 border-b border-gray-50 ${chat.active ? 'bg-emerald-50/50' : ''}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${chat.color}`}>
+              {chat.initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between items-baseline mb-0.5">
+                <h4 className="text-xs font-bold text-gray-800 truncate">{chat.name}</h4>
+                <span className="text-[9px] text-gray-400 flex-shrink-0">{chat.time}</span>
+              </div>
+              <p className="text-[10px] text-gray-500 truncate flex items-center gap-1">
+                <BotMessageSquare className="w-3 h-3 text-emerald-500" /> {chat.msg}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    {/* Main Chat Area */}
+    <div className="flex-1 flex flex-col bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center">
+      <div className="p-3 md:p-4 bg-white/90 backdrop-blur-sm border-b border-gray-200 flex items-center gap-3 shadow-sm">
+        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+          AC
+        </div>
+        <div>
+          <h3 className="font-bold text-sm text-gray-800">Ana Clara</h3>
+          <p className="text-[10px] text-gray-500 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> IA Nexus em atendimento
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
+        <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
+        <div className="flex justify-end">
+          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+            Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.
+            <span className="text-[9px] text-gray-500 block text-right mt-1">08:14</span>
+          </div>
+        </div>
+        
+        <div className="flex gap-2">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
+             <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
+            Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.
+            <br/><br/>
+            Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?
+            <span className="text-[9px] text-gray-400 block text-right mt-1">08:15</span>
+          </div>
+        </div>
+
+        <div className="flex justify-end mt-2">
+          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+            Nossa, muito obrigada! Pode confirmar sim. 🙏
+            <span className="text-[9px] text-gray-500 block text-right mt-1">08:16</span>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
+             <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
+            <span>Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.</span>
+            <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2">
+              <CalendarDays className="w-4 h-4 text-emerald-500" />
+              <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
+            </div>
+            <span className="text-[9px] text-gray-400 block text-right mt-1">08:16</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="p-3 bg-gray-50 border-t border-gray-200">
+        <div className="relative flex items-center">
+          <input type="text" placeholder="IA conversando... Digite para assumir o controle" className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 md:py-3 text-xs md:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800">
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const CRMConexoes = () => (
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* OneDrive */}
+      <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between h-48 hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-start">
+          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+            <Cloud className="w-6 h-6 text-blue-500" />
+          </div>
+          <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">CONECTADO</span>
+        </div>
+        <div>
+          <h3 className="font-bold text-gray-900">Microsoft OneDrive</h3>
+          <p className="text-xs text-gray-500 mt-1">Armazenamento em nuvem de laudos e exames</p>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-[10px] text-gray-400">Sincronizado há 1 min</span>
+        </div>
+      </div>
+      
+      {/* Banco de Dados Antigo */}
+      <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between h-48 hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-start">
+          <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-200">
+            <Database className="w-6 h-6 text-gray-600" />
+          </div>
+          <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">SINCRONIZANDO</span>
+        </div>
+        <div>
+          <h3 className="font-bold text-gray-900">PostgreSQL (Sistema Antigo)</h3>
+          <p className="text-xs text-gray-500 mt-1">Migração automática e bidirecional de dados</p>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div className="bg-emerald-500 h-1.5 rounded-full w-[85%]"></div>
+          </div>
+          <span className="text-[10px] text-gray-400">85%</span>
+        </div>
+      </div>
+
+      {/* WhatsApp */}
+      <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between h-48 hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-start">
+          <div className="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center">
+            <MessageSquare className="w-6 h-6 text-[#25D366]" />
+          </div>
+          <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">ATIVO</span>
+        </div>
+        <div>
+          <h3 className="font-bold text-gray-900">WhatsApp Oficial API</h3>
+          <p className="text-xs text-gray-500 mt-1">Canal de comunicação omnichannel com a IA</p>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-[10px] text-gray-400">124 mensagens/hora</span>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
 const InteractiveCRM = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAI, setShowAI] = useState(false);
@@ -446,6 +621,8 @@ const InteractiveCRM = () => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'agenda', label: 'Agenda', icon: CalendarDays },
     { id: 'pacientes', label: 'Pacientes', icon: Users },
+    { id: 'comunicacao', label: 'Comunicação', icon: MessageSquare },
+    { id: 'conexoes', label: 'Conexões', icon: Plug },
     { id: 'convenios', label: 'Convênios', icon: FileSignature },
     { id: 'faturamento', label: 'Faturamento', icon: Banknote },
     { id: 'notas', label: 'Notas', icon: Receipt },
@@ -538,11 +715,13 @@ const InteractiveCRM = () => {
             </header>
 
             {/* Scrollable Content */}
-            <div className="p-4 md:p-8 flex-1 overflow-y-auto">
+            <div className="p-4 md:p-8 flex-1 overflow-y-auto custom-scrollbar">
               <AnimatePresence mode="wait">
                 {activeTab === 'dashboard' && <CRMDashboard key="dashboard" />}
                 {activeTab === 'agenda' && <CRMAgenda key="agenda" />}
                 {activeTab === 'pacientes' && <CRMPacientes key="pacientes" />}
+                {activeTab === 'comunicacao' && <CRMComunicacao key="comunicacao" />}
+                {activeTab === 'conexoes' && <CRMConexoes key="conexoes" />}
                 {activeTab === 'faturamento' && <CRMFaturamento key="faturamento" />}
                 {/* Fallback */}
                 {['convenios', 'notas', 'equipe'].includes(activeTab) && (
@@ -555,134 +734,56 @@ const InteractiveCRM = () => {
               </AnimatePresence>
             </div>
 
-            {/* AI Assistant Drawer (WhatsApp Simulator) */}
+            {/* AI Assistant Drawer (For the Admin) */}
             <AnimatePresence>
               {showAI && (
                 <motion.div 
                   initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }}
                   transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                  className="absolute top-0 right-0 w-full sm:w-[450px] h-full bg-[#EFEAE2] md:border-l border-gray-200 shadow-2xl flex flex-col z-30 overflow-hidden"
+                  className="absolute top-0 right-0 w-full sm:w-80 h-full bg-white md:border-l border-gray-200 shadow-2xl flex flex-col z-30"
                 >
-                  <div className="p-4 border-b border-gray-200 flex flex-col gap-3 bg-[#00A884] text-white">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
-                          <BotMessageSquare className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-sm md:text-base">Nexus Omnichannel</h4>
-                          <span className="text-[10px] text-white/80 font-medium">Simulação de WhatsApp</span>
-                        </div>
+                  <div className="p-4 md:p-6 border-b border-gray-100 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                        <BotMessageSquare className="w-5 h-5 text-emerald-600" />
                       </div>
-                      <button onClick={() => setShowAI(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                        <X className="w-5 h-5 text-white/80 hover:text-white" />
-                      </button>
+                      <div>
+                        <h4 className="font-bold text-sm md:text-base text-gray-900">Agente Nexus</h4>
+                        <span className="text-[10px] text-emerald-500 font-bold tracking-wider">ONLINE</span>
+                      </div>
                     </div>
-                    
-                    <div className="flex bg-black/10 rounded-lg p-1">
-                      <button onClick={() => setChatMode('paciente')} className={`flex-1 text-xs font-bold py-1.5 rounded-md transition-colors ${chatMode === 'paciente' ? 'bg-white text-[#00A884]' : 'text-white hover:bg-white/5'}`}>
-                        Com Paciente
-                      </button>
-                      <button onClick={() => setChatMode('gestao')} className={`flex-1 text-xs font-bold py-1.5 rounded-md transition-colors ${chatMode === 'gestao' ? 'bg-white text-[#00A884]' : 'text-white hover:bg-white/5'}`}>
-                        Com Gestão
-                      </button>
-                    </div>
+                    <button onClick={() => setShowAI(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                      <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                    </button>
                   </div>
                   
-                  <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4 bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center">
-                    
-                    {chatMode === 'paciente' ? (
-                      <>
-                        <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
-                        <div className="flex justify-end">
-                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-                            Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.
-                            <span className="text-[9px] text-gray-500 block text-right mt-1">08:14</span>
-                          </div>
+                  <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
+                    <div className="bg-gray-50 rounded-2xl p-4 md:p-5 border border-gray-100">
+                      <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                        Olá! Identifiquei que há <strong className="text-black">4 faturamentos pendentes</strong> de ontem e um choque de horário na agenda da Dra. Juliana às 15:30.
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-2 mt-4">
+                      <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Comandos Rápidos</span>
+                      <button className="flex items-center gap-3 w-full p-3 bg-white border border-gray-200 rounded-xl hover:border-emerald-300 hover:shadow-sm transition-all group">
+                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100">
+                          <Check className="w-3 h-3 md:w-4 md:h-4 text-emerald-600" />
                         </div>
-                        
-                        <div className="flex gap-2">
-                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
-                            Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.
-                            <br/><br/>
-                            Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?
-                            <span className="text-[9px] text-gray-400 block text-right mt-1">08:15</span>
-                          </div>
+                        <span className="text-xs md:text-sm font-semibold text-gray-700">Emitir NFs pendentes</span>
+                      </button>
+                      <button className="flex items-center gap-3 w-full p-3 bg-white border border-gray-200 rounded-xl hover:border-emerald-300 hover:shadow-sm transition-all group">
+                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100">
+                          <CalendarDays className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                         </div>
-
-                        <div className="flex justify-end mt-2">
-                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-                            Nossa, muito obrigada! Pode confirmar sim. 🙏
-                            <span className="text-[9px] text-gray-500 block text-right mt-1">08:16</span>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
-                            <span>Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.</span>
-                            <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2">
-                              <CalendarDays className="w-4 h-4 text-emerald-500" />
-                              <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
-                            </div>
-                            <span className="text-[9px] text-gray-400 block text-right mt-1">08:16</span>
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Protocolo Interno</span></div>
-                        
-                        <div className="flex justify-end">
-                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-                            Nexus, como está minha agenda hoje de tarde?
-                            <span className="text-[9px] text-gray-500 block text-right mt-1">11:42</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
-                            Dr. Gabriel, para acessar dados da clínica via WhatsApp externo, por favor valide sua identidade.
-                            <div className="mt-2 flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-200">
-                              <Fingerprint className="w-4 h-4 text-gray-500" />
-                              <span className="text-xs font-bold text-gray-700">Digite seu PIN de 4 dígitos.</span>
-                            </div>
-                            <span className="text-[9px] text-gray-400 block text-right mt-1">11:42</span>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-end mt-2">
-                          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-                            1234
-                            <span className="text-[9px] text-gray-500 block text-right mt-1">11:43</span>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
-                            <span className="flex items-center gap-1 text-emerald-600 text-xs font-bold"><ShieldAlert className="w-3 h-3"/> Autenticado</span>
-                            <span>Você tem <strong>3 pacientes</strong> marcados para a tarde.</span>
-                            <div className="text-xs text-gray-600 space-y-1 mt-1 bg-gray-50 p-2 border border-gray-100 rounded">
-                              <p><strong>14:00</strong> - Roberto Almeida (Amil)</p>
-                              <p><strong>15:30</strong> - Fernanda Lima (Particular)</p>
-                              <p><strong>16:00</strong> - Carlos Santos (Retorno)</p>
-                            </div>
-                            <span className="text-[9px] text-gray-400 block text-right mt-1">11:43</span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
+                        <span className="text-xs md:text-sm font-semibold text-gray-700">Reagendar Dra. Juliana</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="p-3 bg-[#F0F2F5]">
-                    <div className="relative">
-                      <input 
-                        type="text" 
-                        placeholder="Mensagem..." 
-                        disabled
-                        className="w-full bg-white border border-transparent rounded-full py-2.5 pl-4 pr-10 text-sm focus:outline-none"
-                      />
-                      <button className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-[#00A884] text-white rounded-full">
+                  <div className="p-4 bg-gray-50 border-t border-gray-100">
+                    <div className="relative flex items-center">
+                      <input type="text" placeholder="Peça algo à IA..." className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 md:py-3 text-xs md:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                      <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800">
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
