@@ -61,10 +61,29 @@ const HeroSection = () => {
         </motion.div>
       </div>
 
-      <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
-        <span translate="no" className="notranslate text-[10px] md:text-xs font-bold tracking-widest uppercase">Descubra</span>
-        <div className="w-px h-8 md:h-12 bg-black"></div>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 cursor-pointer hover:opacity-70 transition-opacity"
+        onClick={(e) => scrollToSection(e, '#clinica')}
+      >
+        <span translate="no" className="notranslate text-[9px] md:text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">Descubra</span>
+        <div className="w-5 h-8 md:w-6 md:h-10 border-2 border-gray-300 rounded-full flex justify-center p-1">
+          <motion.div 
+            animate={{ 
+              y: [0, 15, 0],
+              opacity: [1, 0.5, 1]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="w-1 h-1 md:w-1.5 md:h-1.5 bg-gray-400 rounded-full"
+          />
+        </div>
+      </motion.div>
     </section>
   );
 };
