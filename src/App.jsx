@@ -445,11 +445,51 @@ const CRMComunicacao = () => {
   const [activeChatId, setActiveChatId] = useState('AC');
 
   const chatList = [
-    { id: 'AC', name: 'Ana Clara', time: '08:16', msg: 'Pode confirmar sim. 🙏', initials: 'AC', color: 'bg-emerald-100 text-emerald-700' },
-    { id: 'CE', name: 'Carlos Eduardo', time: '15:02', msg: '30 minutos R$130,00 com desconto', initials: 'CE', color: 'bg-blue-100 text-blue-700' },
-    { id: 'MO', name: 'Monique', time: '15:00', msg: 'Ta bom', initials: 'MO', color: 'bg-purple-100 text-purple-700' },
-    { id: 'LR', name: 'Luiza Rodrigues', time: '15:00', msg: 'Boa tarde! Aconteceu um imprevisto', initials: 'LR', color: 'bg-orange-100 text-orange-700' },
-    { id: 'DS', name: 'Dr Julio Samos', time: '14:51', msg: 'Ok', initials: 'DS', color: 'bg-gray-100 text-gray-700' }
+    { 
+      id: 'AC', name: 'Ana Clara', time: '08:16', msg: 'Pode confirmar sim. 🙏', initials: 'AC', color: 'bg-emerald-100 text-emerald-700',
+      messages: [
+        { sender: 'user', time: '08:14', text: 'Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.' },
+        { sender: 'ai', time: '08:15', text: 'Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.<br/><br/>Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?' },
+        { sender: 'user', time: '08:16', text: 'Nossa, muito obrigada! Pode confirmar sim. 🙏' },
+        { sender: 'ai', time: '08:16', text: 'Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.', isAppointment: true }
+      ]
+    },
+    { 
+      id: 'CE', name: 'Carlos Eduardo', time: '15:02', msg: '30 minutos R$130,00 com desconto', initials: 'CE', color: 'bg-blue-100 text-blue-700',
+      messages: [
+        { sender: 'ai', time: '14:50', text: 'Olá, Carlos! O seu retorno nutricional está agendado para amanhã às 14h. Para otimizar o seu tempo, gostaria de adiantar a consulta para hoje às 17h, já que abriu uma vaga?' },
+        { sender: 'user', time: '15:00', text: 'Pode ser, mas qual o valor do retorno?' },
+        { sender: 'ai', time: '15:01', text: 'Como você está no pacote trimestral, a consulta de 30 minutos fica por R$ 130,00 (já com desconto aplicado na sua ficha).' },
+        { sender: 'user', time: '15:02', text: 'Perfeito, pode confirmar.' }
+      ]
+    },
+    { 
+      id: 'MO', name: 'Monique', time: '15:00', msg: 'Ta bom', initials: 'MO', color: 'bg-purple-100 text-purple-700',
+      messages: [
+        { sender: 'ai', time: '14:30', text: 'Oi Monique! O seu exame de sangue ficou pronto. Os níveis de vitamina D estão abaixo do ideal. A Dra. Juliana já deixou uma prescrição eletrônica no seu aplicativo e pediu para você iniciar hoje mesmo.' },
+        { sender: 'user', time: '15:00', text: 'Ta bom, muito obrigada por avisar! Já vou acessar a receita.' }
+      ]
+    },
+    { 
+      id: 'LR', name: 'Luiza Rodrigues', time: '15:00', msg: 'Boa tarde! Aconteceu um imprevisto', initials: 'LR', color: 'bg-orange-100 text-orange-700',
+      messages: [
+        { sender: 'user', time: '15:00', text: 'Boa tarde! Aconteceu um imprevisto e não vou conseguir chegar a tempo para minha consulta das 16h.' },
+        { sender: 'ai', time: '15:01', text: 'Sem problemas, Luiza. Entendemos! Para não prejudicar seu tratamento, encontrei um horário amanhã às 09h da manhã com o mesmo especialista. Podemos reagendar para esse horário?' }
+      ]
+    },
+    { 
+      id: 'DS', name: 'Dr Julio Samos', time: '14:51', msg: 'Ok', initials: 'DS', color: 'bg-gray-100 text-gray-700',
+      messages: [
+        { sender: 'ai', time: '14:45', text: 'Dr. Julio, o paciente Marcos V. acaba de chegar na recepção e preencheu o formulário de triagem. A queixa principal é enxaqueca com aura (frequência aumentada nos últimos 3 dias). A ficha médica já foi atualizada e está na sua tela.' },
+        { sender: 'user', time: '14:51', text: 'Ok, pode mandar entrar em 5 minutos.' }
+      ]
+    }
+  ];
+
+  const scheduledList = [
+    { id: '1', name: 'Maria Fernandes', trigger: 'Amanhã, 08:00', msg: 'Olá Maria! Tudo bem? Passando para lembrar do seu jejum de 12h para o exame de ultrassom amanhã. Qualquer dúvida estou por aqui.', initials: 'MF', color: 'bg-pink-100 text-pink-700' },
+    { id: '2', name: 'João Pedro', trigger: 'Sexta, 14:30', msg: 'Olá João! Sua consulta com o cardiologista está confirmada para sexta-feira. Não esqueça de trazer seus últimos exames.', initials: 'JP', color: 'bg-indigo-100 text-indigo-700' },
+    { id: '3', name: 'Campanha Checkup', trigger: 'Dia 20, 09:00', msg: 'Olá! Já faz 6 meses desde o seu último checkup preventivo. Que tal agendar um horário para colocar a saúde em dia?', initials: 'CC', color: 'bg-amber-100 text-amber-700' },
   ];
 
   const activeChat = chatList.find(c => c.id === activeChatId);
@@ -472,33 +512,49 @@ const CRMComunicacao = () => {
             Mensagens Programadas
           </button>
         </div>
-        <div className="p-3 flex gap-2">
-          <button 
-            onClick={() => setCommsFilter('pacientes')}
-            className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'pacientes' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
-            Pacientes
-          </button>
-          <button 
-            onClick={() => setCommsFilter('profissionais')}
-            className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'profissionais' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
-            Profissionais
-          </button>
-        </div>
-        <div className="px-3 pb-3">
+        
+        {commsTab === 'ativas' && (
+          <div className="p-3 flex gap-2">
+            <button 
+              onClick={() => setCommsFilter('pacientes')}
+              className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'pacientes' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
+            >
+              Pacientes
+            </button>
+            <button 
+              onClick={() => setCommsFilter('profissionais')}
+              className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'profissionais' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
+            >
+              Profissionais
+            </button>
+          </div>
+        )}
+
+        <div className="px-3 pb-3 pt-3">
           <div className="relative">
             <Search className="w-3 h-3 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input type="text" placeholder="Buscar contato..." className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+            <input type="text" placeholder={commsTab === 'programadas' ? "Buscar mensagens programadas..." : "Buscar contato..."} className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
           </div>
         </div>
         
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {commsTab === 'programadas' ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400 p-4 text-center space-y-2">
-              <Clock className="w-6 h-6 opacity-50" />
-              <p className="text-xs font-medium">Nenhuma mensagem programada para envio.</p>
-            </div>
+            scheduledList.map((sch) => (
+              <div key={sch.id} className="p-3 flex items-start gap-3 hover:bg-gray-50 border-b border-gray-50 transition-colors">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${sch.color} shrink-0`}>
+                  {sch.initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-baseline mb-0.5">
+                    <h4 className="text-xs font-bold text-gray-800 truncate">{sch.name}</h4>
+                    <span className="text-[9px] text-emerald-600 font-bold flex-shrink-0 flex items-center gap-1"><Clock className="w-2.5 h-2.5"/> {sch.trigger}</span>
+                  </div>
+                  <p className="text-[10px] text-gray-500 mt-1 line-clamp-3 leading-relaxed">
+                    "{sch.msg}"
+                  </p>
+                </div>
+              </div>
+            ))
           ) : commsFilter === 'profissionais' ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-400 p-4 text-center space-y-2">
               <Users className="w-6 h-6 opacity-50" />
@@ -531,7 +587,18 @@ const CRMComunicacao = () => {
       
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center">
-        {activeChat ? (
+        {commsTab === 'programadas' ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/50 backdrop-blur-sm">
+            <Clock className="w-16 h-16 text-emerald-200 mb-4" />
+            <h3 className="text-lg font-bold text-gray-700">Automação de Relacionamento</h3>
+            <p className="text-sm text-gray-500 max-w-sm mt-2">
+              O Agente Nexus dispara mensagens personalizadas de acordo com gatilhos do sistema (consultas, exames, retorno). Nenhuma ação manual é necessária.
+            </p>
+            <button className="mt-6 flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 transition-colors">
+              <Plus className="w-4 h-4"/> Nova Automação
+            </button>
+          </div>
+        ) : activeChat ? (
           <>
             <div className="p-3 md:p-4 bg-white/90 backdrop-blur-sm border-b border-gray-200 flex items-center gap-3 shadow-sm">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${activeChat.color}`}>
@@ -540,66 +607,44 @@ const CRMComunicacao = () => {
               <div>
                 <h3 className="font-bold text-sm text-gray-800">{activeChat.name}</h3>
                 <p className="text-[10px] text-gray-500 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> IA Nexus em atendimento
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> IA Nexus em atendimento
                 </p>
               </div>
             </div>
             
             <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
-              {activeChatId === 'AC' ? (
-                <>
-                  <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
-                  <div className="flex justify-end">
+              <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
+              
+              {activeChat.messages.map((m, i) => (
+                m.sender === 'user' ? (
+                  <div key={i} className="flex justify-end">
                     <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-                      Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.
-                      <span className="text-[9px] text-gray-500 block text-right mt-1">08:14</span>
+                      {m.text}
+                      <span className="text-[9px] text-gray-500 block text-right mt-1">{m.time}</span>
                     </div>
                   </div>
-                  
-                  <div className="flex gap-2">
+                ) : (
+                  <div key={i} className="flex gap-2">
                     <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
                        <BotMessageSquare className="w-4 h-4 text-white" />
                     </div>
                     <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
-                      Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.
-                      <br/><br/>
-                      Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?
-                      <span className="text-[9px] text-gray-400 block text-right mt-1">08:15</span>
+                      {m.isAppointment ? (
+                        <div className="flex flex-col gap-2">
+                          <span dangerouslySetInnerHTML={{ __html: m.text }} />
+                          <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2 mt-1">
+                            <CalendarDays className="w-4 h-4 text-emerald-500" />
+                            <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <span dangerouslySetInnerHTML={{ __html: m.text }} />
+                      )}
+                      <span className="text-[9px] text-gray-400 block text-right mt-1">{m.time}</span>
                     </div>
                   </div>
-
-                  <div className="flex justify-end mt-2">
-                    <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-                      Nossa, muito obrigada! Pode confirmar sim. 🙏
-                      <span className="text-[9px] text-gray-500 block text-right mt-1">08:16</span>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
-                       <BotMessageSquare className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
-                      <span>Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.</span>
-                      <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2">
-                        <CalendarDays className="w-4 h-4 text-emerald-500" />
-                        <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
-                      </div>
-                      <span className="text-[9px] text-gray-400 block text-right mt-1">08:16</span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-80">
-                  <BotMessageSquare className="w-10 h-10 text-emerald-500 mb-2" />
-                  <p className="text-sm font-bold text-gray-700 bg-white/90 px-4 py-2 rounded-lg shadow-sm">
-                    Central de Comunicação IA
-                  </p>
-                  <p className="text-[10px] text-gray-500 bg-white/90 px-3 py-1 rounded-md shadow-sm max-w-xs">
-                    O histórico completo desta conversa está sendo sincronizado.
-                  </p>
-                </div>
-              )}
+                )
+              ))}
             </div>
             
             <div className="p-3 bg-gray-50 border-t border-gray-200">
