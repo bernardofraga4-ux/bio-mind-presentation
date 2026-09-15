@@ -7,7 +7,7 @@ import {
   Users, BotMessageSquare, Search, MoreVertical, Banknote,
   Bell, FileText, Stethoscope, Briefcase, ChevronRight, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
-  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, Sparkles, User, Fingerprint, Plug, Cloud
+  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, User, Fingerprint, Plug, Cloud
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -362,10 +362,12 @@ const CRMPacientes = () => (
                 </td>
                 <td className="p-3 md:p-4 text-xs md:text-sm text-gray-700">{p.cpf}</td>
                 <td className="p-3 md:p-4">
-                  <span className={`px-2 flex w-max items-center gap-1.5 py-1 ${p.color} text-[10px] md:text-xs font-bold rounded-md`}>
-                    {p.origin === 'IA Nexus' ? <Sparkles className="w-3 h-3"/> : <User className="w-3 h-3"/>}
-                    {p.origin}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className={`flex items-center justify-center w-5 h-5 rounded-md ${p.color} shrink-0`}>
+                      {p.origin === 'IA Nexus' ? <BotMessageSquare className="w-3 h-3"/> : <User className="w-3 h-3"/>}
+                    </div>
+                    <span className="text-[10px] md:text-xs font-bold text-gray-700">{p.origin}</span>
+                  </div>
                 </td>
                 <td className="p-3 md:p-4">
                   <div className="flex items-center justify-end gap-3">
@@ -437,118 +439,191 @@ const CRMFaturamento = () => (
   </motion.div>
 );
 
-const CRMComunicacao = () => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    {/* Sidebar Left */}
-    <div className="w-1/3 min-w-[250px] border-r border-gray-100 flex flex-col">
-      <div className="p-3 border-b border-gray-100 flex gap-4">
-        <button className="text-xs font-bold text-emerald-600 border-b-2 border-emerald-600 pb-1">Conversas Ativas</button>
-        <button className="text-xs font-bold text-gray-400 hover:text-gray-600 pb-1">Mensagens Programadas</button>
-      </div>
-      <div className="p-3 flex gap-2">
-        <button className="flex-1 bg-gray-100 text-gray-800 text-xs font-bold py-1.5 rounded-lg border border-gray-200">Pacientes</button>
-        <button className="flex-1 text-gray-500 hover:bg-gray-50 text-xs font-bold py-1.5 rounded-lg">Profissionais</button>
-      </div>
-      <div className="px-3 pb-3">
-        <div className="relative">
-          <Search className="w-3 h-3 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input type="text" placeholder="Buscar contato..." className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+const CRMComunicacao = () => {
+  const [commsTab, setCommsTab] = useState('ativas'); // ativas, programadas
+  const [commsFilter, setCommsFilter] = useState('pacientes'); // pacientes, profissionais
+  const [activeChatId, setActiveChatId] = useState('AC');
+
+  const chatList = [
+    { id: 'AC', name: 'Ana Clara', time: '08:16', msg: 'Pode confirmar sim. 🙏', initials: 'AC', color: 'bg-emerald-100 text-emerald-700' },
+    { id: 'CE', name: 'Carlos Eduardo', time: '15:02', msg: '30 minutos R$130,00 com desconto', initials: 'CE', color: 'bg-blue-100 text-blue-700' },
+    { id: 'MO', name: 'Monique', time: '15:00', msg: 'Ta bom', initials: 'MO', color: 'bg-purple-100 text-purple-700' },
+    { id: 'LR', name: 'Luiza Rodrigues', time: '15:00', msg: 'Boa tarde! Aconteceu um imprevisto', initials: 'LR', color: 'bg-orange-100 text-orange-700' },
+    { id: 'DS', name: 'Dr Julio Samos', time: '14:51', msg: 'Ok', initials: 'DS', color: 'bg-gray-100 text-gray-700' }
+  ];
+
+  const activeChat = chatList.find(c => c.id === activeChatId);
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* Sidebar Left */}
+      <div className="w-1/3 min-w-[250px] border-r border-gray-100 flex flex-col">
+        <div className="p-3 border-b border-gray-100 flex gap-4">
+          <button 
+            onClick={() => setCommsTab('ativas')}
+            className={`text-xs font-bold pb-1 transition-colors ${commsTab === 'ativas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+            Conversas Ativas
+          </button>
+          <button 
+            onClick={() => setCommsTab('programadas')}
+            className={`text-xs font-bold pb-1 transition-colors ${commsTab === 'programadas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+            Mensagens Programadas
+          </button>
         </div>
-      </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {[
-          { name: 'Ana Clara', time: '08:16', msg: 'Pode confirmar sim. 🙏', active: true, initials: 'AC', color: 'bg-emerald-100 text-emerald-700' },
-          { name: 'Multi Saúde', time: '15:02', msg: '30 minutos R$130,00 com desconto', active: false, initials: 'MS', color: 'bg-blue-100 text-blue-700' },
-          { name: 'Monique', time: '15:00', msg: 'Ta bom', active: false, initials: 'MO', color: 'bg-purple-100 text-purple-700' },
-          { name: 'Luiza Rodrigues', time: '15:00', msg: 'Boa tarde! Aconteceu um imprevisto', active: false, initials: 'LR', color: 'bg-orange-100 text-orange-700' },
-          { name: 'Dr Julio Samos', time: '14:51', msg: 'Ok', active: false, initials: 'DS', color: 'bg-gray-100 text-gray-700' }
-        ].map((chat, i) => (
-          <div key={i} className={`p-3 flex items-start gap-3 cursor-pointer hover:bg-gray-50 border-b border-gray-50 ${chat.active ? 'bg-emerald-50/50' : ''}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${chat.color}`}>
-              {chat.initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex justify-between items-baseline mb-0.5">
-                <h4 className="text-xs font-bold text-gray-800 truncate">{chat.name}</h4>
-                <span className="text-[9px] text-gray-400 flex-shrink-0">{chat.time}</span>
-              </div>
-              <p className="text-[10px] text-gray-500 truncate flex items-center gap-1">
-                <BotMessageSquare className="w-3 h-3 text-emerald-500" /> {chat.msg}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-    
-    {/* Main Chat Area */}
-    <div className="flex-1 flex flex-col bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center">
-      <div className="p-3 md:p-4 bg-white/90 backdrop-blur-sm border-b border-gray-200 flex items-center gap-3 shadow-sm">
-        <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
-          AC
+        <div className="p-3 flex gap-2">
+          <button 
+            onClick={() => setCommsFilter('pacientes')}
+            className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'pacientes' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
+          >
+            Pacientes
+          </button>
+          <button 
+            onClick={() => setCommsFilter('profissionais')}
+            className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'profissionais' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
+          >
+            Profissionais
+          </button>
         </div>
-        <div>
-          <h3 className="font-bold text-sm text-gray-800">Ana Clara</h3>
-          <p className="text-[10px] text-gray-500 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> IA Nexus em atendimento
-          </p>
-        </div>
-      </div>
-      
-      <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
-        <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
-        <div className="flex justify-end">
-          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-            Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.
-            <span className="text-[9px] text-gray-500 block text-right mt-1">08:14</span>
+        <div className="px-3 pb-3">
+          <div className="relative">
+            <Search className="w-3 h-3 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input type="text" placeholder="Buscar contato..." className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
           </div>
         </div>
         
-        <div className="flex gap-2">
-          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
-             <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
-            Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.
-            <br/><br/>
-            Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?
-            <span className="text-[9px] text-gray-400 block text-right mt-1">08:15</span>
-          </div>
-        </div>
-
-        <div className="flex justify-end mt-2">
-          <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
-            Nossa, muito obrigada! Pode confirmar sim. 🙏
-            <span className="text-[9px] text-gray-500 block text-right mt-1">08:16</span>
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
-             <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
-            <span>Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.</span>
-            <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-emerald-500" />
-              <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          {commsTab === 'programadas' ? (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 p-4 text-center space-y-2">
+              <Clock className="w-6 h-6 opacity-50" />
+              <p className="text-xs font-medium">Nenhuma mensagem programada para envio.</p>
             </div>
-            <span className="text-[9px] text-gray-400 block text-right mt-1">08:16</span>
-          </div>
+          ) : commsFilter === 'profissionais' ? (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 p-4 text-center space-y-2">
+              <Users className="w-6 h-6 opacity-50" />
+              <p className="text-xs font-medium">Nenhum profissional online.</p>
+            </div>
+          ) : (
+            chatList.map((chat) => (
+              <div 
+                key={chat.id} 
+                onClick={() => setActiveChatId(chat.id)}
+                className={`p-3 flex items-start gap-3 cursor-pointer hover:bg-gray-50 border-b border-gray-50 transition-colors ${activeChatId === chat.id ? 'bg-emerald-50/50' : ''}`}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${chat.color}`}>
+                  {chat.initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-baseline mb-0.5">
+                    <h4 className="text-xs font-bold text-gray-800 truncate">{chat.name}</h4>
+                    <span className="text-[9px] text-gray-400 flex-shrink-0">{chat.time}</span>
+                  </div>
+                  <p className="text-[10px] text-gray-500 truncate flex items-center gap-1">
+                    <BotMessageSquare className="w-3 h-3 text-emerald-500" /> {chat.msg}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
       
-      <div className="p-3 bg-gray-50 border-t border-gray-200">
-        <div className="relative flex items-center">
-          <input type="text" placeholder="IA conversando... Digite para assumir o controle" className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 md:py-3 text-xs md:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800">
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center">
+        {activeChat ? (
+          <>
+            <div className="p-3 md:p-4 bg-white/90 backdrop-blur-sm border-b border-gray-200 flex items-center gap-3 shadow-sm">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${activeChat.color}`}>
+                {activeChat.initials}
+              </div>
+              <div>
+                <h3 className="font-bold text-sm text-gray-800">{activeChat.name}</h3>
+                <p className="text-[10px] text-gray-500 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> IA Nexus em atendimento
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
+              {activeChatId === 'AC' ? (
+                <>
+                  <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
+                  <div className="flex justify-end">
+                    <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+                      Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.
+                      <span className="text-[9px] text-gray-500 block text-right mt-1">08:14</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
+                       <BotMessageSquare className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
+                      Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.
+                      <br/><br/>
+                      Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?
+                      <span className="text-[9px] text-gray-400 block text-right mt-1">08:15</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mt-2">
+                    <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+                      Nossa, muito obrigada! Pode confirmar sim. 🙏
+                      <span className="text-[9px] text-gray-500 block text-right mt-1">08:16</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
+                       <BotMessageSquare className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100 flex flex-col gap-2">
+                      <span>Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.</span>
+                      <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2">
+                        <CalendarDays className="w-4 h-4 text-emerald-500" />
+                        <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
+                      </div>
+                      <span className="text-[9px] text-gray-400 block text-right mt-1">08:16</span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-3 opacity-80">
+                  <BotMessageSquare className="w-10 h-10 text-emerald-500 mb-2" />
+                  <p className="text-sm font-bold text-gray-700 bg-white/90 px-4 py-2 rounded-lg shadow-sm">
+                    Central de Comunicação IA
+                  </p>
+                  <p className="text-[10px] text-gray-500 bg-white/90 px-3 py-1 rounded-md shadow-sm max-w-xs">
+                    O histórico completo desta conversa está sendo sincronizado.
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            <div className="p-3 bg-gray-50 border-t border-gray-200">
+              <div className="relative flex items-center">
+                <input type="text" placeholder="IA conversando... Digite para assumir o controle" className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 md:py-3 text-xs md:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800">
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/50 backdrop-blur-sm">
+            <BotMessageSquare className="w-16 h-16 text-gray-300 mb-4" />
+            <h3 className="text-lg font-bold text-gray-700">Central de Comunicação IA</h3>
+            <p className="text-sm text-gray-500 max-w-sm mt-2">
+              Selecione um chat ao lado para visualizar a conversa, interagir com o paciente ou assumir o atendimento no lugar do Nexus.
+            </p>
+          </div>
+        )}
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 const CRMConexoes = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
