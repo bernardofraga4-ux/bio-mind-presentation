@@ -5,9 +5,9 @@ import {
   ArrowRight, Clock, ShieldCheck, Activity, Check, X, 
   Database, Workflow, Calculator, LayoutDashboard, CalendarDays,
   Users, BotMessageSquare, Search, MoreVertical, Banknote,
-  Bell, FileText, Stethoscope, Briefcase, ChevronRight, PieChart,
+  Bell, FileText, Stethoscope, Briefcase, ChevronRight, ChevronLeft, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
-  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, User, Fingerprint, Plug, Cloud
+  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, User, Fingerprint, Plug, Cloud, Send, RotateCcw
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -462,8 +462,10 @@ const CRMComunicacao = () => {
   const [commsTab, setCommsTab] = useState('ativas'); // ativas, programadas
   const [commsFilter, setCommsFilter] = useState('pacientes'); // pacientes, profissionais
   const [activeChatId, setActiveChatId] = useState('AC');
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
+  const [typedMessage, setTypedMessage] = useState('');
 
-  const chatList = [
+  const [chatList, setChatList] = useState([
     { 
       id: 'AC', name: 'Ana Clara', time: '08:16', msg: 'Pode confirmar sim. 🙏', initials: 'AC', color: 'bg-emerald-100 text-emerald-700',
       messages: [
@@ -503,37 +505,81 @@ const CRMComunicacao = () => {
         { sender: 'user', time: '14:51', text: 'Ok, pode mandar entrar em 5 minutos.' }
       ]
     }
-  ];
+  ]);
 
   const scheduledList = [
-    { id: '1', name: 'Maria Fernandes', trigger: 'Amanhã, 08:00', msg: 'Olá Maria! Tudo bem? Passando para lembrar do seu jejum de 12h para o exame de ultrassom amanhã. Qualquer dúvida estou por aqui.', initials: 'MF', color: 'bg-pink-100 text-pink-700' },
+    { id: '1', name: 'Maria Fernandes', trigger: 'Amanhã, 08:00', msg: 'Olá Maria! Passando para lembrar do seu jejum de 12h para o exame de ultrassom amanhã às 08:00. Qualquer dúvida estou por aqui.', initials: 'MF', color: 'bg-pink-100 text-pink-700' },
     { id: '2', name: 'João Pedro', trigger: 'Sexta, 14:30', msg: 'Olá João! Sua consulta com o cardiologista está confirmada para sexta-feira. Não esqueça de trazer seus últimos exames.', initials: 'JP', color: 'bg-indigo-100 text-indigo-700' },
     { id: '3', name: 'Campanha Checkup', trigger: 'Dia 20, 09:00', msg: 'Olá! Já faz 6 meses desde o seu último checkup preventivo. Que tal agendar um horário para colocar a saúde em dia?', initials: 'CC', color: 'bg-amber-100 text-amber-700' },
   ];
 
   const activeChat = chatList.find(c => c.id === activeChatId);
 
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!typedMessage.trim() || !activeChat) return;
+
+    const newMsg = {
+      sender: 'user',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text: typedMessage
+    };
+
+    setChatList(prev => prev.map(chat => {
+      if (chat.id === activeChat.id) {
+        return {
+          ...chat,
+          msg: typedMessage,
+          messages: [...chat.messages, newMsg]
+        };
+      }
+      return chat;
+    }));
+
+    setTypedMessage('');
+
+    // Resposta automática da IA após 1s
+    setTimeout(() => {
+      setChatList(prev => prev.map(chat => {
+        if (chat.id === activeChat.id) {
+          return {
+            ...chat,
+            messages: [
+              ...chat.messages,
+              {
+                sender: 'ai',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                text: 'Perfeito! Mensagem recebida e registrada no prontuário do paciente.'
+              }
+            ]
+          };
+        }
+        return chat;
+      }));
+    }, 1000);
+  };
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      {/* Sidebar Left */}
-      <div className="w-1/3 min-w-[250px] border-r border-gray-100 flex flex-col">
-        <div className="p-3 border-b border-gray-100 flex gap-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full w-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+      {/* Sidebar Left (Lista de Conversas / Mensagens Programadas) */}
+      <div className={`${mobileChatOpen && commsTab === 'ativas' ? 'hidden md:flex' : 'flex'} w-full md:w-80 md:min-w-[280px] md:max-w-xs border-r border-gray-100 flex-col h-full bg-white flex-shrink-0`}>
+        <div className="p-2 sm:p-3 border-b border-gray-100 flex gap-2 sm:gap-4 overflow-x-auto">
           <button 
-            onClick={() => setCommsTab('ativas')}
-            className={`text-xs font-bold pb-1 transition-colors ${commsTab === 'ativas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
+            onClick={() => { setCommsTab('ativas'); setMobileChatOpen(false); }}
+            className={`text-xs font-bold pb-1 whitespace-nowrap transition-colors ${commsTab === 'ativas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
           >
             Conversas Ativas
           </button>
           <button 
-            onClick={() => setCommsTab('programadas')}
-            className={`text-xs font-bold pb-1 transition-colors ${commsTab === 'programadas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
+            onClick={() => { setCommsTab('programadas'); setMobileChatOpen(false); }}
+            className={`text-xs font-bold pb-1 whitespace-nowrap transition-colors ${commsTab === 'programadas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
           >
             Mensagens Programadas
           </button>
         </div>
         
         {commsTab === 'ativas' && (
-          <div className="p-3 flex gap-2">
+          <div className="p-2 sm:p-3 flex gap-2">
             <button 
               onClick={() => setCommsFilter('pacientes')}
               className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'pacientes' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
@@ -549,111 +595,150 @@ const CRMComunicacao = () => {
           </div>
         )}
 
-        <div className="px-3 pb-3 pt-3">
+        <div className="px-2 sm:px-3 pb-2 sm:pb-3 pt-2">
           <div className="relative">
-            <Search className="w-3 h-3 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input type="text" placeholder={commsTab === 'programadas' ? "Buscar mensagens programadas..." : "Buscar contato..."} className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder={commsTab === 'programadas' ? "Buscar agendadas..." : "Buscar contato..."} 
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" 
+            />
           </div>
         </div>
         
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {commsTab === 'programadas' ? (
-            scheduledList.map((sch) => (
-              <div key={sch.id} className="p-3 flex items-start gap-3 hover:bg-gray-50 border-b border-gray-50 transition-colors">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${sch.color} shrink-0`}>
-                  {sch.initials}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-baseline mb-0.5">
-                    <h4 className="text-xs font-bold text-gray-800 truncate">{sch.name}</h4>
-                    <span className="text-[9px] text-emerald-600 font-bold flex-shrink-0 flex items-center gap-1"><Clock className="w-2.5 h-2.5"/> {sch.trigger}</span>
+            <div className="divide-y divide-gray-50">
+              {scheduledList.map((sch) => (
+                <div key={sch.id} className="p-3 sm:p-3.5 flex items-start gap-3 hover:bg-gray-50 transition-colors cursor-default">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${sch.color} shrink-0 shadow-sm`}>
+                    {sch.initials}
                   </div>
-                  <p className="text-[10px] text-gray-500 mt-1 line-clamp-3 leading-relaxed">
-                    "{sch.msg}"
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline mb-0.5">
+                      <h4 className="text-xs font-bold text-gray-800 truncate">{sch.name}</h4>
+                      <span className="text-[9px] text-emerald-600 font-bold flex-shrink-0 flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        <Clock className="w-2.5 h-2.5"/> {sch.trigger}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed break-words">
+                      "{sch.msg}"
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           ) : commsFilter === 'profissionais' ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400 p-4 text-center space-y-2">
-              <Users className="w-6 h-6 opacity-50" />
-              <p className="text-xs font-medium">Nenhum profissional online.</p>
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 p-6 text-center space-y-2">
+              <Users className="w-8 h-8 opacity-40 text-gray-400" />
+              <p className="text-xs font-medium">Nenhum profissional com chamado aberto.</p>
             </div>
           ) : (
-            chatList.map((chat) => (
-              <div 
-                key={chat.id} 
-                onClick={() => setActiveChatId(chat.id)}
-                className={`p-3 flex items-start gap-3 cursor-pointer hover:bg-gray-50 border-b border-gray-50 transition-colors ${activeChatId === chat.id ? 'bg-emerald-50/50' : ''}`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${chat.color}`}>
-                  {chat.initials}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-baseline mb-0.5">
-                    <h4 className="text-xs font-bold text-gray-800 truncate">{chat.name}</h4>
-                    <span className="text-[9px] text-gray-400 flex-shrink-0">{chat.time}</span>
+            <div className="divide-y divide-gray-50">
+              {chatList.map((chat) => (
+                <div 
+                  key={chat.id} 
+                  onClick={() => {
+                    setActiveChatId(chat.id);
+                    setMobileChatOpen(true);
+                  }}
+                  className={`p-3 sm:p-3.5 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${activeChatId === chat.id ? 'bg-emerald-50/60 md:border-l-4 md:border-emerald-500' : ''}`}
+                >
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${chat.color} shrink-0 shadow-sm`}>
+                    {chat.initials}
                   </div>
-                  <p className="text-[10px] text-gray-500 truncate flex items-center gap-1">
-                    <BotMessageSquare className="w-3 h-3 text-emerald-500" /> {chat.msg}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline mb-1">
+                      <h4 className="text-xs sm:text-sm font-bold text-gray-800 truncate">{chat.name}</h4>
+                      <span className="text-[10px] text-gray-400 flex-shrink-0 ml-1">{chat.time}</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 truncate flex items-center gap-1.5">
+                      <BotMessageSquare className="w-3 h-3 text-emerald-500 shrink-0" />
+                      <span className="truncate">{chat.msg}</span>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </div>
       
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center">
+      {/* Main Chat Area / Programmed Messages Details */}
+      <div className={`${commsTab === 'programadas' ? 'hidden md:flex' : (!mobileChatOpen ? 'hidden md:flex' : 'flex')} flex-1 flex-col h-full bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center min-w-0`}>
         {commsTab === 'programadas' ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/50 backdrop-blur-sm">
-            <Clock className="w-16 h-16 text-emerald-200 mb-4" />
-            <h3 className="text-lg font-bold text-gray-700">Automação de Relacionamento</h3>
-            <p className="text-sm text-gray-500 max-w-sm mt-2">
-              O Agente Nexus dispara mensagens personalizadas de acordo com gatilhos do sistema (consultas, exames, retorno). Nenhuma ação manual é necessária.
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/70 backdrop-blur-md">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4 border border-emerald-100 shadow-sm">
+              <Clock className="w-8 h-8 text-emerald-600" />
+            </div>
+            <h3 className="text-lg md:text-xl font-bold text-gray-800">Automação de Relacionamento Ativa</h3>
+            <p className="text-xs md:text-sm text-gray-500 max-w-md mt-2 leading-relaxed">
+              O Agente Nexus dispara mensagens e lembretes com base em regras clínicas (jejum, exames, confirmações e pós-consulta). Zero trabalho para a recepção.
             </p>
-            <button className="mt-6 flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-emerald-700 transition-colors">
-              <Plus className="w-4 h-4"/> Nova Automação
-            </button>
+            <div className="mt-6 flex flex-wrap gap-2 justify-center">
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold">Lembretes 24h antes</span>
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-[10px] font-bold">Confirmação de Retorno</span>
+              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-[10px] font-bold">Instruções de Exames</span>
+            </div>
           </div>
         ) : activeChat ? (
           <>
-            <div className="p-3 md:p-4 bg-white/90 backdrop-blur-sm border-b border-gray-200 flex items-center gap-3 shadow-sm">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${activeChat.color}`}>
-                {activeChat.initials}
+            {/* Header da conversa com botão de voltar no mobile */}
+            <div className="p-3 md:p-4 bg-white/95 backdrop-blur-md border-b border-gray-200 flex items-center justify-between shadow-sm flex-shrink-0">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <button 
+                  onClick={() => setMobileChatOpen(false)}
+                  className="md:hidden p-1.5 -ml-1 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors flex items-center gap-0.5 text-xs font-bold"
+                  aria-label="Voltar para a lista de conversas"
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-700" />
+                  <span className="text-gray-700">Voltar</span>
+                </button>
+                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm ${activeChat.color} shrink-0 shadow-sm`}>
+                  {activeChat.initials}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-xs sm:text-sm text-gray-800 truncate">{activeChat.name}</h3>
+                  <p className="text-[10px] text-gray-500 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span> 
+                    <span className="truncate">IA Nexus em atendimento autônomo</span>
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-sm text-gray-800">{activeChat.name}</h3>
-                <p className="text-[10px] text-gray-500 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> IA Nexus em atendimento
-                </p>
+
+              <div className="hidden sm:flex items-center gap-2 text-gray-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                  WhatsApp Conectado
+                </span>
               </div>
             </div>
             
-            <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
-              <div className="text-center text-[10px] text-gray-500 my-2"><span className="bg-white/80 px-2 py-1 rounded-md shadow-sm">Hoje</span></div>
+            {/* Lista de Mensagens */}
+            <div className="flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col gap-3 sm:gap-4 custom-scrollbar">
+              <div className="text-center text-[10px] text-gray-500 my-1 sm:my-2">
+                <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm text-gray-600 font-medium">Hoje</span>
+              </div>
               
               {activeChat.messages.map((m, i) => (
                 m.sender === 'user' ? (
                   <div key={i} className="flex justify-end">
-                    <div className="bg-[#D9FDD3] p-3 rounded-xl rounded-tr-sm text-sm text-gray-800 shadow-sm max-w-[85%]">
+                    <div className="bg-[#D9FDD3] p-2.5 sm:p-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm text-gray-800 shadow-sm max-w-[88%] sm:max-w-[80%] break-words">
                       {m.text}
                       <span className="text-[9px] text-gray-500 block text-right mt-1">{m.time}</span>
                     </div>
                   </div>
                 ) : (
-                  <div key={i} className="flex gap-2">
-                    <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm mt-auto flex-shrink-0">
-                       <BotMessageSquare className="w-4 h-4 text-white" />
+                  <div key={i} className="flex gap-2 items-end">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm flex-shrink-0 mb-1">
+                       <BotMessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                     </div>
-                    <div className="bg-white p-3 rounded-xl rounded-tl-sm text-sm text-gray-800 shadow-sm max-w-[85%] border border-gray-100">
+                    <div className="bg-white p-2.5 sm:p-3 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-gray-800 shadow-sm max-w-[88%] sm:max-w-[80%] border border-gray-100 break-words">
                       {m.isAppointment ? (
                         <div className="flex flex-col gap-2">
                           <span dangerouslySetInnerHTML={{ __html: m.text }} />
-                          <div className="bg-gray-50 p-2 rounded border border-gray-200 flex items-center gap-2 mt-1">
-                            <CalendarDays className="w-4 h-4 text-emerald-500" />
-                            <span className="text-xs font-bold text-gray-700">Hoje, 10:30 - Retorno Emergência</span>
+                          <div className="bg-emerald-50 p-2 sm:p-2.5 rounded-xl border border-emerald-100 flex items-center gap-2 mt-1">
+                            <CalendarDays className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span className="text-[11px] sm:text-xs font-bold text-gray-800">Hoje, 10:30 - Retorno Emergência</span>
                           </div>
                         </div>
                       ) : (
@@ -666,21 +751,32 @@ const CRMComunicacao = () => {
               ))}
             </div>
             
-            <div className="p-3 bg-gray-50 border-t border-gray-200">
+            {/* Input para responder ou assumir o chat */}
+            <form onSubmit={handleSendMessage} className="p-2 sm:p-3 bg-gray-50/95 backdrop-blur-sm border-t border-gray-200">
               <div className="relative flex items-center">
-                <input type="text" placeholder="IA conversando... Digite para assumir o controle" className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 md:py-3 text-xs md:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800">
-                  <ArrowRight className="w-4 h-4" />
+                <input 
+                  type="text" 
+                  value={typedMessage}
+                  onChange={(e) => setTypedMessage(e.target.value)}
+                  placeholder="IA conversando... Digite para intervir" 
+                  className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 sm:py-2.5 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                />
+                <button 
+                  type="submit"
+                  className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors shadow-sm"
+                  aria-label="Enviar mensagem"
+                >
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
-            </div>
+            </form>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/50 backdrop-blur-sm">
-            <BotMessageSquare className="w-16 h-16 text-gray-300 mb-4" />
-            <h3 className="text-lg font-bold text-gray-700">Central de Comunicação IA</h3>
-            <p className="text-sm text-gray-500 max-w-sm mt-2">
-              Selecione um chat ao lado para visualizar a conversa, interagir com o paciente ou assumir o atendimento no lugar do Nexus.
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/60 backdrop-blur-sm">
+            <BotMessageSquare className="w-12 h-12 text-gray-300 mb-3" />
+            <h3 className="text-base font-bold text-gray-700">Central de Comunicação IA</h3>
+            <p className="text-xs text-gray-500 max-w-xs mt-1">
+              Selecione uma conversa ao lado para visualizar a triagem automática do Nexus.
             </p>
           </div>
         )}
@@ -751,10 +847,250 @@ const CRMConexoes = () => (
   </motion.div>
 );
 
+const NexusAgentDrawer = ({ showAI, onClose }) => {
+  const [messages, setMessages] = useState([
+    {
+      id: 'init-1',
+      sender: 'ai',
+      time: 'Agora',
+      text: 'Olá! Sou o <strong>Agente Nexus</strong>, o cérebro operacional da sua clínica. Identifiquei <strong>4 faturamentos pendentes</strong> de ontem e um choque de horário na agenda da Dra. Juliana às 15:30.<br/><br/>Clique em uma das dúvidas abaixo para ver a demonstração da IA em tempo real:'
+    }
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [inputVal, setInputVal] = useState('');
+
+  const preRecordedQA = [
+    {
+      label: '⚡ Como a IA atende no WhatsApp?',
+      question: 'Como você faz o atendimento automático no WhatsApp?',
+      answer: 'Eu atendo cada paciente em menos de 3 segundos, 24 horas por dia. Entendo sintomas em áudio ou texto, valido o convênio, encontro o melhor horário na agenda médica e confirmo a consulta direto no sistema — tudo sem intervenção da recepção.'
+    },
+    {
+      label: '💰 Quanto tempo e custo economiza?',
+      question: 'Qual a real economia de tempo e custos para a clínica?',
+      answer: 'Uma clínica economiza em média de 120 a 160 horas por mês. O tempo gasto ligando para pacientes, transcrevendo dados de WhatsApp para o sistema e cobrando orçamentos cai para zero. Sua recepção foca 100% no acolhimento presencial.'
+    },
+    {
+      label: '🔄 E se o paciente desmarcar?',
+      question: 'O que o sistema faz quando alguém desmarca em cima da hora?',
+      answer: 'No instante em que o cancelamento ocorre, eu consulto a lista de espera inteligente e disparo mensagens via WhatsApp para pacientes prioritários. Vagas ociosas são preenchidas em menos de 10 minutos, sem nenhum esforço manual.'
+    },
+    {
+      label: '📑 Como funciona faturamento e NFs?',
+      question: 'Como é feita a emissão de notas e o fechamento do caixa?',
+      answer: 'Cruzo os atendimentos do dia com a tabela de procedimentos e convênios. Calculo automaticamente os repasses líquidos de cada médico (descontando taxas e materiais) e emito as notas fiscais em lote com um único clique de confirmação.'
+    },
+    {
+      label: '🔒 Sigilo e conformidade LGPD?',
+      question: 'Os dados médicos e de pacientes estão protegidos?',
+      answer: 'Sim, seguimos as diretrizes mais rigorosas da LGPD e do CFM. Todas as mensagens e fichas trafegam por canais criptografados de ponta a ponta e ficam sob custódia exclusiva da sua clínica, sem exposição a modelos públicos.'
+    }
+  ];
+
+  const handleAsk = (item) => {
+    if (isTyping) return;
+    const userMsg = {
+      id: Date.now().toString(),
+      sender: 'user',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text: item.question
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const aiMsg = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: item.answer
+      };
+      setMessages(prev => [...prev, aiMsg]);
+      setIsTyping(false);
+    }, 600);
+  };
+
+  const handleCustomSubmit = (e) => {
+    e.preventDefault();
+    if (!inputVal.trim() || isTyping) return;
+
+    const userText = inputVal;
+    setInputVal('');
+
+    const userMsg = {
+      id: Date.now().toString(),
+      sender: 'user',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text: userText
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
+
+    setTimeout(() => {
+      let reply = 'Como Agente Nexus, fui modelado especificamente para as regras da sua clínica. Eu centralizo WhatsApp, prontuário, agenda médica e faturamento em tempo real sem erros operacionais.';
+      const lower = userText.toLowerCase();
+      if (lower.includes('custo') || lower.includes('valor') || lower.includes('preço') || lower.includes('econom')) {
+        reply = preRecordedQA[1].answer;
+      } else if (lower.includes('whatsapp') || lower.includes('atende') || lower.includes('mensagem')) {
+        reply = preRecordedQA[0].answer;
+      } else if (lower.includes('desmarca') || lower.includes('cancela') || lower.includes('agenda')) {
+        reply = preRecordedQA[2].answer;
+      } else if (lower.includes('nota') || lower.includes('fatura') || lower.includes('dinheiro') || lower.includes('repasse')) {
+        reply = preRecordedQA[3].answer;
+      } else if (lower.includes('seguran') || lower.includes('lgpd') || lower.includes('dado')) {
+        reply = preRecordedQA[4].answer;
+      }
+
+      setMessages(prev => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          sender: 'ai',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: reply
+        }
+      ]);
+      setIsTyping(false);
+    }, 700);
+  };
+
+  const resetChat = () => {
+    setMessages([
+      {
+        id: 'init-1',
+        sender: 'ai',
+        time: 'Agora',
+        text: 'Demonstração reiniciada! Selecione uma pergunta abaixo para ver a IA em ação:'
+      }
+    ]);
+  };
+
+  return (
+    <AnimatePresence>
+      {showAI && (
+        <motion.div 
+          initial={{ x: '100%', opacity: 0 }} 
+          animate={{ x: 0, opacity: 1 }} 
+          exit={{ x: '100%', opacity: 0 }}
+          transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+          className="absolute top-0 right-0 w-full sm:w-96 h-full bg-white md:border-l border-gray-200 shadow-2xl flex flex-col z-30 overflow-hidden"
+        >
+          {/* Header */}
+          <div className="p-3 sm:p-4 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <BotMessageSquare className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-tight">Agente Nexus</h4>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="text-[10px] text-emerald-600 font-bold tracking-wider">ONLINE • SUPORTE 24H</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={resetChat} 
+                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                title="Reiniciar conversa"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={onClose} 
+                className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Fechar Nexus"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+          
+          {/* Messages List */}
+          <div className="flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar bg-gray-50/50">
+            {messages.map((m) => (
+              m.sender === 'user' ? (
+                <div key={m.id} className="flex justify-end">
+                  <div className="bg-gray-900 text-white p-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm shadow-sm max-w-[85%] break-words">
+                    {m.text}
+                    <span className="text-[9px] text-gray-400 block text-right mt-1">{m.time}</span>
+                  </div>
+                </div>
+              ) : (
+                <div key={m.id} className="flex gap-2 items-start">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center shadow-sm shrink-0 mt-0.5">
+                    <BotMessageSquare className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="bg-white p-3 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-gray-800 shadow-sm border border-gray-100 max-w-[88%] leading-relaxed break-words">
+                    <span dangerouslySetInnerHTML={{ __html: m.text }} />
+                    <span className="text-[9px] text-gray-400 block text-right mt-1">{m.time}</span>
+                  </div>
+                </div>
+              )
+            ))}
+
+            {isTyping && (
+              <div className="flex gap-2 items-center text-xs text-gray-400 p-2 bg-white rounded-xl border border-gray-100 w-max shadow-sm">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce"></div>
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></div>
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></div>
+                <span className="text-[10px] text-gray-500 font-medium ml-1">Nexus formulando resposta...</span>
+              </div>
+            )}
+
+            {/* Quick Questions Chips */}
+            <div className="pt-2">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">
+                Perguntas Frequentes (Clique para testar):
+              </span>
+              <div className="flex flex-col gap-1.5">
+                {preRecordedQA.map((qa, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => handleAsk(qa)}
+                    disabled={isTyping}
+                    className="text-left p-2.5 bg-white hover:bg-emerald-50/70 border border-gray-200 hover:border-emerald-300 rounded-xl text-xs font-semibold text-gray-700 hover:text-emerald-800 transition-all shadow-xs flex items-center justify-between group disabled:opacity-50"
+                  >
+                    <span>{qa.label}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Input Footer */}
+          <form onSubmit={handleCustomSubmit} className="p-2 sm:p-3 bg-white border-t border-gray-100 flex-shrink-0">
+            <div className="relative flex items-center">
+              <input 
+                type="text" 
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                placeholder="Pergunte ao Nexus..." 
+                className="w-full bg-gray-50 border border-gray-200 rounded-full pl-4 pr-11 py-2 sm:py-2.5 text-xs sm:text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white" 
+              />
+              <button 
+                type="submit"
+                disabled={isTyping || !inputVal.trim()}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 bg-gray-900 hover:bg-gray-800 disabled:opacity-40 text-white rounded-full flex items-center justify-center transition-all shadow-sm"
+                aria-label="Enviar para o Nexus"
+              >
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 const InteractiveCRM = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAI, setShowAI] = useState(false);
-  const [chatMode, setChatMode] = useState('paciente');
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -769,41 +1105,54 @@ const InteractiveCRM = () => {
   ];
 
   return (
-    <section id="crm" className="w-full bg-[#f4f5f7] py-20 md:py-32 px-4 md:px-8 border-t border-gray-200">
+    <section id="crm" className="w-full bg-[#f4f5f7] py-16 sm:py-20 md:py-32 px-2 sm:px-4 md:px-8 border-t border-gray-200">
       <div className="max-w-[1400px] mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <div className="inline-block px-4 py-1.5 mb-4 md:mb-6 text-[10px] md:text-xs font-bold tracking-widest text-black uppercase bg-white border border-gray-200 rounded-full shadow-sm">
+          <div className="inline-block px-4 py-1.5 mb-3 md:mb-6 text-[10px] md:text-xs font-bold tracking-widest text-black uppercase bg-white border border-gray-200 rounded-full shadow-sm">
             RÉPLICA FUNCIONAL
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-4 md:mb-6">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-3 md:mb-6">
             O coração da sua operação.
           </h2>
-          <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
             Mais do que um CRM, um ecossistema vivo. Gerencie agendas, emita notas e interaja com a Inteligência Artificial no mesmo ambiente.
           </p>
         </motion.div>
 
         {/* Browser Mockup Wrapper */}
-        <div className="w-full bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row h-[700px] md:h-[800px] relative">
+        <div className="w-full bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row min-h-[640px] h-[660px] sm:h-[720px] md:h-[800px] relative">
           
-          {/* Sidebar / Top Nav (Mobile) */}
-          <div className="w-full md:w-64 bg-[#0D0E10] text-gray-400 p-2 md:p-4 flex flex-row md:flex-col flex-shrink-0 relative z-20 overflow-x-auto md:overflow-visible custom-scrollbar border-b md:border-b-0 border-white/10">
-            <div className="hidden md:flex items-center gap-3 px-2 py-4 mb-6">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                <div className="w-3 h-3 bg-black rounded-sm"></div>
-              </div>
-              <span className="font-black text-xl tracking-tighter text-white"><span translate="no" className="notranslate">BIO MIND</span></span>
+          {/* Mobile Top Header (Somente telas pequenas) */}
+          <div className="flex md:hidden items-center justify-between w-full px-3 py-2 bg-[#0D0E10] border-b border-white/10 flex-shrink-0">
+            <span className="font-black text-lg tracking-tighter text-white notranslate">BIO MIND</span>
+            <button 
+              onClick={() => setShowAI(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm transition-all"
+            >
+              <BotMessageSquare className="w-3.5 h-3.5" />
+              <span>Nexus IA</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            </button>
+          </div>
+
+          {/* Sidebar (Desktop) / Abas Roláveis (Mobile) */}
+          <div className="w-full md:w-64 bg-[#0D0E10] text-gray-400 p-2 md:p-4 flex flex-row md:flex-col flex-shrink-0 relative z-20 overflow-x-auto md:overflow-visible custom-scrollbar border-b md:border-b-0 border-white/10 scroll-smooth">
+            {/* Logo Desktop - Sem quadradinho */}
+            <div className="hidden md:flex items-center px-2 py-4 mb-6">
+              <span className="font-black text-2xl tracking-tighter text-white">
+                <span translate="no" className="notranslate">BIO MIND</span>
+              </span>
             </div>
             
-            <nav className="flex flex-row md:flex-col gap-2 md:gap-1 w-max md:w-auto p-2 md:p-0">
+            <nav className="flex flex-row md:flex-col gap-1.5 md:gap-1 w-max md:w-auto p-1 md:p-0">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-auto md:w-full flex items-center md:justify-between px-3 md:px-3 py-2 md:py-3 rounded-lg md:rounded-xl transition-all text-xs md:text-sm font-semibold whitespace-nowrap ${
+                  className={`w-auto md:w-full flex items-center md:justify-between px-3 py-2 md:py-3 rounded-lg md:rounded-xl transition-all text-xs md:text-sm font-semibold whitespace-nowrap ${
                     activeTab === tab.id 
                       ? 'bg-white/10 text-white shadow-inner' 
                       : 'hover:bg-white/5 hover:text-gray-200'
@@ -818,16 +1167,17 @@ const InteractiveCRM = () => {
               ))}
             </nav>
 
-            <div className="md:mt-auto pt-2 md:pt-4 relative flex items-center ml-auto md:ml-0 pr-2 md:pr-0">
+            {/* Botão Desktop do Nexus */}
+            <div className="hidden md:flex mt-auto pt-4 relative items-center">
               <button 
                 onClick={() => setShowAI(!showAI)}
-                className="w-auto md:w-full flex items-center justify-between gap-2 md:gap-3 px-3 py-2 md:px-4 md:py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-lg md:rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] group whitespace-nowrap"
+                className="w-full flex items-center justify-between gap-3 px-4 py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] group whitespace-nowrap"
               >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <BotMessageSquare className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="font-bold text-xs md:text-sm">Abrir Nexus</span>
+                <div className="flex items-center gap-3">
+                  <BotMessageSquare className="w-5 h-5" />
+                  <span className="font-bold text-sm">Abrir Nexus</span>
                 </div>
-                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
               </button>
             </div>
           </div>
@@ -835,17 +1185,17 @@ const InteractiveCRM = () => {
           {/* Main Content Area */}
           <div className="flex-1 bg-[#FAFAFA] relative flex flex-col overflow-hidden min-w-0 h-full">
             {/* Topbar */}
-            <header className="h-16 md:h-20 border-b border-gray-100 flex items-center justify-between px-4 md:px-8 bg-white/90 backdrop-blur-md z-10 flex-shrink-0">
-              <h2 className="text-lg md:text-xl font-black text-gray-800 tracking-tight">
+            <header className="h-14 sm:h-16 md:h-20 border-b border-gray-100 flex items-center justify-between px-3 sm:px-4 md:px-8 bg-white/90 backdrop-blur-md z-10 flex-shrink-0">
+              <h2 className="text-base sm:text-lg md:text-xl font-black text-gray-800 tracking-tight">
                 {tabs.find(t => t.id === activeTab)?.label}
               </h2>
-              <div className="flex items-center gap-4 md:gap-6 text-gray-400">
+              <div className="flex items-center gap-3 md:gap-6 text-gray-400">
                 <Search className="hidden sm:block w-4 h-4 md:w-5 md:h-5 hover:text-gray-800 cursor-pointer transition-colors" />
                 <div className="relative">
                   <Bell className="w-4 h-4 md:w-5 md:h-5 hover:text-gray-800 cursor-pointer transition-colors" />
                   <div className="absolute -top-1 -right-1 w-2 h-2 md:w-2.5 md:h-2.5 bg-red-500 rounded-full border-2 border-white"></div>
                 </div>
-                <div className="flex items-center gap-3 pl-3 md:pl-4 border-l border-gray-200">
+                <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
                   <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gray-200 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
                     <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="Admin" className="w-full h-full object-cover"/>
                   </div>
@@ -854,7 +1204,7 @@ const InteractiveCRM = () => {
             </header>
 
             {/* Scrollable Content */}
-            <div className="p-4 md:p-8 flex-1 overflow-y-auto custom-scrollbar">
+            <div className={`flex-1 overflow-y-auto custom-scrollbar ${activeTab === 'comunicacao' ? 'p-1.5 sm:p-3 md:p-6' : 'p-3 sm:p-4 md:p-8'}`}>
               <AnimatePresence mode="wait">
                 {activeTab === 'dashboard' && <CRMDashboard key="dashboard" />}
                 {activeTab === 'agenda' && <CRMAgenda key="agenda" />}
@@ -873,63 +1223,8 @@ const InteractiveCRM = () => {
               </AnimatePresence>
             </div>
 
-            {/* AI Assistant Drawer (For the Admin) */}
-            <AnimatePresence>
-              {showAI && (
-                <motion.div 
-                  initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }}
-                  transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                  className="absolute top-0 right-0 w-full sm:w-80 h-full bg-white md:border-l border-gray-200 shadow-2xl flex flex-col z-30"
-                >
-                  <div className="p-4 md:p-6 border-b border-gray-100 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                        <BotMessageSquare className="w-5 h-5 text-emerald-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm md:text-base text-gray-900">Agente Nexus</h4>
-                        <span className="text-[10px] text-emerald-500 font-bold tracking-wider">ONLINE</span>
-                      </div>
-                    </div>
-                    <button onClick={() => setShowAI(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                      <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col gap-4 custom-scrollbar">
-                    <div className="bg-gray-50 rounded-2xl p-4 md:p-5 border border-gray-100">
-                      <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                        Olá! Identifiquei que há <strong className="text-black">4 faturamentos pendentes</strong> de ontem e um choque de horário na agenda da Dra. Juliana às 15:30.
-                      </p>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-4">
-                      <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Comandos Rápidos</span>
-                      <button className="flex items-center gap-3 w-full p-3 bg-white border border-gray-200 rounded-xl hover:border-emerald-300 hover:shadow-sm transition-all group">
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100">
-                          <Check className="w-3 h-3 md:w-4 md:h-4 text-emerald-600" />
-                        </div>
-                        <span className="text-xs md:text-sm font-semibold text-gray-700">Emitir NFs pendentes</span>
-                      </button>
-                      <button className="flex items-center gap-3 w-full p-3 bg-white border border-gray-200 rounded-xl hover:border-emerald-300 hover:shadow-sm transition-all group">
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100">
-                          <CalendarDays className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
-                        </div>
-                        <span className="text-xs md:text-sm font-semibold text-gray-700">Reagendar Dra. Juliana</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 border-t border-gray-100">
-                    <div className="relative flex items-center">
-                      <input type="text" placeholder="Peça algo à IA..." className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 md:py-3 text-xs md:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-                      <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800">
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* AI Assistant Drawer Interativo */}
+            <NexusAgentDrawer showAI={showAI} onClose={() => setShowAI(false)} />
           </div>
         </div>
       </div>
@@ -1012,16 +1307,12 @@ const PremiumFooter = () => (
         
         {/* Brand Col */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="font-black text-2xl tracking-tighter flex items-center gap-3">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-              <div className="w-2.5 h-2.5 bg-black rounded-sm"></div>
-            </div>
+          <div className="font-black text-2xl md:text-3xl tracking-tighter text-white">
             <span translate="no" className="notranslate">BIO MIND</span>
           </div>
           <p className="text-gray-400 text-sm font-light leading-relaxed max-w-xs">
             A vanguarda da inteligência artificial aplicada à gestão clínica. Substituímos softwares mortos por ecossistemas vivos.
           </p>
-
         </div>
 
         {/* Links Rápidos */}
@@ -1042,10 +1333,8 @@ const PremiumFooter = () => (
               <Mail className="w-4 h-4 text-gray-500" />
               contato@biomind.com.br
             </li>
-
           </ul>
         </div>
-
 
       </div>
 
@@ -1058,6 +1347,26 @@ const PremiumFooter = () => (
       </div>
     </div>
   </footer>
+);
+
+const WhatsAppWidget = () => (
+  <a
+    href="https://wa.me/5511989543917?text=Ol%C3%A1!%20Estou%20na%20apresenta%C3%A7%C3%A3o%20da%20Bio%20Mind%20para%20cl%C3%ADnicas%20e%20gostaria%20de%20falar%20com%20um%20especialista."
+    target="_blank"
+    rel="noopener noreferrer"
+    className="fixed bottom-6 right-4 sm:right-6 z-50 bg-[#0F1012] text-white rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_15px_35px_rgba(37,211,102,0.25)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center cursor-pointer group h-12 sm:h-14 px-3.5 sm:px-4 border border-white/10 backdrop-blur-md"
+    aria-label="Falar com Especialista no WhatsApp"
+  >
+    <div className="relative flex items-center justify-center shrink-0 min-w-[24px]">
+      <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6 fill-[#25D366]" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.662-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+      </svg>
+      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 border-2 border-neutral-900 rounded-full animate-pulse" />
+    </div>
+    <span className="text-xs sm:text-sm font-semibold ml-2.5 sm:ml-3 whitespace-nowrap text-white">
+      Falar com Especialista
+    </span>
+  </a>
 );
 
 // --- MAIN APP ---
@@ -1076,10 +1385,7 @@ function App() {
     <main className="flex min-h-screen flex-col w-full overflow-x-hidden bg-white text-gray-900 selection:bg-black selection:text-white font-sans">
       <header className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100 transition-all">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <div className="font-black text-xl md:text-2xl tracking-tighter flex items-center gap-2 md:gap-3 cursor-pointer" onClick={(e) => scrollToSection(e, '#hero')}>
-            <div className="w-6 h-6 md:w-8 md:h-8 bg-black rounded-md md:rounded-lg flex items-center justify-center shadow-lg">
-              <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-sm"></div>
-            </div>
+          <div className="font-black text-xl md:text-2xl tracking-tighter cursor-pointer text-black" onClick={(e) => scrollToSection(e, '#hero')}>
             <span translate="no" className="notranslate">BIO MIND</span>
           </div>
           {/* Menu links agem como scrollers nas respectivas seções */}
@@ -1088,7 +1394,6 @@ function App() {
             <a href="#clinica" onClick={(e) => scrollToSection(e, '#clinica')} className="hover:text-black transition-colors">A Clínica</a>
             <a href="#footer" onClick={(e) => scrollToSection(e, '#footer')} className="hover:text-black transition-colors">Contato</a>
           </nav>
-          {/* Remoção do botão de "Agendar Reunião" do Header, conforme pedido. No mobile, adicionado botão simples de menu hamburguer (visual apenas) se precisasse, mas ocultando por minimalismo */}
         </div>
       </header>
 
@@ -1099,6 +1404,7 @@ function App() {
       <CustomizationSection />
       <ROICalculator />
       <PremiumFooter />
+      <WhatsAppWidget />
     </main>
   );
 }
