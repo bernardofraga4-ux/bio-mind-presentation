@@ -7,7 +7,8 @@ import {
   Users, BotMessageSquare, Search, MoreVertical, Banknote,
   Bell, FileText, Stethoscope, Briefcase, ChevronRight, ChevronLeft, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
-  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, User, Fingerprint, Plug, Cloud, Send, RotateCcw
+  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, User, Fingerprint, Plug, Cloud, Send, RotateCcw,
+  CheckCircle2, Download, ExternalLink, FileSpreadsheet, Sparkles, Award, Star, Building2, HelpCircle, Bot, Share2, CheckCircle
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -751,25 +752,17 @@ const CRMComunicacao = () => {
               ))}
             </div>
             
-            {/* Input para responder ou assumir o chat */}
-            <form onSubmit={handleSendMessage} className="p-2 sm:p-3 bg-gray-50/95 backdrop-blur-sm border-t border-gray-200">
-              <div className="relative flex items-center">
-                <input 
-                  type="text" 
-                  value={typedMessage}
-                  onChange={(e) => setTypedMessage(e.target.value)}
-                  placeholder="IA conversando... Digite para intervir" 
-                  className="w-full bg-white border border-gray-200 rounded-full pl-4 pr-12 py-2 sm:py-2.5 text-xs sm:text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" 
-                />
-                <button 
-                  type="submit"
-                  className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors shadow-sm"
-                  aria-label="Enviar mensagem"
-                >
-                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
+            {/* Canal autônomo monitorado pelo Agente Nexus (desativado para digitação humana desnecessária) */}
+            <div className="p-2 sm:p-3 bg-gray-50/95 backdrop-blur-sm border-t border-gray-200 flex items-center justify-between gap-2 sm:gap-3">
+              <div className="flex-1 flex items-center gap-2 bg-gray-100/90 border border-gray-200 rounded-full px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-gray-500">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                <span className="truncate">Nexus respondendo autonomamente no WhatsApp</span>
               </div>
-            </form>
+              <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[11px] sm:text-xs font-semibold rounded-full border border-emerald-200/60 shrink-0">
+                <Bot className="w-3.5 h-3.5 text-emerald-600" />
+                <span>IA Ativa 24h</span>
+              </div>
+            </div>
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/60 backdrop-blur-sm">
@@ -846,6 +839,879 @@ const CRMConexoes = () => (
     </div>
   </motion.div>
 );
+
+const CRMConvenios = () => {
+  const [selectedCategory, setSelectedCategory] = useState('todos');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [toastMsg, setToastMsg] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const convenios = [
+    { 
+      id: 1, 
+      nome: 'Bradesco Saúde Top Nacional', 
+      ans: '005711', 
+      categoria: 'medicina',
+      especialidades: 'Ortopedia, Clínica Geral & Cardiologia',
+      tuss: '10101012 (Consulta Médica em Consultório)',
+      valor: 'R$ 168,00', 
+      glosa: '0.4%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '30 dias',
+      tag: 'Mais Utilizado'
+    },
+    { 
+      id: 2, 
+      nome: 'SulAmérica Saúde Especial', 
+      ans: '006246', 
+      categoria: 'psicologia',
+      especialidades: 'Psicologia Clínica, Neuro & Psiquiatria',
+      tuss: '50000144 (Sessão de Psicoterapia Individual)',
+      valor: 'R$ 152,00', 
+      glosa: '0.2%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '30 dias',
+      tag: 'Baixa Glosa'
+    },
+    { 
+      id: 3, 
+      nome: 'Amil Fácil / One Health', 
+      ans: '326305', 
+      categoria: 'psicologia',
+      especialidades: 'Psicoterapia, Psiquiatria & TCC',
+      tuss: '50000470 (Consulta/Atendimento Psicológico)',
+      valor: 'R$ 135,00', 
+      glosa: '0.5%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '35 dias',
+      tag: 'Ativo 24h'
+    },
+    { 
+      id: 4, 
+      nome: 'OdontoPrev Master Platinum', 
+      ans: '301949', 
+      categoria: 'odonto',
+      especialidades: 'Odontologia Clínica & Endodontia',
+      tuss: '85100040 (Profilaxia & Raspagem Supragengival)',
+      valor: 'R$ 195,00', 
+      glosa: '0.8%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '25 dias',
+      tag: 'Odonto Líder'
+    },
+    { 
+      id: 5, 
+      nome: 'Care Plus Soberano Executivo', 
+      ans: '367281', 
+      categoria: 'medicina',
+      especialidades: 'Checkup Executivo, Odonto & Saúde Mental',
+      tuss: '50000470 (Consulta Multidisciplinar)',
+      valor: 'R$ 240,00', 
+      glosa: '0.0%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '15 dias',
+      tag: 'Tabela Premium'
+    },
+    { 
+      id: 6, 
+      nome: 'Unimed Central Nacional', 
+      ans: '339679', 
+      categoria: 'fisioterapia',
+      especialidades: 'Fisioterapia Motora & RPG',
+      tuss: '20104235 (Sessão de Fisioterapia Ambulatorial)',
+      valor: 'R$ 115,00', 
+      glosa: '1.1%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '45 dias',
+      tag: 'Rede Ampla'
+    },
+    { 
+      id: 7, 
+      nome: 'Porto Seguro Saúde Prata', 
+      ans: '000582', 
+      categoria: 'medicina',
+      especialidades: 'Cardiologia, Dermatologia & Cirurgia Geral',
+      tuss: '10101012 (Consulta Médica Especializada)',
+      valor: 'R$ 175,00', 
+      glosa: '0.3%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '30 dias',
+      tag: 'Liquidação Rápida'
+    },
+    { 
+      id: 8, 
+      nome: 'Notredame Intermédica (GNDI)', 
+      ans: '359017', 
+      categoria: 'psicologia',
+      especialidades: 'Fonoaudiologia & Psicoterapia Infantil',
+      tuss: '50000560 (Terapia Fonoaudiológica/Psico)',
+      valor: 'R$ 98,00', 
+      glosa: '1.2%', 
+      status: 'Homologado TISS', 
+      tempoMedio: '40 dias',
+      tag: 'Alto Volume'
+    }
+  ];
+
+  const filtered = convenios.filter(c => {
+    const matchesCat = selectedCategory === 'todos' || c.categoria === selectedCategory;
+    const matchesSearch = c.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          c.especialidades.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          c.ans.includes(searchTerm);
+    return matchesCat && matchesSearch;
+  });
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 md:space-y-6">
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className="fixed top-24 right-6 z-50 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-gray-700 animate-in fade-in slide-in-from-top-4">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span className="text-xs sm:text-sm font-medium">{toastMsg}</span>
+        </div>
+      )}
+
+      {/* Top Banner & KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Operadoras Ativas</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </div>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">8 Planos</h3>
+          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Conectadas via TISS XML</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Faturamento Mês</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">R$ 42.850<span className="text-xs sm:text-sm text-gray-400 font-normal">,00</span></h3>
+          <p className="text-[10px] sm:text-xs text-emerald-600 mt-1 font-semibold flex items-center gap-1">
+            <ArrowRight className="w-3 h-3 -rotate-45" /> +18.4% vs mês anterior
+          </p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Taxa Média de Glosa</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-emerald-600">0.5%</h3>
+          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Auditada previamente por IA</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-black text-white shadow-sm flex flex-col justify-between">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Autonomia TISS</span>
+          <div className="mt-2">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-emerald-400">100%</h3>
+            <p className="text-[10px] sm:text-xs text-gray-400 mt-1">Guias emitidas sem digitação</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Card */}
+      <div className="border border-gray-100 rounded-2xl bg-white shadow-sm overflow-hidden">
+        {/* Controls: Filter Tabs + Search */}
+        <div className="p-3 sm:p-4 md:p-5 bg-gray-50/80 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {[
+              { id: 'todos', label: 'Todos (8)' },
+              { id: 'psicologia', label: 'Psicologia & Terapia' },
+              { id: 'odonto', label: 'Odontologia' },
+              { id: 'medicina', label: 'Medicina' },
+              { id: 'fisioterapia', label: 'Fisioterapia' }
+            ].map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  selectedCategory === cat.id 
+                    ? 'bg-black text-white shadow-xs' 
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="relative flex-1 md:w-64">
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Filtrar convênio ou código..."
+                className="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+            <button
+              onClick={() => showToast('Lote TISS de 24 guias auditado: 0 inconsistências detectadas pelo Nexus!')}
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors whitespace-nowrap flex items-center gap-1.5 shadow-xs"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Auditar Lote</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Convenios Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-gray-100 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50/50">
+                <th className="p-3 sm:p-4">Operadora & Registro ANS</th>
+                <th className="p-3 sm:p-4">Especialidades Cobertas</th>
+                <th className="p-3 sm:p-4">Código TUSS Padrão</th>
+                <th className="p-3 sm:p-4 text-right">Valor Repasse</th>
+                <th className="p-3 sm:p-4 text-center">Taxa de Glosa</th>
+                <th className="p-3 sm:p-4 text-center">Conexão TISS</th>
+                <th className="p-3 sm:p-4 text-right">Ação</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filtered.map((c) => (
+                <tr key={c.id} className="hover:bg-gray-50/80 transition-colors">
+                  <td className="p-3 sm:p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-xs text-gray-700 shrink-0">
+                        {c.nome.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-gray-900 text-xs sm:text-sm">{c.nome}</p>
+                          <span className="hidden sm:inline-block text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
+                            {c.tag}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-gray-400">ANS: {c.ans} • Liquidação: {c.tempoMedio}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-3 sm:p-4">
+                    <p className="text-xs text-gray-700 font-medium">{c.especialidades}</p>
+                  </td>
+                  <td className="p-3 sm:p-4">
+                    <span className="text-[11px] font-mono font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                      {c.tuss}
+                    </span>
+                  </td>
+                  <td className="p-3 sm:p-4 text-right">
+                    <p className="font-black text-xs sm:text-sm text-gray-900">{c.valor}</p>
+                    <p className="text-[9px] text-gray-400">Tabela acordada</p>
+                  </td>
+                  <td className="p-3 sm:p-4 text-center">
+                    <span className="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold rounded-md">
+                      {c.glosa}
+                    </span>
+                  </td>
+                  <td className="p-3 sm:p-4 text-center">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100/70 text-emerald-800 text-[10px] font-bold rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                      {c.status}
+                    </span>
+                  </td>
+                  <td className="p-3 sm:p-4 text-right">
+                    <button
+                      onClick={() => showToast(`Tabela TUSS e regras da operadora ${c.nome} sincronizadas com sucesso!`)}
+                      className="px-2.5 py-1 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      Tabela
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const CRMNotas = () => {
+  const [filterStatus, setFilterStatus] = useState('todas');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [toastMsg, setToastMsg] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const notas = [
+    {
+      id: 'NFS-e #2026-0891',
+      rps: 'RPS 1409',
+      paciente: 'Ana Clara Mendes',
+      cpf: '418.***.***-20',
+      servico: 'Consulta Ortopédica Especializada com Retorno',
+      valor: 'R$ 350,00',
+      data: 'Hoje, 10:45',
+      status: 'Autorizada',
+      prefeitura: 'Prefeitura SP • Autenticada',
+      iss: 'R$ 7,00 (2%)'
+    },
+    {
+      id: 'NFS-e #2026-0890',
+      rps: 'RPS 1408',
+      paciente: 'Carlos Eduardo Vianna',
+      cpf: '782.***.***-15',
+      servico: 'Pacote Trimestral de Nutrição Clínica & Metabologia',
+      valor: 'R$ 780,00',
+      data: 'Hoje, 09:30',
+      status: 'Autorizada',
+      prefeitura: 'Prefeitura SP • Autenticada',
+      iss: 'R$ 15,60 (2%)'
+    },
+    {
+      id: 'NFS-e #2026-0889',
+      rps: 'RPS 1407',
+      paciente: 'Monique Albuquerque',
+      cpf: '109.***.***-34',
+      servico: 'Sessão de Psicoterapia Individual Cognitivo-Comportamental',
+      valor: 'R$ 220,00',
+      data: 'Hoje, 08:45',
+      status: 'Autorizada',
+      prefeitura: 'Prefeitura SP • Autenticada',
+      iss: 'R$ 4,40 (2%)'
+    },
+    {
+      id: 'NFS-e #2026-0888',
+      rps: 'RPS 1406',
+      paciente: 'Roberto Fagundes',
+      cpf: '901.***.***-54',
+      servico: 'Tratamento de Endodontia e Restauração Odontológica',
+      valor: 'R$ 540,00',
+      data: 'Ontem, 16:20',
+      status: 'Autorizada',
+      prefeitura: 'Prefeitura SP • Autenticada',
+      iss: 'R$ 10,80 (2%)'
+    },
+    {
+      id: 'NFS-e #2026-0887',
+      rps: 'RPS 1405',
+      paciente: 'Mariana Vasconcelos',
+      cpf: '332.***.***-87',
+      servico: 'Mapeamento Corporal Dermatológico & Dermatoscopia',
+      valor: 'R$ 620,00',
+      data: 'Ontem, 14:10',
+      status: 'Autorizada',
+      prefeitura: 'Prefeitura SP • Autenticada',
+      iss: 'R$ 12,40 (2%)'
+    },
+    {
+      id: 'NFS-e #2026-0886',
+      rps: 'RPS 1404',
+      paciente: 'Lucas Gabriel Pinheiro',
+      cpf: '215.***.***-99',
+      servico: 'Sessão de Reabilitação Fisioterapêutica Motora',
+      valor: 'R$ 180,00',
+      data: 'Ontem, 11:30',
+      status: 'Processando',
+      prefeitura: 'Webservice da Prefeitura em validação',
+      iss: 'R$ 3,60 (2%)'
+    }
+  ];
+
+  const filtered = notas.filter(n => {
+    const matchesStatus = filterStatus === 'todas' || 
+      (filterStatus === 'autorizadas' && n.status === 'Autorizada') ||
+      (filterStatus === 'processando' && n.status === 'Processando');
+    const matchesSearch = n.paciente.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          n.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          n.servico.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          n.cpf.includes(searchTerm);
+    return matchesStatus && matchesSearch;
+  });
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 md:space-y-6">
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className="fixed top-24 right-6 z-50 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-gray-700 animate-in fade-in slide-in-from-top-4">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span className="text-xs sm:text-sm font-medium">{toastMsg}</span>
+        </div>
+      )}
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Total Faturado no Mês</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">R$ 68.450<span className="text-xs sm:text-sm text-gray-400 font-normal">,00</span></h3>
+          <p className="text-[10px] sm:text-xs text-emerald-600 mt-1 font-semibold">142 NFS-e emitidas</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Emitidas por IA</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-emerald-600">100%</h3>
+          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Gatilho pós-pagamento confirmado</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Horas Economizadas</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">38h</h3>
+          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Tempo poupado da recepção</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-black text-white shadow-sm flex flex-col justify-between">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Status Prefeitura SP</span>
+          <div className="mt-2 flex items-center justify-between">
+            <div>
+              <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Webservice Ativo
+              </span>
+              <p className="text-[10px] text-gray-400 mt-0.5">Certificado A1 Válido</p>
+            </div>
+            <Receipt className="w-6 h-6 text-gray-400" />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Table Card */}
+      <div className="border border-gray-100 rounded-2xl bg-white shadow-sm overflow-hidden">
+        {/* Controls */}
+        <div className="p-3 sm:p-4 md:p-5 bg-gray-50/80 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {[
+              { id: 'todas', label: 'Todas (142)' },
+              { id: 'autorizadas', label: 'Autorizadas (138)' },
+              { id: 'processando', label: 'Em Processamento (4)' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setFilterStatus(tab.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  filterStatus === tab.id 
+                    ? 'bg-black text-white shadow-xs' 
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="relative flex-1 md:w-64">
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar paciente, CPF ou NFS-e..."
+                className="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+            <button
+              onClick={() => showToast('Arquivo consolidado SPED/XML exportado para a contabilidade!')}
+              className="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg text-xs font-bold transition-colors whitespace-nowrap flex items-center gap-1.5 shadow-xs"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Exportar XML</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Invoices Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-gray-100 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50/50">
+                <th className="p-3 sm:p-4">Nº Nota & RPS</th>
+                <th className="p-3 sm:p-4">Paciente (Tomador)</th>
+                <th className="p-3 sm:p-4">Procedimento / Discriminação</th>
+                <th className="p-3 sm:p-4 text-right">Valor Líquido</th>
+                <th className="p-3 sm:p-4 text-center">Status</th>
+                <th className="p-3 sm:p-4 text-right">Ações Rápidas</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filtered.map((n, idx) => (
+                <tr key={idx} className="hover:bg-gray-50/80 transition-colors">
+                  <td className="p-3 sm:p-4">
+                    <p className="font-bold text-gray-900 text-xs sm:text-sm font-mono">{n.id}</p>
+                    <p className="text-[10px] text-gray-400">{n.rps} • {n.data}</p>
+                  </td>
+                  <td className="p-3 sm:p-4">
+                    <p className="font-bold text-gray-900 text-xs sm:text-sm">{n.paciente}</p>
+                    <p className="text-[10px] text-gray-400 font-mono">CPF: {n.cpf}</p>
+                  </td>
+                  <td className="p-3 sm:p-4">
+                    <p className="text-xs text-gray-700 font-medium max-w-xs truncate">{n.servico}</p>
+                    <p className="text-[10px] text-gray-400">{n.prefeitura} • ISS: {n.iss}</p>
+                  </td>
+                  <td className="p-3 sm:p-4 text-right">
+                    <p className="font-black text-xs sm:text-sm text-gray-900">{n.valor}</p>
+                    <span className="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Quitado</span>
+                  </td>
+                  <td className="p-3 sm:p-4 text-center">
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-full ${
+                      n.status === 'Autorizada' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${n.status === 'Autorizada' ? 'bg-emerald-600' : 'bg-amber-600 animate-pulse'}`}></span>
+                      {n.status}
+                    </span>
+                  </td>
+                  <td className="p-3 sm:p-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => showToast(`Download da DANFE ${n.id} iniciado em PDF!`)}
+                        className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Baixar PDF da Nota"
+                      >
+                        <FileText className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => showToast(`NFS-e e comprovante enviados via WhatsApp para ${n.paciente}!`)}
+                        className="px-2 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/70 rounded-lg transition-colors flex items-center gap-1"
+                        title="Enviar via WhatsApp"
+                      >
+                        <MessageSquare className="w-3 h-3 text-emerald-600" />
+                        <span className="hidden sm:inline">WhatsApp</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const CRMEquipe = () => {
+  const [selectedSpecialty, setSelectedSpecialty] = useState('todos');
+  const [toastMsg, setToastMsg] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  // Exatamente 9 profissionais conforme solicitado
+  const profissionais = [
+    {
+      id: 1,
+      nome: 'Dr. Gabriel Arantes',
+      especialidade: 'Ortopedia & Traumatologia',
+      registro: 'CRM/SP 142.890',
+      rqe: 'RQE 77412',
+      sala: 'Consultório 03',
+      status: 'Em Atendimento',
+      statusColor: 'bg-amber-100 text-amber-700 border-amber-200',
+      dotColor: 'bg-amber-500',
+      consultasHoje: 8,
+      repasse: '70%',
+      faturamentoHoje: 'R$ 2.450,00',
+      rating: '4.9',
+      reviews: 128,
+      avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80',
+      categoria: 'medicina'
+    },
+    {
+      id: 2,
+      nome: 'Dra. Juliana Silveira',
+      especialidade: 'Dermatologia Clínica & Cirúrgica',
+      registro: 'CRM/SP 168.420',
+      rqe: 'RQE 82190',
+      sala: 'Consultório 01',
+      status: 'Agenda Livre',
+      statusColor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      dotColor: 'bg-emerald-500',
+      consultasHoje: 6,
+      repasse: '75%',
+      faturamentoHoje: 'R$ 2.520,00',
+      rating: '5.0',
+      reviews: 94,
+      avatar: 'https://images.unsplash.com/photo-1594824813589-3221b203c942?w=150&auto=format&fit=crop&q=80',
+      categoria: 'medicina'
+    },
+    {
+      id: 3,
+      nome: 'Dr. Julio Ramos Samos',
+      especialidade: 'Neurologia Clínica & Neurofisiologia',
+      registro: 'CRM/SP 115.304',
+      rqe: 'RQE 61205',
+      sala: 'Consultório 02',
+      status: 'Em Atendimento',
+      statusColor: 'bg-amber-100 text-amber-700 border-amber-200',
+      dotColor: 'bg-amber-500',
+      consultasHoje: 7,
+      repasse: '70%',
+      faturamentoHoje: 'R$ 2.800,00',
+      rating: '4.8',
+      reviews: 110,
+      avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150&auto=format&fit=crop&q=80',
+      categoria: 'medicina'
+    },
+    {
+      id: 4,
+      nome: 'Dra. Camila Meirelles',
+      especialidade: 'Psicologia Clínica & TCC',
+      registro: 'CRP 06/138.992',
+      rqe: 'Esp. Saúde Mental',
+      sala: 'Consultório 04',
+      status: 'Em Atendimento',
+      statusColor: 'bg-amber-100 text-amber-700 border-amber-200',
+      dotColor: 'bg-amber-500',
+      consultasHoje: 9,
+      repasse: '80%',
+      faturamentoHoje: 'R$ 1.980,00',
+      rating: '5.0',
+      reviews: 145,
+      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80',
+      categoria: 'psicologia'
+    },
+    {
+      id: 5,
+      nome: 'Dr. Lucas Takahashi',
+      especialidade: 'Odontologia & Implantodontia',
+      registro: 'CRO/SP 88.412',
+      rqe: 'Cirurgião Bucomaxilo',
+      sala: 'Consultório Odonto 01',
+      status: 'Cirurgia',
+      statusColor: 'bg-purple-100 text-purple-700 border-purple-200',
+      dotColor: 'bg-purple-500',
+      consultasHoje: 5,
+      repasse: '75%',
+      faturamentoHoje: 'R$ 3.850,00',
+      rating: '4.9',
+      reviews: 88,
+      avatar: 'https://images.unsplash.com/photo-1622902046580-2b47f47f5471?w=150&auto=format&fit=crop&q=80',
+      categoria: 'odonto'
+    },
+    {
+      id: 6,
+      nome: 'Dra. Beatriz Albuquerque',
+      especialidade: 'Cardiologia & Ergometria',
+      registro: 'CRM/SP 177.210',
+      rqe: 'RQE 90112',
+      sala: 'Consultório 05',
+      status: 'Agenda Livre',
+      statusColor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      dotColor: 'bg-emerald-500',
+      consultasHoje: 6,
+      repasse: '70%',
+      faturamentoHoje: 'R$ 2.100,00',
+      rating: '4.9',
+      reviews: 76,
+      avatar: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=150&auto=format&fit=crop&q=80',
+      categoria: 'medicina'
+    },
+    {
+      id: 7,
+      nome: 'Dra. Fernanda Castro',
+      especialidade: 'Nutrição Clínica & Metabologia',
+      registro: 'CRN-3 44.120',
+      rqe: 'Esp. Obesidade & Esporte',
+      sala: 'Telemedicina Online',
+      status: 'Consulta Online',
+      statusColor: 'bg-blue-100 text-blue-700 border-blue-200',
+      dotColor: 'bg-blue-500',
+      consultasHoje: 8,
+      repasse: '80%',
+      faturamentoHoje: 'R$ 1.600,00',
+      rating: '4.8',
+      reviews: 102,
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      categoria: 'terapia'
+    },
+    {
+      id: 8,
+      nome: 'Dra. Larissa Monteiro',
+      especialidade: 'Ginecologia & Obstetrícia',
+      registro: 'CRM/SP 153.940',
+      rqe: 'RQE 73504',
+      sala: 'Consultório 06',
+      status: 'Agenda Livre',
+      statusColor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      dotColor: 'bg-emerald-500',
+      consultasHoje: 7,
+      repasse: '75%',
+      faturamentoHoje: 'R$ 2.450,00',
+      rating: '5.0',
+      reviews: 115,
+      avatar: 'https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=150&auto=format&fit=crop&q=80',
+      categoria: 'medicina'
+    },
+    {
+      id: 9,
+      nome: 'Dr. Rafael Nogueira',
+      especialidade: 'Fisioterapia & Reabilitação Motora',
+      registro: 'CREFITO-3 92.410-F',
+      rqe: 'Especialista Ortopédico',
+      sala: 'Estúdio Reabilitação',
+      status: 'Em Atendimento',
+      statusColor: 'bg-amber-100 text-amber-700 border-amber-200',
+      dotColor: 'bg-amber-500',
+      consultasHoje: 10,
+      repasse: '75%',
+      faturamentoHoje: 'R$ 2.200,00',
+      rating: '4.9',
+      reviews: 130,
+      avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&auto=format&fit=crop&q=80',
+      categoria: 'terapia'
+    }
+  ];
+
+  const filtered = profissionais.filter(p => {
+    if (selectedSpecialty === 'todos') return true;
+    return p.categoria === selectedSpecialty;
+  });
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 md:space-y-6">
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className="fixed top-24 right-6 z-50 bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-gray-700 animate-in fade-in slide-in-from-top-4">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span className="text-xs sm:text-sm font-medium">{toastMsg}</span>
+        </div>
+      )}
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Corpo Clínico</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">9 Especialistas</h3>
+          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Multi-especialidades ativas</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Consultas Hoje</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">66 Agendadas</h3>
+          <p className="text-[10px] sm:text-xs text-emerald-600 mt-1 font-semibold">92% taxa de ocupação</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">NPS dos Pacientes</span>
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-emerald-600">4.9 ★</h3>
+          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Baseado em 883 avaliações</p>
+        </div>
+
+        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-black text-white shadow-sm flex flex-col justify-between">
+          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Cálculo de Repasses</span>
+          <div className="mt-2">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-emerald-400">100% Automático</h3>
+            <p className="text-[10px] sm:text-xs text-gray-400 mt-1">Sem conciliação manual no fim do mês</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          {[
+            { id: 'todos', label: 'Todos os 9 Profissionais' },
+            { id: 'medicina', label: 'Médicos (5)' },
+            { id: 'psicologia', label: 'Psicologia & Mental (1)' },
+            { id: 'odonto', label: 'Odontologia (1)' },
+            { id: 'terapia', label: 'Nutrição & Fisio (2)' }
+          ].map(f => (
+            <button
+              key={f.id}
+              onClick={() => setSelectedSpecialty(f.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                selectedSpecialty === f.id 
+                  ? 'bg-black text-white shadow-xs' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <span className="text-xs text-gray-400 font-medium hidden sm:inline">
+          Exibindo {filtered.length} de 9 profissionais
+        </span>
+      </div>
+
+      {/* Grid of 9 Professionals */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+        {filtered.map(p => (
+          <div key={p.id} className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <img 
+                    src={p.avatar} 
+                    alt={p.nome}
+                    className="w-12 h-12 rounded-xl object-cover border border-gray-100 shadow-xs"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nome)}&background=10b981&color=fff`;
+                    }}
+                  />
+                  <div>
+                    <h4 className="font-bold text-gray-900 text-sm">{p.nome}</h4>
+                    <p className="text-xs text-gray-500">{p.especialidade}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-[10px] font-mono font-semibold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
+                        {p.registro}
+                      </span>
+                      <span className="text-[10px] text-gray-400">{p.rqe}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status and Room */}
+              <div className="mt-3.5 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                <span className="text-gray-500 font-medium flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-gray-400" />
+                  {p.sala}
+                </span>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${p.statusColor}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${p.dotColor}`}></span>
+                  {p.status}
+                </span>
+              </div>
+
+              {/* Metrics */}
+              <div className="grid grid-cols-3 gap-2 mt-3 p-2.5 bg-gray-50 rounded-xl text-center">
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium">Hoje</p>
+                  <p className="text-xs font-bold text-gray-800">{p.consultasHoje} pac.</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium">Repasse</p>
+                  <p className="text-xs font-bold text-emerald-700">{p.repasse}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-medium">Avaliação</p>
+                  <p className="text-xs font-bold text-amber-600 flex items-center justify-center gap-0.5">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {p.rating}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2">
+              <button
+                onClick={() => showToast(`Agenda de ${p.nome} sincronizada! 0 conflitos encontrados.`)}
+                className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-xs font-bold transition-colors"
+              >
+                Ver Agenda
+              </button>
+              <button
+                onClick={() => showToast(`Histórico de atendimentos e prontuários do ${p.sala} abertos.`)}
+                className="px-3 py-1.5 bg-black hover:bg-gray-800 text-white rounded-lg text-xs font-bold transition-colors"
+              >
+                Prontuários
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
 
 const NexusAgentDrawer = ({ showAI, onClose }) => {
   const [messages, setMessages] = useState([
@@ -1211,15 +2077,10 @@ const InteractiveCRM = () => {
                 {activeTab === 'pacientes' && <CRMPacientes key="pacientes" />}
                 {activeTab === 'comunicacao' && <CRMComunicacao key="comunicacao" />}
                 {activeTab === 'conexoes' && <CRMConexoes key="conexoes" />}
+                {activeTab === 'convenios' && <CRMConvenios key="convenios" />}
                 {activeTab === 'faturamento' && <CRMFaturamento key="faturamento" />}
-                {/* Fallback */}
-                {['convenios', 'notas', 'equipe'].includes(activeTab) && (
-                  <motion.div key="fallback" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center h-full text-center space-y-3 md:space-y-4 text-gray-400 p-4">
-                    <Database className="w-10 h-10 md:w-12 md:h-12 mb-2 md:mb-4 opacity-50" />
-                    <h3 className="text-lg md:text-xl font-bold text-gray-800">Módulo de {tabs.find(t => t.id === activeTab)?.label}</h3>
-                    <p className="text-xs md:text-sm max-w-sm font-medium">Esta interface é uma simulação. O módulo completo contém dezenas de filtros e ações operacionais baseadas no sistema real.</p>
-                  </motion.div>
-                )}
+                {activeTab === 'notas' && <CRMNotas key="notas" />}
+                {activeTab === 'equipe' && <CRMEquipe key="equipe" />}
               </AnimatePresence>
             </div>
 
@@ -1349,11 +2210,304 @@ const PremiumFooter = () => (
   </footer>
 );
 
-const WhatsAppWidget = () => (
-  <a
-    href="https://wa.me/5511989543917?text=Ol%C3%A1!%20Estou%20na%20apresenta%C3%A7%C3%A3o%20da%20Bio%20Mind%20para%20cl%C3%ADnicas%20e%20gostaria%20de%20falar%20com%20um%20especialista."
-    target="_blank"
-    rel="noopener noreferrer"
+const LeadQuizModal = ({ isOpen, onClose }) => {
+  const [step, setStep] = useState(1);
+  const [clinicName, setClinicName] = useState('');
+  const [teamSize, setTeamSize] = useState('');
+  const [bottleneck, setBottleneck] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+      setClinicName('');
+      setTeamSize('');
+      setBottleneck('');
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const handleNextFromClinic = (e) => {
+    e.preventDefault();
+    if (!clinicName.trim()) return;
+    setStep(2);
+  };
+
+  const handleSelectTeam = (size) => {
+    setTeamSize(size);
+    setStep(3);
+  };
+
+  const handleSelectBottleneck = (problem) => {
+    setBottleneck(problem);
+    setStep(4);
+  };
+
+  const getWhatsAppUrl = (customText) => {
+    if (customText) {
+      return `https://wa.me/5511989543917?text=${encodeURIComponent(customText)}`;
+    }
+    const clinic = clinicName.trim() || 'Minha Clínica';
+    const team = teamSize || '1 a 3 profissionais';
+    const problem = bottleneck || 'Gestão e atendimento';
+    const msg = `Olá! Fiz o diagnóstico operacional no site da Bio Mind para a clínica *${clinic}*.\n\n` +
+      `🏥 *Clínica:* ${clinic}\n` +
+      `👥 *Equipe:* ${team}\n` +
+      `⚠️ *Maior Desafio:* ${problem}\n\n` +
+      `Gostaria de ver uma demonstração de como o Nexus automatiza esses processos!`;
+    return `https://wa.me/5511989543917?text=${encodeURIComponent(msg)}`;
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in"
+      onClick={onClose}
+    >
+      <div 
+        className="w-full max-w-lg bg-[#0F1012] border border-white/10 text-white rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Glow decorativo */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+              Diagnóstico Operacional Gratuito
+            </span>
+          </div>
+          <button 
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+            aria-label="Fechar Quiz"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Barra de Progresso */}
+        <div className="w-full bg-white/5 rounded-full h-1.5 mb-6 overflow-hidden">
+          <div 
+            className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
+            style={{ width: `${(step / 4) * 100}%` }}
+          ></div>
+        </div>
+
+        {/* Step 1: Nome da Clínica */}
+        {step === 1 && (
+          <form onSubmit={handleNextFromClinic} className="space-y-6">
+            <div>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Pergunta 1 de 3</span>
+              <h3 className="text-xl sm:text-2xl font-black text-white mt-1">
+                Qual o nome da sua clínica ou consultório?
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-400 mt-2">
+                Personalizaremos o plano e a estimativa de horas poupadas para sua estrutura.
+              </p>
+            </div>
+
+            <div>
+              <input
+                type="text"
+                autoFocus
+                value={clinicName}
+                onChange={(e) => setClinicName(e.target.value)}
+                placeholder="Ex: Clínica Santa Clara ou Consultório Dra. Juliana"
+                className="w-full bg-white/5 border border-white/15 focus:border-emerald-500 rounded-2xl px-4 py-3.5 text-sm sm:text-base text-white placeholder-gray-500 focus:outline-none transition-all shadow-inner"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <a
+                href={getWhatsAppUrl("Olá! Gostaria de falar com um especialista da Bio Mind diretamente.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onClose}
+                className="text-xs text-gray-500 hover:text-gray-300 underline"
+              >
+                Pular e falar direto no WhatsApp
+              </a>
+
+              <button
+                type="submit"
+                disabled={!clinicName.trim()}
+                className="w-full sm:w-auto px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+              >
+                <span>Avançar</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Step 2: Tamanho da Equipe */}
+        {step === 2 && (
+          <div className="space-y-6">
+            <div>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Pergunta 2 de 3</span>
+              <h3 className="text-xl sm:text-2xl font-black text-white mt-1">
+                Quantos profissionais atendem na sua clínica?
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-400 mt-2">
+                Isso define a escala de mensagens diárias, confirmações e repasses.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { id: '1 a 3 profissionais', label: '1 a 3 profissionais', sub: 'Consultório individual ou equipe enxuta' },
+                { id: '4 a 10 profissionais', label: '4 a 10 profissionais', sub: 'Clínica multidisciplinar em expansão' },
+                { id: 'Mais de 10 profissionais', label: 'Mais de 10 profissionais', sub: 'Policlínica ou centro médico com alto fluxo' }
+              ].map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => handleSelectTeam(opt.id)}
+                  className="w-full text-left p-4 rounded-2xl bg-white/5 hover:bg-emerald-500/10 border border-white/10 hover:border-emerald-500/40 transition-all group flex items-center justify-between"
+                >
+                  <div>
+                    <h4 className="text-sm sm:text-base font-bold text-white group-hover:text-emerald-400 transition-colors">
+                      {opt.label}
+                    </h4>
+                    <p className="text-xs text-gray-400 mt-0.5">{opt.sub}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setStep(1)}
+              className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Voltar
+            </button>
+          </div>
+        )}
+
+        {/* Step 3: Maior Gargalo Operacional */}
+        {step === 3 && (
+          <div className="space-y-6">
+            <div>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Pergunta 3 de 3</span>
+              <h3 className="text-xl sm:text-2xl font-black text-white mt-1">
+                Qual o maior gargalo da sua clínica hoje?
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-400 mt-2">
+                Onde você sente que a clínica perde mais tempo ou receita?
+              </p>
+            </div>
+
+            <div className="space-y-2.5">
+              {[
+                { id: 'WhatsApp lento e perda de pacientes por demora', label: 'WhatsApp congestionado & demora de resposta aos pacientes' },
+                { id: 'Faltas e desmarcações de última hora (no-show)', label: 'Faltas na agenda (no-show) sem preenchimento ágil da vaga' },
+                { id: 'Glosas de convênios e conferência manual de guias', label: 'Glosas de convênios e conferência manual de guias TISS' },
+                { id: 'Recepção sobrecarregada com digitação e notas fiscais', label: 'Recepção sobrecarregada com digitação e notas fiscais' },
+                { id: 'Todos os gargalos acima juntos', label: 'Todos os gargalos acima juntos' }
+              ].map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => handleSelectBottleneck(opt.id)}
+                  className="w-full text-left p-3.5 rounded-xl bg-white/5 hover:bg-emerald-500/10 border border-white/10 hover:border-emerald-500/40 transition-all group flex items-center justify-between"
+                >
+                  <span className="text-xs sm:text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                    {opt.label}
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-gray-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setStep(2)}
+              className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Voltar
+            </button>
+          </div>
+        )}
+
+        {/* Step 4: Resultado do Diagnóstico */}
+        {step === 4 && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20 mb-3">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Diagnóstico Concluído
+              </div>
+              <h3 className="text-2xl font-black text-white">
+                Plano Estimado para {clinicName || 'Sua Clínica'}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                Com base no seu perfil ({teamSize}), o Nexus projeta o seguinte impacto imediato:
+              </p>
+            </div>
+
+            {/* Projected Impact Cards */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="bg-white/5 p-3 rounded-2xl border border-white/10 text-center">
+                <span className="text-[10px] text-gray-400 font-bold uppercase">Tempo Poupado</span>
+                <p className="text-lg sm:text-xl font-black text-emerald-400 mt-1">~30h/mês</p>
+                <p className="text-[9px] text-gray-400 mt-0.5">da recepção</p>
+              </div>
+
+              <div className="bg-white/5 p-3 rounded-2xl border border-white/10 text-center">
+                <span className="text-[10px] text-gray-400 font-bold uppercase">No-Show</span>
+                <p className="text-lg sm:text-xl font-black text-emerald-400 mt-1">-42%</p>
+                <p className="text-[9px] text-gray-400 mt-0.5">com aviso ativo</p>
+              </div>
+
+              <div className="bg-white/5 p-3 rounded-2xl border border-white/10 text-center">
+                <span className="text-[10px] text-gray-400 font-bold uppercase">Atendimento</span>
+                <p className="text-lg sm:text-xl font-black text-white mt-1">0 seg</p>
+                <p className="text-[9px] text-gray-400 mt-0.5">24h por dia</p>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-emerald-950/30 border border-emerald-500/30 rounded-2xl text-xs text-emerald-300">
+              <p className="font-semibold">Resumo do Foco:</p>
+              <p className="text-gray-300 mt-1">
+                Automação para eliminar o gargalo: <strong className="text-white">"{bottleneck}"</strong>, unificando WhatsApp, agendas e notas em tempo real.
+              </p>
+            </div>
+
+            {/* Primary Action Button */}
+            <div className="space-y-2 pt-2">
+              <a
+                href={getWhatsAppUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onClose}
+                className="w-full py-4 bg-[#25D366] hover:bg-[#20ba59] text-gray-950 font-black rounded-2xl text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-[#25D366]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.662-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+                </svg>
+                <span>Falar com Especialista no WhatsApp</span>
+              </a>
+
+              <div className="text-center pt-2">
+                <button
+                  onClick={() => setStep(1)}
+                  className="text-xs text-gray-500 hover:text-gray-300"
+                >
+                  Refazer diagnóstico
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const WhatsAppWidget = ({ onOpenQuiz }) => (
+  <button
+    type="button"
+    onClick={onOpenQuiz}
     className="fixed bottom-6 right-4 sm:right-6 z-50 bg-[#0F1012] text-white rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_15px_35px_rgba(37,211,102,0.25)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center cursor-pointer group h-12 sm:h-14 px-3.5 sm:px-4 border border-white/10 backdrop-blur-md"
     aria-label="Falar com Especialista no WhatsApp"
   >
@@ -1366,12 +2520,14 @@ const WhatsAppWidget = () => (
     <span className="text-xs sm:text-sm font-semibold ml-2.5 sm:ml-3 whitespace-nowrap text-white">
       Falar com Especialista
     </span>
-  </a>
+  </button>
 );
 
 // --- MAIN APP ---
 
 function App() {
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+
   useEffect(() => {
     window.lenisInstance = new Lenis({
       duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', smooth: true,
@@ -1404,7 +2560,8 @@ function App() {
       <CustomizationSection />
       <ROICalculator />
       <PremiumFooter />
-      <WhatsAppWidget />
+      <WhatsAppWidget onOpenQuiz={() => setIsQuizOpen(true)} />
+      <LeadQuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
     </main>
   );
 }
