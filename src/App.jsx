@@ -1428,7 +1428,7 @@ const CRMEquipe = () => {
       faturamentoHoje: 'R$ 2.520,00',
       rating: '5.0',
       reviews: 94,
-      avatar: 'https://images.unsplash.com/photo-1594824813589-3221b203c942?w=150&auto=format&fit=crop&q=80',
+      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&auto=format&fit=crop&q=80',
       categoria: 'medicina'
     },
     {
@@ -1446,7 +1446,7 @@ const CRMEquipe = () => {
       faturamentoHoje: 'R$ 2.800,00',
       rating: '4.8',
       reviews: 110,
-      avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150&auto=format&fit=crop&q=80',
+      avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=200&auto=format&fit=crop&q=80',
       categoria: 'medicina'
     },
     {
@@ -1464,7 +1464,7 @@ const CRMEquipe = () => {
       faturamentoHoje: 'R$ 1.980,00',
       rating: '5.0',
       reviews: 145,
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&auto=format&fit=crop&q=80',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
       categoria: 'psicologia'
     },
     {
@@ -1574,42 +1574,64 @@ const CRMEquipe = () => {
         </div>
       )}
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
-          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Corpo Clínico</span>
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">9 Especialistas</h3>
-          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Multi-especialidades ativas</p>
-        </div>
-
-        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
-          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Consultas Hoje</span>
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-gray-900">66 Agendadas</h3>
-          <p className="text-[10px] sm:text-xs text-emerald-600 mt-1 font-semibold">92% taxa de ocupação</p>
-        </div>
-
-        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
-          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">NPS dos Pacientes</span>
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-black mt-2 text-emerald-600">4.9 ★</h3>
-          <p className="text-[10px] sm:text-xs text-gray-500 mt-1">Baseado em 883 avaliações</p>
-        </div>
-
-        <div className="p-3.5 sm:p-5 border border-gray-100 rounded-2xl bg-black text-white shadow-sm flex flex-col justify-between">
-          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Cálculo de Repasses</span>
-          <div className="mt-2">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-emerald-400">100% Automático</h3>
-            <p className="text-[10px] sm:text-xs text-gray-400 mt-1">Sem conciliação manual no fim do mês</p>
+      {/* KPI Cards - Números perfeitamente enquadrados sem vazamento */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
+        {/* Card 1 - Corpo Clínico */}
+        <div className="p-3.5 sm:p-4 md:p-5 border border-gray-100 rounded-2xl bg-white shadow-xs flex flex-col justify-between overflow-hidden min-w-0">
+          <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">Corpo Clínico</span>
+          <div className="my-2 sm:my-3">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-gray-900 leading-none">9</span>
+              <span className="text-xs sm:text-sm font-bold text-gray-600">Especialistas</span>
+            </div>
           </div>
+          <p className="text-[10px] sm:text-xs text-gray-500 truncate">Multi-especialidades ativas</p>
+        </div>
+
+        {/* Card 2 - Consultas Hoje */}
+        <div className="p-3.5 sm:p-4 md:p-5 border border-gray-100 rounded-2xl bg-white shadow-xs flex flex-col justify-between overflow-hidden min-w-0">
+          <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">Consultas Hoje</span>
+          <div className="my-2 sm:my-3">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-gray-900 leading-none">66</span>
+              <span className="text-xs sm:text-sm font-bold text-gray-600">Agendadas</span>
+            </div>
+          </div>
+          <p className="text-[10px] sm:text-xs text-emerald-600 font-semibold truncate">92% taxa de ocupação</p>
+        </div>
+
+        {/* Card 3 - NPS dos Pacientes */}
+        <div className="p-3.5 sm:p-4 md:p-5 border border-gray-100 rounded-2xl bg-white shadow-xs flex flex-col justify-between overflow-hidden min-w-0">
+          <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">NPS Pacientes</span>
+          <div className="my-2 sm:my-3">
+            <div className="flex items-center gap-1.5">
+              <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-emerald-600 leading-none">4.9</span>
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-400 shrink-0" />
+            </div>
+          </div>
+          <p className="text-[10px] sm:text-xs text-gray-500 truncate">883 avaliações auditadas</p>
+        </div>
+
+        {/* Card 4 - Cálculo de Repasses */}
+        <div className="p-3.5 sm:p-4 md:p-5 border border-gray-800 rounded-2xl bg-[#0D0E10] text-white shadow-xs flex flex-col justify-between overflow-hidden min-w-0">
+          <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">Cálculo Repasses</span>
+          <div className="my-2 sm:my-3">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-emerald-400 leading-none">100%</span>
+              <span className="text-xs sm:text-sm font-bold text-emerald-300">Automático</span>
+            </div>
+          </div>
+          <p className="text-[10px] sm:text-xs text-gray-400 truncate">Sem conciliação manual</p>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white p-2.5 sm:p-3.5 rounded-2xl border border-gray-100 shadow-xs">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {[
-            { id: 'todos', label: 'Todos os 9 Profissionais' },
+            { id: 'todos', label: 'Todos (9)' },
             { id: 'medicina', label: 'Médicos (5)' },
-            { id: 'psicologia', label: 'Psicologia & Mental (1)' },
+            { id: 'psicologia', label: 'Psicologia (1)' },
             { id: 'odonto', label: 'Odontologia (1)' },
             { id: 'terapia', label: 'Nutrição & Fisio (2)' }
           ].map(f => (
@@ -1626,82 +1648,80 @@ const CRMEquipe = () => {
             </button>
           ))}
         </div>
-        <span className="text-xs text-gray-400 font-medium hidden sm:inline">
+        <span className="text-xs text-gray-400 font-medium hidden sm:inline pr-1">
           Exibindo {filtered.length} de 9 profissionais
         </span>
       </div>
 
-      {/* Grid of 9 Professionals */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+      {/* Grid of 9 Professionals - Enquadramento perfeito sem esmagar os cards */}
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3.5 sm:gap-4">
         {filtered.map(p => (
-          <div key={p.id} className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div key={p.id} className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden min-w-0">
             <div>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <img 
-                    src={p.avatar} 
-                    alt={p.nome}
-                    className="w-12 h-12 rounded-xl object-cover border border-gray-100 shadow-xs"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nome)}&background=10b981&color=fff`;
-                    }}
-                  />
-                  <div>
-                    <h4 className="font-bold text-gray-900 text-sm">{p.nome}</h4>
-                    <p className="text-xs text-gray-500">{p.especialidade}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-[10px] font-mono font-semibold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-                        {p.registro}
-                      </span>
-                      <span className="text-[10px] text-gray-400">{p.rqe}</span>
-                    </div>
+              <div className="flex items-start gap-3 min-w-0">
+                <img 
+                  src={p.avatar} 
+                  alt={p.nome}
+                  className="w-12 h-12 rounded-xl object-cover border border-gray-100 shadow-xs shrink-0"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nome)}&background=0D0E10&color=10b981&bold=true`;
+                  }}
+                />
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-bold text-gray-900 text-sm truncate" title={p.nome}>{p.nome}</h4>
+                  <p className="text-xs text-gray-500 truncate" title={p.especialidade}>{p.especialidade}</p>
+                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                    <span className="text-[10px] font-mono font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded shrink-0">
+                      {p.registro}
+                    </span>
+                    <span className="text-[10px] text-gray-400 truncate">{p.rqe}</span>
                   </div>
                 </div>
               </div>
 
               {/* Status and Room */}
-              <div className="mt-3.5 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-                <span className="text-gray-500 font-medium flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-gray-400" />
-                  {p.sala}
+              <div className="mt-3.5 pt-2.5 border-t border-gray-100 flex items-center justify-between text-xs gap-2">
+                <span className="text-gray-500 font-medium flex items-center gap-1.5 text-[11px] truncate">
+                  <Building2 className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                  <span className="truncate">{p.sala}</span>
                 </span>
-                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${p.statusColor}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${p.dotColor}`}></span>
-                  {p.status}
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${p.statusColor}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${p.dotColor}`}></span>
+                  <span>{p.status}</span>
                 </span>
               </div>
 
               {/* Metrics */}
-              <div className="grid grid-cols-3 gap-2 mt-3 p-2.5 bg-gray-50 rounded-xl text-center">
+              <div className="grid grid-cols-3 gap-1.5 mt-3 p-2.5 bg-gray-50 rounded-xl text-center">
                 <div>
                   <p className="text-[10px] text-gray-400 font-medium">Hoje</p>
-                  <p className="text-xs font-bold text-gray-800">{p.consultasHoje} pac.</p>
+                  <p className="text-xs font-bold text-gray-900">{p.consultasHoje} pac.</p>
                 </div>
                 <div>
                   <p className="text-[10px] text-gray-400 font-medium">Repasse</p>
-                  <p className="text-xs font-bold text-emerald-700">{p.repasse}</p>
+                  <p className="text-xs font-bold text-emerald-600">{p.repasse}</p>
                 </div>
                 <div>
                   <p className="text-[10px] text-gray-400 font-medium">Avaliação</p>
                   <p className="text-xs font-bold text-amber-600 flex items-center justify-center gap-0.5">
-                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {p.rating}
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-400 shrink-0" /> {p.rating}
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2">
+            <div className="mt-3.5 pt-3 border-t border-gray-100 flex items-center gap-2">
               <button
                 onClick={() => showToast(`Agenda de ${p.nome} sincronizada! 0 conflitos encontrados.`)}
-                className="flex-1 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-xs font-bold transition-colors"
+                className="flex-1 py-1.5 px-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-xs font-bold transition-colors truncate"
               >
                 Ver Agenda
               </button>
               <button
                 onClick={() => showToast(`Histórico de atendimentos e prontuários do ${p.sala} abertos.`)}
-                className="px-3 py-1.5 bg-black hover:bg-gray-800 text-white rounded-lg text-xs font-bold transition-colors"
+                className="px-3 py-1.5 bg-black hover:bg-gray-800 text-white rounded-lg text-xs font-bold transition-colors whitespace-nowrap"
               >
                 Prontuários
               </button>
@@ -2070,7 +2090,7 @@ const InteractiveCRM = () => {
             </header>
 
             {/* Scrollable Content */}
-            <div className={`flex-1 overflow-y-auto custom-scrollbar ${activeTab === 'comunicacao' ? 'p-1.5 sm:p-3 md:p-6' : 'p-3 sm:p-4 md:p-8'}`}>
+            <div className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${activeTab === 'comunicacao' ? 'p-1.5 sm:p-3 md:p-6' : activeTab === 'equipe' ? 'p-3 sm:p-4 md:p-6' : 'p-3 sm:p-4 md:p-8'}`}>
               <AnimatePresence mode="wait">
                 {activeTab === 'dashboard' && <CRMDashboard key="dashboard" />}
                 {activeTab === 'agenda' && <CRMAgenda key="agenda" />}
