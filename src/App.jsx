@@ -9,7 +9,7 @@ import {
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
   CheckCircle2, Download, ExternalLink, FileSpreadsheet, Sparkles, Award, Star, Building2, HelpCircle, Bot, Share2, CheckCircle,
   SlidersHorizontal, Layers, Plug, Cloud, Grid, Infinity, List, Mail, Menu, Printer, RotateCcw, Settings, Sidebar, Table, User, Volume,
-  Lock, Folder, PanelLeftClose
+  Lock, Folder, PanelLeftClose, CreditCard, Coins, Volume2, VolumeX, Moon, Sun, Send, Paperclip, Mic, Copy, CheckCheck, UserCheck, TrendingUp, AlertCircle, Play, Pause, UserCog, History
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -108,7 +108,7 @@ const TheChaosSection = () => (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
         {[
           { icon: Database, title: "Dados Fragmentados", desc: "Informações espalhadas em planilhas, cadernos e softwares arcaicos que travam." },
-          { icon: Clock, title: "Fila de Espera Virtual", desc: "Pacientes esfriando no WhatsApp enquanto a recepção tenta dar conta do presencial." },
+          { icon: Clock, title: "Fila de Espera Virtual", desc: "Mensagens acumuladas no WhatsApp enquanto a recepção tenta dar conta do acolhimento presencial." },
           { icon: Banknote, title: "Faturamento Cego", desc: "Glosas não contestadas, repasses médicos confusos e emissão manual de notas fiscais." }
         ].map((item, idx) => (
           <motion.div 
@@ -744,6 +744,8 @@ const CRMOperacoesMedicas = ({ onShowToast }) => {
 };
 
 const CRMDashboard = ({ onShowToast, isStarred, setIsStarred }) => {
+  const [dateFilter, setDateFilter] = useState('semana'); // 'hoje' | 'semana' | 'mes' | 'tudo'
+  const [activeSubView, setActiveSubView] = useState('clinico'); // 'clinico' (Multi Saúde) | 'recepcao' (Fila Salesforce)
   const [selectedContact, setSelectedContact] = useState(mockContacts[0]);
   const [fields, setFields] = useState(mockContacts[0].fields);
 
@@ -757,25 +759,34 @@ const CRMDashboard = ({ onShowToast, isStarred, setIsStarred }) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Header da Dashboard Salesforce */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <h3 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
-              Engajamento & Gestão Clínica
-            </h3>
-            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-md">
-              PAINEL SALESFORCE / PANACEA
-            </span>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">
-            Fluxo operacional unificado: triagem, agenda médica, repasses e conexão com planilhas.
-          </p>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+      {/* Barra de Sub-Navegação do Dashboard */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border border-gray-100 shadow-2xs">
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setActiveSubView('clinico')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeSubView === 'clinico' 
+                ? 'bg-emerald-600 text-white shadow-2xs' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Painel Clínico Multi Saúde</span>
+          </button>
+          <button 
+            onClick={() => setActiveSubView('recepcao')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeSubView === 'recepcao' 
+                ? 'bg-gray-900 text-white shadow-2xs' 
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Fila da Recepção (Panacea)</span>
+          </button>
         </div>
 
-        {/* Action Pill Top-Right (Salesforce style com funções reais) */}
         <div className="flex items-center gap-1.5 self-start sm:self-auto bg-gray-50 border border-gray-200 p-1 rounded-xl">
           <button 
             onClick={() => {
@@ -787,311 +798,625 @@ const CRMDashboard = ({ onShowToast, isStarred, setIsStarred }) => {
             }`} 
             title={isStarred ? "Favoritado" : "Favoritar"}
           >
-            <Star className={`w-4 h-4 ${isStarred ? 'fill-amber-400 text-amber-500' : ''}`} />
+            <Star className={`w-3.5 h-3.5 ${isStarred ? 'fill-amber-400 text-amber-500' : ''}`} />
           </button>
           <button 
-            onClick={() => onShowToast('Link seguro do prontuário copiado para a área de transferência!')}
+            onClick={() => onShowToast('Link seguro do painel copiado para a área de transferência!')}
             className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" 
             title="Compartilhar Link"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-3.5 h-3.5" />
           </button>
           <button 
-            onClick={() => onShowToast('Gerando prontuário e relatório de atendimento em PDF...')}
+            onClick={() => onShowToast('Gerando relatório executivo consolidado em PDF...')}
             className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" 
             title="Exportar PDF"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
           </button>
           <button 
-            onClick={() => onShowToast('Painel de configurações: backup OneDrive ativo e WhatsApp conectado.')}
+            onClick={() => onShowToast('Configurações de sincronização: Webhook n8n ativo e OneDrive conectado.')}
             className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" 
             title="Configurações"
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Régua / Esteira de Atendimento (Salesforce Pipeline Bar) */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
-        <div className="flex items-center justify-between text-xs font-bold text-gray-600 mb-2">
-          <span>Esteira de Atendimento em Tempo Real</span>
-          <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[10px]">
-            Etapa Atual: {selectedContact.status}
-          </span>
-        </div>
-
-        {/* Segmented Rainbow Progress Bar */}
-        <div className="grid grid-cols-4 gap-1.5 bg-gray-100 p-1 rounded-xl">
-          <div className="bg-gradient-to-r from-emerald-500 to-emerald-400 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
-            <Check className="w-3 h-3" />
-            <span className="truncate">1. Contato</span>
-          </div>
-          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
-            <Check className="w-3 h-3" />
-            <span className="truncate">2. Triagem IA</span>
-          </div>
-          <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
-            <Check className="w-3 h-3" />
-            <span className="truncate">3. Confirmado</span>
-          </div>
-          <div className="bg-gray-200 text-gray-600 text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1">
-            <span className="truncate">4. Concluído</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Grid Central de 3 Colunas (Salesforce Dashboard Layout) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
-        {/* Coluna 1: Fila de Atendimento (Work Queue) */}
-        <div className="lg:col-span-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-gray-500" />
-                <span className="font-bold text-xs uppercase tracking-wider text-gray-700">Fila da Recepção</span>
+      {activeSubView === 'clinico' ? (
+        /* =========================================
+            PAINEL CLÍNICO PRINCIPAL (MULTI SAÚDE)
+        ========================================= */
+        <div className="space-y-6">
+          {/* ZONA 1: TRIAGEM E ATENDIMENTO */}
+          <section className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center">
+                  <MessageSquare className="w-4 h-4 text-teal-700" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">Triagem & Comunicação</h3>
               </div>
-              <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                4 Prioritários
-              </span>
-            </div>
-
-            <div className="space-y-2">
-              {mockContacts.map((c) => {
-                const isSelected = selectedContact.id === c.id;
-                return (
-                  <div
-                    key={c.id}
-                    onClick={() => handleSelectContact(c)}
-                    className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
-                      isSelected 
-                        ? 'border-gray-900 bg-gray-50/80 shadow-2xs' 
-                        : 'border-gray-100 hover:border-gray-200 bg-white'
+              <div className="flex bg-gray-100 p-1 rounded-xl self-start sm:self-auto">
+                {[
+                  { id: 'hoje', label: 'Hoje' },
+                  { id: 'semana', label: '7 Dias' },
+                  { id: 'mes', label: 'Este Mês' },
+                  { id: 'tudo', label: 'Todo Período' }
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setDateFilter(f.id)}
+                    className={`px-3 sm:px-4 py-1 text-xs font-semibold rounded-lg transition-all ${
+                      dateFilter === f.id 
+                        ? 'bg-white text-teal-700 shadow-2xs font-bold' 
+                        : 'text-gray-500 hover:text-gray-900'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-gray-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                        {c.name.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-gray-900 leading-tight">{c.name}</h4>
-                        <p className="text-[10px] text-gray-500 truncate max-w-[140px]">{c.role}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${c.scoreColor}`}>
-                        {c.score}
-                      </span>
-                      <span className="text-[9px] text-gray-400">{c.origin}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 flex items-center justify-between">
-            <span>Sincronizado via OneDrive</span>
-            <span className="text-emerald-700 font-bold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online
-            </span>
-          </div>
-        </div>
-
-        {/* Coluna 2: Informações do Paciente Selecionado & Checklist */}
-        <div className="lg:col-span-5 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs space-y-4">
-          <div className="flex items-start justify-between pb-3 border-b border-gray-100">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                Ficha Rápida do Paciente
-              </span>
-              <h3 className="text-base font-black text-gray-900 mt-1">{selectedContact.name}</h3>
-              <p className="text-xs text-gray-500">{selectedContact.role}</p>
-            </div>
-            <button className="px-3 py-1.5 bg-black text-white rounded-lg text-xs font-bold hover:bg-neutral-800 transition-colors shadow-2xs flex items-center gap-1.5">
-              <Stethoscope className="w-3.5 h-3.5" />
-              <span>Chamar</span>
-            </button>
-          </div>
-
-          {/* Dados Rápidos */}
-          <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
-            <div>
-              <span className="text-[10px] text-gray-400 block font-medium">Convênio / Pagamento:</span>
-              <strong className="text-gray-800 text-[11px]">{selectedContact.convenio}</strong>
-            </div>
-            <div>
-              <span className="text-[10px] text-gray-400 block font-medium">Médico / Sala:</span>
-              <strong className="text-gray-800 text-[11px]">{selectedContact.medico} ({selectedContact.sala})</strong>
-            </div>
-            <div className="mt-2">
-              <span className="text-[10px] text-gray-400 block font-medium">WhatsApp:</span>
-              <strong className="text-gray-800 text-[11px]">{selectedContact.phone}</strong>
-            </div>
-            <div className="mt-2">
-              <span className="text-[10px] text-gray-400 block font-medium">Horário Marcado:</span>
-              <strong className="text-emerald-700 text-[11px]">{selectedContact.horario}</strong>
-            </div>
-          </div>
-
-          {/* Checklist Campos Chave (Key Fields Salesforce) */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
-              Campos Chave da Recepção (Checklist)
-            </h4>
-            <div className="space-y-1.5">
-              {fields.map((f) => (
-                <div 
-                  key={f.id}
-                  onClick={() => toggleField(f.id)}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-200"
-                >
-                  <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
-                    f.checked ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-gray-300 bg-white'
-                  }`}>
-                    {f.checked && <Check className="w-3 h-3" />}
-                  </div>
-                  <span className={`text-xs ${f.checked ? 'text-gray-800 font-semibold' : 'text-gray-500'}`}>
                     {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4 Cards de Métricas Estilo Multi Saúde */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Card 1: Contatos Recebidos */}
+              <div className="rounded-3xl p-5 sm:p-6 bg-white border border-gray-100 shadow-xl shadow-teal-500/5 relative overflow-hidden hover:scale-[1.01] transition-transform">
+                <h4 className="font-semibold text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">Contatos Recebidos</h4>
+                <div className="text-4xl font-extrabold mb-1.5 text-gray-900 tracking-tight">
+                  219
+                </div>
+                <p className="text-xs font-medium text-gray-400">
+                  {dateFilter === 'tudo' ? 'Todo o Período' : dateFilter === 'mes' ? 'Neste Mês' : dateFilter === 'semana' ? 'Últimos 7 Dias' : 'Hoje'}
+                </p>
+              </div>
+
+              {/* Card 2: Atendidos pela Recepção */}
+              <div className="rounded-3xl p-5 sm:p-6 bg-teal-600 text-white shadow-xl shadow-teal-600/20 relative overflow-hidden hover:scale-[1.01] transition-transform">
+                <div className="flex justify-between items-start mb-4 sm:mb-6">
+                  <h4 className="font-semibold text-xs sm:text-sm text-teal-100 flex items-center gap-1.5">
+                    <UserCog className="w-4 h-4" /> Atendidos pela Recepção
+                  </h4>
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-teal-500/60 text-white">
+                    Ativos
                   </span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
+                <div className="text-4xl font-extrabold mb-1.5 tracking-tight">
+                  124
+                </div>
+                <p className="text-xs font-medium text-teal-200">Atendimento humano ágil</p>
+              </div>
 
-        {/* Coluna 3: AI Scoring Gauge (Salesforce) & Diretrizes */}
-        <div className="lg:col-span-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between space-y-4">
-          <div>
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100 mb-3">
-              <span className="font-bold text-xs uppercase tracking-wider text-gray-700">AI Scoring</span>
-              <Sparkles className="w-4 h-4 text-amber-500" />
+              {/* Card 3: Em Atendimento */}
+              <div className="rounded-3xl p-5 sm:p-6 bg-amber-400 text-slate-900 shadow-xl shadow-amber-400/20 relative overflow-hidden hover:scale-[1.01] transition-transform">
+                <div className="flex justify-between items-start mb-4 sm:mb-6">
+                  <h4 className="font-semibold text-xs sm:text-sm text-amber-900/80 flex items-center gap-1.5">
+                    <TrendingUp className="w-4 h-4" /> Em Atendimento
+                  </h4>
+                </div>
+                <div className="text-4xl font-extrabold mb-1.5 tracking-tight">
+                  26
+                </div>
+                <p className="text-xs font-medium text-amber-900/70">Interações da equipe</p>
+              </div>
+
+              {/* Card 4: Aguardando Retorno */}
+              <div className="rounded-3xl p-5 sm:p-6 bg-rose-500 text-white shadow-xl shadow-rose-500/20 relative overflow-hidden hover:scale-[1.01] transition-transform">
+                <div className="flex justify-between items-start mb-4 sm:mb-6">
+                  <h4 className="font-semibold text-xs sm:text-sm text-rose-100 flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4" /> Aguardando Retorno
+                  </h4>
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-600/70 text-white">
+                    Fila
+                  </span>
+                </div>
+                <div className="text-4xl font-extrabold mb-1.5 tracking-tight">
+                  95
+                </div>
+                <p className="text-xs font-medium text-rose-200">Aguardando resposta da equipe</p>
+              </div>
             </div>
 
-            {/* Circular Gauge Salesforce Rainbow */}
-            <div className="flex flex-col items-center justify-center my-2">
-              <div 
-                className="w-24 h-24 rounded-full flex items-center justify-center p-2 shadow-inner"
-                style={{
-                  background: 'conic-gradient(#10b981 0% 35%, #06b6d4 35% 65%, #8b5cf6 65% 85%, #f59e0b 85% 100%)'
-                }}
-              >
-                <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center shadow-xs">
-                  <span className="text-2xl font-black text-gray-900 leading-none">{selectedContact.score}</span>
-                  <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">SCORE IA</span>
+            {/* Gráfico Triagem / Fluxo de Atendimento Real (Curvas SVG fiéis ao print) */}
+            <div className="bg-white border border-gray-100 rounded-3xl shadow-xl shadow-teal-500/5 p-5 sm:p-6 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h4 className="text-gray-900 font-bold text-base sm:text-lg">
+                    Fluxo de Atendimento (Últimos 7 Dias)
+                  </h4>
+                  <p className="text-xs text-gray-500">Distribuição real de mensagens por faixa de horário</p>
+                </div>
+                <div className="flex items-center gap-4 text-xs font-bold">
+                  <span className="flex items-center gap-1.5 text-teal-600">
+                    <span className="w-2.5 h-2.5 rounded-full bg-teal-500" /> Recepção / Equipe
+                  </span>
+                  <span className="flex items-center gap-1.5 text-indigo-600">
+                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" /> Pacientes
+                  </span>
                 </div>
               </div>
-              <span className="text-[11px] font-bold text-gray-700 mt-2">Pontualidade & Eficiência</span>
+
+              {/* Renderização SVG de Alta Precisão */}
+              <div className="w-full h-56 sm:h-64 relative pt-2">
+                <svg viewBox="0 0 800 240" className="w-full h-full overflow-visible">
+                  <defs>
+                    <linearGradient id="gradEquipe" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#0d9488" stopOpacity="0.45" />
+                      <stop offset="100%" stopColor="#0d9488" stopOpacity="0.02" />
+                    </linearGradient>
+                    <linearGradient id="gradPaciente" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#6366f1" stopOpacity="0.35" />
+                      <stop offset="100%" stopColor="#6366f1" stopOpacity="0.02" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Linhas de Grade Horizontais */}
+                  {[0, 50, 100, 150, 200].map((y, i) => (
+                    <g key={i}>
+                      <line x1="40" y1={y} x2="780" y2={y} stroke="#e5e7eb" strokeDasharray="3 3" />
+                      <text x="25" y={y + 4} textAnchor="end" fontSize="10" fill="#9ca3af" fontFamily="monospace">
+                        {260 - (i * 65)}
+                      </text>
+                    </g>
+                  ))}
+
+                  {/* Área Preenchida - Recepção/Equipe */}
+                  <path 
+                    d="M 60 145 C 150 70, 210 20, 280 20 C 350 20, 410 130, 480 165 C 550 175, 650 170, 760 215 L 760 215 L 60 215 Z" 
+                    fill="url(#gradEquipe)" 
+                  />
+                  {/* Linha da Curva - Recepção */}
+                  <path 
+                    d="M 60 145 C 150 70, 210 20, 280 20 C 350 20, 410 130, 480 165 C 550 175, 650 170, 760 215" 
+                    fill="none" 
+                    stroke="#0d9488" 
+                    strokeWidth="3.5" 
+                    strokeLinecap="round" 
+                  />
+
+                  {/* Área Preenchida - Pacientes */}
+                  <path 
+                    d="M 60 165 C 150 120, 220 100, 280 100 C 350 100, 410 145, 480 170 C 550 172, 650 175, 760 220 L 760 220 L 60 220 Z" 
+                    fill="url(#gradPaciente)" 
+                  />
+                  {/* Linha da Curva - Pacientes */}
+                  <path 
+                    d="M 60 165 C 150 120, 220 100, 280 100 C 350 100, 410 145, 480 170 C 550 172, 650 175, 760 220" 
+                    fill="none" 
+                    stroke="#6366f1" 
+                    strokeWidth="3.5" 
+                    strokeLinecap="round" 
+                  />
+
+                  {/* Eixo X com Horários */}
+                  {['08:00', '10:00', '12:00', '14:00', '16:00', '18:00'].map((hora, idx) => (
+                    <text key={idx} x={60 + idx * 140} y="235" textAnchor="middle" fontSize="11" fill="#6b7280" fontWeight="500">
+                      {hora}
+                    </text>
+                  ))}
+                </svg>
+              </div>
+            </div>
+          </section>
+
+          {/* ZONA 2: PACIENTES E FATURAMENTO */}
+          <section className="space-y-4 pt-2">
+            <div className="flex items-center gap-2.5 px-1">
+              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                <span className="text-emerald-700 font-bold">$</span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Base de Pacientes & Faturamento</h3>
             </div>
 
-            {/* Top Positivos */}
-            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1.5 text-[11px]">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Top Indicadores:</span>
-              <p className="text-gray-700 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Confirmação em 12s
-              </p>
-              <p className="text-gray-700 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 0 glosas no convênio
-              </p>
-              <p className="text-gray-700 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span> OneDrive sincronizado
-              </p>
-            </div>
-          </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Card 1: Por Convênio vs Particular */}
+              <div className="bg-white border border-gray-100 rounded-3xl shadow-xl shadow-teal-500/5 p-5 sm:p-6 flex flex-col justify-between">
+                <div>
+                  <h4 className="text-gray-900 font-bold text-base sm:text-lg">Por Convênio vs Particular</h4>
+                  <p className="text-xs text-gray-500 mb-4">Volume de cadastros por plano</p>
+                </div>
 
-          {/* Diretrizes para Sucesso */}
-          <div className="bg-emerald-50/60 border border-emerald-100 p-3 rounded-xl space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
-              Próxima Ação da Recepção:
-            </span>
-            <p className="text-xs text-emerald-900 leading-snug">
-              {selectedContact.nextAction}
-            </p>
-          </div>
-        </div>
-      </div>
+                <div className="flex items-center justify-between gap-4 my-auto">
+                  {/* Donut SVG */}
+                  <div className="relative w-32 h-32 shrink-0">
+                    <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                      {/* Sobam 38% */}
+                      <circle cx="50" cy="50" r="38" fill="transparent" stroke="#10b981" strokeWidth="16" strokeDasharray="238.7" strokeDashoffset="0" />
+                      {/* Sepaco 28% */}
+                      <circle cx="50" cy="50" r="38" fill="transparent" stroke="#0ea5e9" strokeWidth="16" strokeDasharray="238.7" strokeDashoffset="-90.7" />
+                      {/* Bradesco 18% */}
+                      <circle cx="50" cy="50" r="38" fill="transparent" stroke="#6366f1" strokeWidth="16" strokeDasharray="238.7" strokeDashoffset="-157.5" />
+                      {/* Particular 16% */}
+                      <circle cx="50" cy="50" r="38" fill="transparent" stroke="#f59e0b" strokeWidth="16" strokeDasharray="238.7" strokeDashoffset="-200.5" />
+                    </svg>
+                  </div>
 
-      {/* Seção Inferior: Appointment Overview & Calendário (Panacea style) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
-        {/* Tabela de Consultas do Dia */}
-        <div className="lg:col-span-8 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs">
-          <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
-            <div>
-              <h4 className="text-sm font-bold text-gray-900">Visão Geral de Agendamentos (Hoje)</h4>
-              <p className="text-xs text-gray-500">98 agendados • 87 atendidos • 8 na recepção • 3 desmarcados</p>
-            </div>
-            <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
-              Taxa de Comparecimento: 97%
-            </span>
-          </div>
-
-          <div className="space-y-2.5">
-            {[
-              { time: '08:00', patient: 'Lucas Antunes', spec: 'Clínica Geral', doctor: 'Dr. Henrique', status: 'Concluído', color: 'bg-gray-100 text-gray-700' },
-              { time: '09:30', patient: 'Mariana Alcantara', spec: 'Dermatologia', doctor: 'Dr. Henrique', status: 'Em Atendimento', color: 'bg-emerald-100 text-emerald-800' },
-              { time: '11:00', patient: 'Carlos Eduardo', spec: 'Cardiologia', doctor: 'Dra. Beatriz', status: 'Aguardando Sala', color: 'bg-blue-100 text-blue-800' },
-              { time: '14:00', patient: 'Fernanda Lima', spec: 'Ortopedia', doctor: 'Dr. Roberto', status: 'Confirmado WhatsApp', color: 'bg-purple-100 text-purple-800' },
-              { time: '15:30', patient: 'Roberto Mendes', spec: 'Oftalmologia', doctor: 'Dr. Alexandre', status: 'Confirmado WhatsApp', color: 'bg-purple-100 text-purple-800' }
-            ].map((row, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2.5 sm:p-3 bg-gray-50/70 hover:bg-gray-100/70 rounded-xl transition-colors border border-gray-100 text-xs">
-                <div className="flex items-center gap-3">
-                  <span className="font-bold text-gray-900 w-12">{row.time}</span>
-                  <div>
-                    <strong className="text-gray-900 block">{row.patient}</strong>
-                    <span className="text-gray-500 text-[11px]">{row.spec} • {row.doctor}</span>
+                  {/* Legenda com % */}
+                  <div className="flex-1 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-gray-600"><span className="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span> Sobam</span>
+                      <strong className="text-gray-900 font-mono">38%</strong>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-gray-600"><span className="w-2.5 h-2.5 rounded-full bg-[#0ea5e9]"></span> Sepaco</span>
+                      <strong className="text-gray-900 font-mono">28%</strong>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-gray-600"><span className="w-2.5 h-2.5 rounded-full bg-[#6366f1]"></span> Bradesco</span>
+                      <strong className="text-gray-900 font-mono">18%</strong>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-gray-600"><span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> Particular</span>
+                      <strong className="text-gray-900 font-mono">16%</strong>
+                    </div>
                   </div>
                 </div>
-                <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${row.color}`}>
-                  {row.status}
+
+                <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-500">
+                  <span>918 cadastros ativos</span>
+                  <span className="text-emerald-700 font-bold">100% auditado</span>
+                </div>
+              </div>
+
+              {/* Card 2: Consultas Particulares (Dark Card) */}
+              <div className="rounded-3xl p-5 sm:p-6 flex flex-col justify-between bg-zinc-950 text-white shadow-xl shadow-zinc-900/10 hover:scale-[1.01] transition-transform">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h4 className="font-semibold text-xs sm:text-sm text-zinc-400">Consultas Particulares</h4>
+                    <p className="text-xs text-zinc-500 mt-0.5">Atendimentos diretos na clínica</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-zinc-800 text-zinc-200">
+                    Particular
+                  </span>
+                </div>
+                <div>
+                  <div className="text-5xl font-extrabold mb-2 tracking-tight">
+                    252
+                  </div>
+                  <p className="text-sm font-bold text-emerald-400 flex items-center gap-1 font-mono">
+                    R$ 21.322,00 faturados
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3: Consultas por Convênio (Green Card) */}
+              <div className="rounded-3xl p-5 sm:p-6 flex flex-col justify-between bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 hover:scale-[1.01] transition-transform">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h4 className="font-semibold text-xs sm:text-sm text-emerald-100">Consultas por Convênio</h4>
+                    <p className="text-xs text-emerald-200/90 mt-0.5">Sobam, Sepaco, Amil e outros</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-emerald-600/60 text-white">
+                    Guias
+                  </span>
+                </div>
+                <div>
+                  <div className="text-5xl font-extrabold mb-2 tracking-tight">
+                    666
+                  </div>
+                  <p className="text-sm font-medium text-emerald-100">
+                    Guias e autorizações processadas
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ZONA 3: OCUPAÇÃO DA CLÍNICA */}
+          <section className="space-y-4 pt-2">
+            <div className="flex items-center gap-2.5 px-1">
+              <div className="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center">
+                <CalendarDays className="w-4 h-4 text-cyan-700" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Ocupação da Clínica</h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Card 1: Consultas Hoje */}
+              <div className="bg-white border border-gray-100 rounded-3xl shadow-xl shadow-teal-500/5 p-5 sm:p-6 h-[290px] flex flex-col justify-between items-center text-center">
+                <h4 className="text-gray-900 font-bold text-base w-full text-left">Consultas Hoje</h4>
+                <div className="my-auto">
+                  <span className="text-6xl font-black text-teal-600 tracking-tight">
+                    26
+                  </span>
+                  <p className="text-xs font-semibold text-gray-500 mt-2">Agendamentos no dia</p>
+                </div>
+                <div className="w-full pt-3 border-t border-gray-100 flex flex-col items-center">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-xs font-bold text-teal-700">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
+                    <span>16 Finalizadas</span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">Atendimentos concluídos hoje</p>
+                </div>
+              </div>
+
+              {/* Card 2: Ocupação (Dia) */}
+              <div className="bg-white border border-gray-100 rounded-3xl shadow-xl shadow-teal-500/5 p-5 sm:p-6 h-[290px] flex flex-col justify-between items-center text-center">
+                <h4 className="text-gray-900 font-bold text-base w-full text-left">Ocupação (Dia)</h4>
+                <div className="relative w-32 h-32 flex items-center justify-center my-auto">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="41" fill="transparent" stroke="#f1f5f9" strokeWidth="11" />
+                    <circle cx="50" cy="50" r="41" fill="transparent" stroke="#0ea5e9" strokeWidth="11" strokeDasharray="257.6" strokeDashoffset="0" strokeLinecap="round" />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-3xl font-black text-gray-900 tracking-tight">100%</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-sky-500">Hoje</span>
+                  </div>
+                </div>
+                <div className="w-full pt-3 border-t border-gray-100 flex flex-col items-center">
+                  <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-sky-50 text-xs font-bold text-sky-700">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                    <span>26 de 24 vagas</span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">Capacidade diária das salas</p>
+                </div>
+              </div>
+
+              {/* Card 3: Ocupação (Mês) */}
+              <div className="bg-white border border-gray-100 rounded-3xl shadow-xl shadow-teal-500/5 p-5 sm:p-6 h-[290px] flex flex-col justify-between items-center text-center">
+                <h4 className="text-gray-900 font-bold text-base w-full text-left">Ocupação (Mês)</h4>
+                <div className="relative w-32 h-32 flex items-center justify-center my-auto">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="41" fill="transparent" stroke="#f1f5f9" strokeWidth="11" />
+                    <circle cx="50" cy="50" r="41" fill="transparent" stroke="#10b981" strokeWidth="11" strokeDasharray="257.6" strokeDashoffset="28" strokeLinecap="round" />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-3xl font-black text-gray-900 tracking-tight">89%</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-500">No Mês</span>
+                  </div>
+                </div>
+                <div className="w-full pt-3 border-t border-gray-100 flex flex-col items-center">
+                  <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-xs font-bold text-emerald-700">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>214 atendimentos</span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1">Meta mensal da clínica</p>
+                </div>
+              </div>
+
+              {/* Card 4: Ocupação (Ano Todo) */}
+              <div className="bg-white border border-gray-100 rounded-3xl shadow-xl shadow-teal-500/5 p-5 sm:p-6 h-[290px] flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-gray-900 font-bold text-base">Ocupação (Ano Todo)</h4>
+                  <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
+                    2026
+                  </span>
+                </div>
+
+                {/* Bar Chart Vertical SVG */}
+                <div className="w-full h-36 flex items-end justify-between gap-3 px-2 pt-2">
+                  {[
+                    { mes: 'Mar', val: 12, label: '12%' },
+                    { mes: 'Jun', val: 20, label: '20%' },
+                    { mes: 'Set', val: 94, label: '94%' },
+                    { mes: 'Dez', val: 86, label: '86%' }
+                  ].map((bar, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                      <span className="text-[9px] font-mono font-bold text-gray-400">{bar.label}</span>
+                      <div 
+                        className="w-full rounded-md bg-[#0ea5e9] transition-all"
+                        style={{ height: `${bar.val}%` }}
+                      />
+                      <span className="text-[10px] font-semibold text-gray-600">{bar.mes}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-gray-100 text-center">
+                  <p className="text-[10px] text-gray-400 font-medium">Crescimento constante de ocupação</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : (
+        /* =========================================
+            FILA DE RECEPÇÃO & PANACEA CHECKLIST
+        ========================================= */
+        <div className="space-y-6">
+          {/* Régua / Esteira de Atendimento */}
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
+            <div className="flex items-center justify-between text-xs font-bold text-gray-600 mb-2">
+              <span>Esteira de Atendimento em Tempo Real</span>
+              <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[10px]">
+                Etapa Atual: {selectedContact.status}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-4 gap-1.5 bg-gray-100 p-1 rounded-xl">
+              <div className="bg-gradient-to-r from-emerald-500 to-emerald-400 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
+                <Check className="w-3 h-3" />
+                <span className="truncate">1. Contato</span>
+              </div>
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
+                <Check className="w-3 h-3" />
+                <span className="truncate">2. Triagem IA</span>
+              </div>
+              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
+                <Check className="w-3 h-3" />
+                <span className="truncate">3. Confirmado</span>
+              </div>
+              <div className="bg-gray-200 text-gray-600 text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1">
+                <span className="truncate">4. Concluído</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Grid Central da Fila */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            {/* Coluna 1: Fila da Recepção */}
+            <div className="lg:col-span-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-gray-500" />
+                    <span className="font-bold text-xs uppercase tracking-wider text-gray-700">Fila da Recepção</span>
+                  </div>
+                  <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                    4 Prioritários
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {mockContacts.map((c) => {
+                    const isSelected = selectedContact.id === c.id;
+                    return (
+                      <div
+                        key={c.id}
+                        onClick={() => handleSelectContact(c)}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                          isSelected 
+                            ? 'border-gray-900 bg-gray-50/80 shadow-2xs' 
+                            : 'border-gray-100 hover:border-gray-200 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-gray-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                            {c.name.charAt(0)}
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-gray-900 leading-tight">{c.name}</h4>
+                            <p className="text-[10px] text-gray-500 truncate max-w-[140px]">{c.role}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${c.scoreColor}`}>
+                            {c.score}
+                          </span>
+                          <span className="text-[9px] text-gray-400">{c.origin}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 flex items-center justify-between">
+                <span>Sincronizado via OneDrive</span>
+                <span className="text-emerald-700 font-bold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online
                 </span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Mini Calendário e Estatísticas Rápidas (Panacea style) */}
-        <div className="lg:col-span-4 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
-              <span className="font-bold text-xs uppercase tracking-wider text-gray-700">Calendário de Consultórios</span>
-              <Calendar className="w-4 h-4 text-gray-400" />
             </div>
 
-            <div className="grid grid-cols-7 gap-1 text-center text-xs mb-3 font-semibold text-gray-400">
-              <span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span><span>DOM</span>
-            </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-xs">
-              {[19, 20, 21, 22, 23, 24, 25].map((d, i) => (
-                <div 
-                  key={i} 
-                  className={`py-2 rounded-lg font-bold transition-all ${
-                    d === 22 
-                      ? 'bg-black text-white shadow-2xs' 
-                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  {d}
+            {/* Coluna 2: Ficha Rápida & Checklist */}
+            <div className="lg:col-span-5 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs space-y-4">
+              <div className="flex items-start justify-between pb-3 border-b border-gray-100">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                    Ficha Rápida do Paciente
+                  </span>
+                  <h3 className="text-base font-black text-gray-900 mt-1">{selectedContact.name}</h3>
+                  <p className="text-xs text-gray-500">{selectedContact.role}</p>
                 </div>
-              ))}
-            </div>
-          </div>
+                <button 
+                  onClick={() => onShowToast(`Chamada médica disparada para ${selectedContact.name} no Consultório.`)}
+                  className="px-3 py-1.5 bg-black text-white rounded-lg text-xs font-bold hover:bg-neutral-800 transition-colors shadow-2xs flex items-center gap-1.5"
+                >
+                  <Stethoscope className="w-3.5 h-3.5" />
+                  <span>Chamar</span>
+                </button>
+              </div>
 
-          <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 mt-4 space-y-1.5 text-xs">
-            <div className="flex justify-between text-gray-600">
-              <span>Capacidade Total:</span>
-              <strong className="text-gray-900">8 Salas Ativas</strong>
+              {/* Dados Rápidos */}
+              <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <div>
+                  <span className="text-[10px] text-gray-400 block font-medium">Convênio / Pagamento:</span>
+                  <strong className="text-gray-800 text-[11px]">{selectedContact.convenio}</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-gray-400 block font-medium">Médico / Sala:</span>
+                  <strong className="text-gray-800 text-[11px]">{selectedContact.medico} ({selectedContact.sala})</strong>
+                </div>
+                <div className="mt-2">
+                  <span className="text-[10px] text-gray-400 block font-medium">WhatsApp:</span>
+                  <strong className="text-gray-800 text-[11px]">{selectedContact.phone}</strong>
+                </div>
+                <div className="mt-2">
+                  <span className="text-[10px] text-gray-400 block font-medium">Horário Marcado:</span>
+                  <strong className="text-emerald-700 text-[11px]">{selectedContact.horario}</strong>
+                </div>
+              </div>
+
+              {/* Checklist */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+                  Campos Chave da Recepção (Checklist)
+                </h4>
+                <div className="space-y-1.5">
+                  {fields.map((f) => (
+                    <div 
+                      key={f.id}
+                      onClick={() => toggleField(f.id)}
+                      className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-200"
+                    >
+                      <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
+                        f.checked ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-gray-300 bg-white'
+                      }`}>
+                        {f.checked && <Check className="w-3 h-3" />}
+                      </div>
+                      <span className={`text-xs ${f.checked ? 'text-gray-800 font-semibold' : 'text-gray-500'}`}>
+                        {f.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Tempo Médio Recepção:</span>
-              <strong className="text-emerald-700 font-bold">1 min 40s</strong>
+
+            {/* Coluna 3: AI Scoring */}
+            <div className="lg:col-span-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between space-y-4">
+              <div>
+                <div className="flex items-center justify-between pb-2 border-b border-gray-100 mb-3">
+                  <span className="font-bold text-xs uppercase tracking-wider text-gray-700">AI Scoring</span>
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                </div>
+
+                <div className="flex flex-col items-center justify-center my-2">
+                  <div 
+                    className="w-24 h-24 rounded-full flex items-center justify-center p-2 shadow-inner"
+                    style={{
+                      background: 'conic-gradient(#10b981 0% 35%, #06b6d4 35% 65%, #8b5cf6 65% 85%, #f59e0b 85% 100%)'
+                    }}
+                  >
+                    <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center shadow-xs">
+                      <span className="text-2xl font-black text-gray-900 leading-none">{selectedContact.score}</span>
+                      <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">SCORE IA</span>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-bold text-gray-700 mt-2">Pontualidade & Eficiência</span>
+                </div>
+
+                <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1.5 text-[11px]">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Top Indicadores:</span>
+                  <p className="text-gray-700 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Confirmação em 12s
+                  </p>
+                  <p className="text-gray-700 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 0 glosas no convênio
+                  </p>
+                  <p className="text-gray-700 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span> OneDrive sincronizado
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-emerald-50/60 border border-emerald-100 p-3 rounded-xl space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
+                  Próxima Ação da Recepção:
+                </span>
+                <p className="text-xs text-emerald-900 leading-snug">
+                  {selectedContact.nextAction}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </motion.div>
   );
 };
 
@@ -1216,163 +1541,622 @@ const CRMPacientes = () => (
   </motion.div>
 );
 
-const CRMFaturamento = () => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-      <div className="p-4 md:p-6 border border-gray-100 rounded-2xl bg-black text-white shadow-lg">
-        <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Receita Bruta (Mês)</span>
-        <h3 className="text-3xl md:text-4xl font-black mt-2">R$ 84.500<span className="text-lg md:text-xl text-gray-400">,00</span></h3>
-      </div>
-      <div className="p-4 md:p-6 border border-gray-100 rounded-2xl bg-white shadow-sm">
-        <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Repasses Pendentes</span>
-        <h3 className="text-3xl md:text-4xl font-black mt-2 text-red-500">R$ 12.350<span className="text-lg md:text-xl text-red-300">,00</span></h3>
-      </div>
-      <div className="p-4 md:p-6 border border-gray-100 rounded-2xl bg-white shadow-sm flex flex-col justify-between">
-        <div>
-          <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Repasses Pagos</span>
-          <h3 className="text-2xl md:text-3xl font-black mt-2 text-emerald-500">R$ 41.200,00</h3>
-        </div>
-      </div>
-    </div>
-    
-    <div className="border border-gray-100 rounded-2xl bg-white overflow-hidden shadow-sm">
-      <div className="px-4 md:px-6 py-3 md:py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-        <span className="text-xs md:text-sm font-bold text-gray-800">Caixa Diário - Entradas</span>
-        <button className="px-2 md:px-3 py-1 md:py-1.5 bg-black text-white rounded-lg text-[10px] md:text-xs font-bold hover:bg-gray-800">+ Manual</button>
-      </div>
-      <div className="p-0 overflow-x-auto w-full">
-        <div className="min-w-[400px]">
-          {[
-            { doc: 'Dr. Gabriel Magri', desc: 'Consulta Particular - Hoje, 14:00', val: '250,00', type: 'PIX' },
-            { doc: 'Dra. Juliana Silva', desc: 'Exame Rotina - Hoje, 15:30', val: '450,00', type: 'Cartão C.' },
-            { doc: 'Dr. Gabriel Magri', desc: 'Retorno (Taxa Equip) - Hoje, 16:00', val: '80,00', type: 'Dinheiro' }
-          ].map((item, i) => (
-            <div key={i} className="flex justify-between items-center p-3 md:p-4 px-4 md:px-6 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 rotate-45" />
-                </div>
-                <div>
-                  <p className="font-bold text-xs md:text-sm text-gray-900">{item.doc}</p>
-                  <p className="text-[10px] md:text-xs text-gray-500">{item.desc}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-black text-sm md:text-lg text-gray-900">R$ {item.val}</p>
-                <p className="text-[8px] md:text-[10px] uppercase font-bold text-gray-400 bg-gray-100 inline-block px-1.5 md:px-2 py-0.5 rounded-sm mt-1">{item.type}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </motion.div>
-);
+const CRMFaturamento = ({ onShowToast }) => {
+  const [tabView, setTabView] = useState('repasses');
+  const [paidDoctors, setPaidDoctors] = useState(new Set([2, 4, 6]));
 
-const CRMComunicacao = () => {
+  const showToast = (msg) => {
+    if (onShowToast) onShowToast(msg);
+  };
+
+  const repassesMedicos = [
+    { id: 1, nome: 'Dr. Gabriel Magri', esp: 'Ortopedia & Traumatologia', consultas: 18, faturamento: 'R$ 7.200,00', taxa: '70%', valorLiquido: 'R$ 5.040,00', pix: 'gabriel.magri@medico.com', crm: 'CRM/SP 142.890' },
+    { id: 2, nome: 'Dra. Juliana Silveira', esp: 'Dermatologia Clínica', consultas: 22, faturamento: 'R$ 8.800,00', taxa: '75%', valorLiquido: 'R$ 6.600,00', pix: '11988887766', crm: 'CRM/SP 168.420' },
+    { id: 3, nome: 'Dr. Julio Ramos Samos', esp: 'Neurologia', consultas: 14, faturamento: 'R$ 5.600,00', taxa: '70%', valorLiquido: 'R$ 3.920,00', pix: 'julio.ramos@neuro.com', crm: 'CRM/SP 115.304' },
+    { id: 4, nome: 'Dra. Camila Meirelles', esp: 'Psicologia Clínica', consultas: 20, faturamento: 'R$ 4.400,00', taxa: '80%', valorLiquido: 'R$ 3.520,00', pix: 'camila.psico@clinica.com', crm: 'CRP 06/138.992' },
+    { id: 5, nome: 'Dr. Lucas Takahashi', esp: 'Odontologia / Bucomaxilo', consultas: 12, faturamento: 'R$ 7.800,00', taxa: '75%', valorLiquido: 'R$ 5.850,00', pix: 'lucas.takahashi@odonto.com', crm: 'CRO/SP 88.412' },
+    { id: 6, nome: 'Dra. Beatriz Albuquerque', esp: 'Cardiologia', consultas: 16, faturamento: 'R$ 6.400,00', taxa: '70%', valorLiquido: 'R$ 4.480,00', pix: 'beatriz.cardio@saude.com', crm: 'CRM/SP 177.210' },
+  ];
+
+  const handlePayPix = (doc) => {
+    setPaidDoctors(prev => new Set([...prev, doc.id]));
+    showToast(`Pix de ${doc.valorLiquido} enviado com sucesso para ${doc.nome}!`);
+  };
+
+  const handleCopyPix = (pix, docNome) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(pix);
+    }
+    showToast(`Chave Pix copiada (${pix}) de ${docNome}`);
+  };
+
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
-        <div>
-          <h3 className="text-lg font-black text-gray-900">Central de Comunicação & Automações</h3>
-          <p className="text-xs text-gray-500">
-            Mensagens programadas, confirmações de presença e simulador em tempo real.
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
+      {/* 4 KPIs Financeiros */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 sm:p-5 border border-gray-900 rounded-2xl bg-black text-white shadow-lg">
+          <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest block">Receita Bruta Total</span>
+          <h3 className="text-2xl sm:text-3xl font-black mt-1">R$ 84.500<span className="text-sm sm:text-base text-gray-400">,00</span></h3>
+          <p className="text-[11px] text-emerald-400 mt-1 font-semibold flex items-center gap-1">
+            <TrendingUp className="w-3 h-3" /> +18.4% vs mês anterior
           </p>
         </div>
-        <span className="px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200">
-          ● 4 Automações Ativas
-        </span>
+
+        <div className="p-4 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-2xs">
+          <span className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest block">Repasses Médicos</span>
+          <h3 className="text-2xl sm:text-3xl font-black mt-1 text-gray-900">R$ 53.550<span className="text-sm sm:text-base text-gray-400">,00</span></h3>
+          <p className="text-[11px] text-gray-400 mt-1">Taxas contratualizadas (60%-80%)</p>
+        </div>
+
+        <div className="p-4 sm:p-5 border border-amber-200/60 rounded-2xl bg-amber-50/50 shadow-2xs">
+          <span className="text-[10px] sm:text-xs font-bold text-amber-700 uppercase tracking-widest block">Pendente de Pix</span>
+          <h3 className="text-2xl sm:text-3xl font-black mt-1 text-amber-900">R$ 14.810<span className="text-sm sm:text-base text-amber-600">,00</span></h3>
+          <p className="text-[11px] text-amber-800 font-medium mt-1">3 médicos aguardando liberação</p>
+        </div>
+
+        <div className="p-4 sm:p-5 border border-gray-100 rounded-2xl bg-white shadow-2xs">
+          <span className="text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest block">Auditoria TISS Glosas</span>
+          <h3 className="text-2xl sm:text-3xl font-black mt-1 text-emerald-600">0,8% <span className="text-xs text-gray-400 font-normal">glosa</span></h3>
+          <p className="text-[11px] text-emerald-700 font-semibold mt-1">Recuperado: R$ 1.840,00 via Nexus</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Coluna 1: Painel de Automações & Mensagens Programadas */}
-        <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-gray-100 shadow-2xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-gray-700">Automações Clínicas Programadas</h4>
-            <span className="text-[11px] text-gray-400">Ativado via n8n</span>
+      {/* Navegação entre Abas Financeiras */}
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-3 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setTabView('repasses')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                tabView === 'repasses'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Repasses Médicos & PIX
+            </button>
+            <button
+              onClick={() => setTabView('entradas')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                tabView === 'entradas'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Caixa Diário & Entradas
+            </button>
+            <button
+              onClick={() => setTabView('glosas')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                tabView === 'glosas'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Auditoria de Glosas
+            </button>
           </div>
 
-          <div className="space-y-3">
+          <button
+            onClick={() => showToast('Demonstrativo financeiro completo exportado em PDF/OFX!')}
+            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 self-start sm:self-auto"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Exportar Relatório</span>
+          </button>
+        </div>
+
+        {/* Tab 1: Repasses Médicos */}
+        {tabView === 'repasses' && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[700px]">
+              <thead>
+                <tr className="border-b border-gray-100 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <th className="py-2.5 px-3">Profissional & CRM</th>
+                  <th className="py-2.5 px-3">Consultas</th>
+                  <th className="py-2.5 px-3">Produção Bruta</th>
+                  <th className="py-2.5 px-3">Taxa / Líquido</th>
+                  <th className="py-2.5 px-3">Chave PIX</th>
+                  <th className="py-2.5 px-3 text-right">Ação / Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 text-xs">
+                {repassesMedicos.map((doc) => {
+                  const isPaid = paidDoctors.has(doc.id);
+                  return (
+                    <tr key={doc.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="py-3 px-3">
+                        <p className="font-bold text-gray-900">{doc.nome}</p>
+                        <p className="text-[11px] text-gray-500">{doc.esp} • {doc.crm}</p>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="font-semibold text-gray-800">{doc.consultas} pac.</span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="font-medium text-gray-600">{doc.faturamento}</span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded mr-1.5">
+                          {doc.taxa}
+                        </span>
+                        <strong className="text-emerald-700 font-bold">{doc.valorLiquido}</strong>
+                      </td>
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-1.5">
+                          <code className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-700 font-mono">
+                            {doc.pix}
+                          </code>
+                          <button
+                            onClick={() => handleCopyPix(doc.pix, doc.nome)}
+                            className="p-1 hover:bg-gray-200 rounded text-gray-500 transition-colors"
+                            title="Copiar Chave PIX"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        {isPaid ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[11px] font-bold">
+                            <CheckCheck className="w-3 h-3" /> Pago via PIX
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => handlePayPix(doc)}
+                            className="px-3 py-1 bg-black hover:bg-gray-800 text-white rounded-lg text-[11px] font-bold transition-all shadow-2xs hover:scale-105"
+                          >
+                            Pagar via Pix
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Tab 2: Caixa Diário */}
+        {tabView === 'entradas' && (
+          <div className="space-y-2">
             {[
-              {
-                title: "Confirmação D-1 (24h de antecedência)",
-                desc: "Envia o lembrete com nome do especialista, endereço e botão de confirmação.",
-                stat: "98,4% presença",
-                active: true
-              },
-              {
-                title: "Lembrete D-0 (2 horas antes da consulta)",
-                desc: "Alerta com rota Google Maps para evitar atrasos e esquecimentos no trânsito.",
-                stat: "0 atrasos hoje",
-                active: true
-              },
-              {
-                title: "Orientações Pós-Procedimento & Receita",
-                desc: "Disparo automático dos cuidados pós-consulta e link do documento digital.",
-                stat: "Instantâneo",
-                active: true
-              },
-              {
-                title: "Reativação Preventiva (Retorno 6 Meses)",
-                desc: "Convite personalizado para exames periódicos e check-ups preventivos.",
-                stat: "+34% retornos",
-                active: true
-              }
-            ].map((item, idx) => (
-              <div key={idx} className="p-3.5 bg-gray-50 rounded-xl border border-gray-200/70 hover:border-gray-300 transition-all">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                      <h5 className="font-bold text-xs text-gray-900">{item.title}</h5>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">{item.desc}</p>
+              { doc: 'Dr. Gabriel Magri', desc: 'Consulta Particular Ortopedia - Presencial', val: '450,00', type: 'PIX Instantâneo', hora: '14:32', status: 'Recebido' },
+              { doc: 'Dra. Juliana Silveira', desc: 'Procedimento Dermatológico - Estética Clínica', val: '980,00', type: 'Cartão de Crédito (1x)', hora: '15:10', status: 'Recebido' },
+              { doc: 'Dr. Julio Ramos Samos', desc: 'Laudo Eletroencefalograma • Convênio Amil One', val: '620,00', type: 'Guia TISS Faturada', hora: '15:45', status: 'Lote Enviado' },
+              { doc: 'Dra. Camila Meirelles', desc: 'Sessão Psicoterapia Cognitivo-Comportamental', val: '280,00', type: 'PIX Instantâneo', hora: '16:00', status: 'Recebido' },
+              { doc: 'Dr. Lucas Takahashi', desc: 'Extração Cirúrgica Terceiro Molar', val: '1.200,00', type: 'Cartão de Débito', hora: '16:30', status: 'Recebido' }
+            ].map((item, i) => (
+              <div key={i} className="flex justify-between items-center p-3 px-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors text-xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                    <ArrowRight className="w-4 h-4 rotate-45" />
                   </div>
-                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-md shrink-0">
-                    {item.stat}
+                  <div>
+                    <p className="font-bold text-gray-900">{item.doc} • <span className="text-gray-500 font-normal">{item.desc}</span></p>
+                    <p className="text-[10px] text-gray-400">{item.hora} • Forma: {item.type}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-black text-sm text-gray-900">R$ {item.val}</p>
+                  <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    {item.status}
                   </span>
                 </div>
               </div>
             ))}
           </div>
+        )}
+
+        {/* Tab 3: Auditoria Glosas */}
+        {tabView === 'glosas' && (
+          <div className="space-y-3">
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-center justify-between">
+              <span><strong>Nexus Auditor:</strong> 142 guias TISS checadas antes da transmissão. Taxa de glosa reduzida de 4.2% para 0.8%.</span>
+              <span className="text-[10px] font-bold uppercase bg-emerald-600 text-white px-2 py-0.5 rounded">Ativo</span>
+            </div>
+            {[
+              { operadora: 'Amil Saúde', guia: 'TISS-884120', valor: 'R$ 480,00', motivo: 'Incompatibilidade de código CBHPM corrigida autonomamente', status: 'Glosa Evitada' },
+              { operadora: 'Bradesco Saúde', guia: 'TISS-773914', valor: 'R$ 720,00', motivo: 'Anexo de laudo e justificativa médica anexados via Nexus', status: 'Recuperado 100%' },
+              { operadora: 'SulAmérica', guia: 'TISS-992015', valor: 'R$ 310,00', motivo: 'Validação de carência antes do atendimento presencial', status: 'Autorizado' }
+            ].map((g, idx) => (
+              <div key={idx} className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-bold text-gray-900">{g.operadora}</span> • <span className="text-gray-500 font-mono text-[11px]">{g.guia}</span>
+                  <p className="text-[11px] text-gray-500 mt-0.5">{g.motivo}</p>
+                </div>
+                <div className="text-right">
+                  <span className="font-bold text-gray-900">{g.valor}</span>
+                  <span className="block text-[10px] font-bold text-emerald-700">{g.status}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+const CRMComunicacao = ({ onShowToast }) => {
+  const [selectedChatId, setSelectedChatId] = useState(1);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(35);
+  const [isHumanControl, setIsHumanControl] = useState(false);
+  const [messageInput, setMessageInput] = useState('');
+
+  const showToast = (msg) => {
+    if (onShowToast) onShowToast(msg);
+  };
+
+  const [chats, setChats] = useState([
+    {
+      id: 1,
+      nome: 'Mariana Silva',
+      tipo: 'Consulta Particular • Dr. Gabriel',
+      horario: '14:30',
+      avatar: 'MS',
+      unread: 1,
+      iaActive: true,
+      messages: [
+        { id: 101, sender: 'ia', time: '10:00', text: 'Olá, Mariana! Tudo bem? Aqui é o Agente Nexus da Clínica Bio Mind. Passando para confirmar sua consulta de Ortopedia com o Dr. Gabriel Magri amanhã às 14:30 no Consultório 03.' },
+        { id: 102, sender: 'user', time: '10:02', text: 'Confirmadíssimo! Preciso levar exames anteriores de coluna?' },
+        { id: 103, sender: 'ia', time: '10:03', text: 'Se você tiver exames ou laudos dos últimos 6 meses, pode trazer sim! Já avisei a recepção e o Dr. Gabriel já terá sua ficha pronta.' },
+        { id: 104, sender: 'card', time: '10:03', cardType: 'agendamento', details: { medico: 'Dr. Gabriel Magri', data: 'Amanhã, 14:30', sala: 'Consultório 03' } }
+      ]
+    },
+    {
+      id: 2,
+      nome: 'Roberto Campos',
+      tipo: 'Dúvida Convênio • Amil One',
+      horario: '11:15',
+      avatar: 'RC',
+      unread: 2,
+      iaActive: true,
+      messages: [
+        { id: 201, sender: 'user', time: '11:14', isAudio: true, duration: '0:38', transcription: 'Olá, bom dia! Gostaria de saber se o Dr. Gabriel aceita Amil One ou se a consulta seria apenas no particular, obrigado!' },
+        { id: 202, sender: 'ia', time: '11:15', text: 'Olá Roberto! Sim, o Dr. Gabriel atende o plano Amil One para consultas e exames ortopédicos. Deseja que eu verifique os horários disponíveis para esta semana?' }
+      ]
+    },
+    {
+      id: 3,
+      nome: 'Dra. Juliana Silveira',
+      tipo: 'Corpo Clínico • Dermatologia',
+      horario: '09:40',
+      avatar: 'JS',
+      unread: 0,
+      iaActive: false,
+      messages: [
+        { id: 301, sender: 'user', time: '09:38', text: 'Bom dia! Consegui liberar a biópsia da paciente Laura das 11h. O laudo já está salvo no OneDrive.' },
+        { id: 302, sender: 'reception', time: '09:40', text: 'Perfeito, Dra. Juliana! Recepcionista Ana já anexou ao prontuário dela. Ótimo atendimento!' }
+      ]
+    },
+    {
+      id: 4,
+      nome: 'Carlos Eduardo',
+      tipo: 'Retorno Pós-Cirúrgico',
+      horario: 'Ontem',
+      avatar: 'CE',
+      unread: 0,
+      iaActive: true,
+      messages: [
+        { id: 401, sender: 'ia', time: 'Ontem', text: 'Olá Carlos! Como está a cicatrização do procedimento? Segue o link com as orientações do pós-operatório.' },
+        { id: 402, sender: 'user', time: 'Ontem', text: 'Tudo ótimo, sem dor nenhuma! Obrigado pelo acompanhamento.' }
+      ]
+    }
+  ]);
+
+  const activeChat = chats.find(c => c.id === selectedChatId) || chats[0];
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!messageInput.trim()) return;
+
+    const newMsg = {
+      id: Date.now(),
+      sender: isHumanControl ? 'reception' : 'user',
+      time: 'Agora',
+      text: messageInput.trim()
+    };
+
+    setChats(prev => prev.map(chat => {
+      if (chat.id === activeChat.id) {
+        return {
+          ...chat,
+          messages: [...chat.messages, newMsg]
+        };
+      }
+      return chat;
+    }));
+
+    const sentText = messageInput.trim();
+    setMessageInput('');
+    showToast(`Mensagem enviada para ${activeChat.nome}`);
+
+    // Simula resposta inteligente se a IA estiver ativa
+    if (!isHumanControl) {
+      setTimeout(() => {
+        setChats(prev => prev.map(chat => {
+          if (chat.id === activeChat.id) {
+            return {
+              ...chat,
+              messages: [
+                ...chat.messages,
+                {
+                  id: Date.now() + 1,
+                  sender: 'ia',
+                  time: 'Agora',
+                  text: `Nexus IA: Entendido! Registrei "${sentText}" na sua ficha médica e já notifiquei a recepção.`
+                }
+              ]
+            };
+          }
+          return chat;
+        }));
+      }, 1000);
+    }
+  };
+
+  const toggleHumanIntervention = () => {
+    setIsHumanControl(!isHumanControl);
+    showToast(isHumanControl ? 'IA reativada para triagem autônoma.' : 'Recepção humana assumiu o atendimento.');
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Top Banner de Status */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
+        <div>
+          <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
+            <span>WhatsApp & Central de Comunicação</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </h3>
+          <p className="text-xs text-gray-500">
+            Apoio inteligente em picos de mensagens e fora do expediente. O atendimento humano está sempre a um clique.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleHumanIntervention}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${
+              isHumanControl 
+                ? 'bg-amber-100 text-amber-900 border-amber-300' 
+                : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+            }`}
+          >
+            {isHumanControl ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5 text-emerald-600" />}
+            <span>{isHumanControl ? 'Modo Humano (Recepção)' : 'Apoio Nexus IA Ativo'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Grid Principal do WhatsApp */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 bg-white rounded-2xl border border-gray-100 shadow-2xs overflow-hidden min-h-[500px]">
+        {/* Coluna Esquerda: Lista de Conversas */}
+        <div className="lg:col-span-4 border-r border-gray-100 flex flex-col bg-[#F9FAFB]">
+          <div className="p-3 border-b border-gray-100 bg-white">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Buscar conversa ou paciente..."
+                className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black"
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
+            {chats.map((c) => {
+              const isSelected = c.id === activeChat.id;
+              return (
+                <div
+                  key={c.id}
+                  onClick={() => setSelectedChatId(c.id)}
+                  className={`p-3 cursor-pointer transition-colors flex items-start gap-2.5 ${
+                    isSelected ? 'bg-white border-l-4 border-black' : 'hover:bg-gray-100/70'
+                  }`}
+                >
+                  <div className="w-9 h-9 rounded-full bg-gray-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                    {c.avatar}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline">
+                      <h4 className="font-bold text-xs text-gray-900 truncate">{c.nome}</h4>
+                      <span className="text-[10px] text-gray-400">{c.horario}</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 truncate mt-0.5">{c.tipo}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      {c.iaActive && (
+                        <span className="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1 rounded">
+                          Nexus IA
+                        </span>
+                      )}
+                      {c.unread > 0 && (
+                        <span className="w-4 h-4 bg-emerald-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center ml-auto">
+                          {c.unread}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Coluna 2: Simulador do WhatsApp da Clínica */}
-        <div className="lg:col-span-5 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3 pb-3 border-b border-gray-100 mb-3 bg-[#075E54] text-white p-3 rounded-xl -m-1">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs">
-                🏥
+        {/* Coluna Direita: Conversa Ativa */}
+        <div className="lg:col-span-8 flex flex-col justify-between bg-[#EFEAE2]/30 min-h-[420px]">
+          {/* Header da Conversa */}
+          <div className="p-3 bg-white border-b border-gray-200 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-emerald-800 text-white font-bold text-xs flex items-center justify-center">
+                {activeChat.avatar}
               </div>
               <div>
-                <h5 className="font-bold text-xs text-white leading-tight">Clínica Bio Mind • Recepção</h5>
-                <span className="text-[10px] text-emerald-200">Online • Agente Nexus + Equipe</span>
+                <h4 className="font-bold text-xs text-gray-900 leading-tight">{activeChat.nome}</h4>
+                <p className="text-[10px] text-emerald-700 font-medium">{activeChat.tipo}</p>
               </div>
             </div>
 
-            {/* Balões de conversa WhatsApp */}
-            <div className="space-y-2.5 text-xs p-2 bg-[#ECE5DD]/60 rounded-xl border border-gray-200 min-h-[220px]">
-              <div className="bg-white p-2.5 rounded-xl rounded-tl-xs shadow-2xs max-w-[85%] text-gray-800">
-                <p>Olá, Mariana! Tudo bem? Passando para confirmar sua consulta com o <strong>Dr. Henrique Vasconcelos</strong> amanhã às <strong>14:30</strong>.</p>
-                <span className="text-[9px] text-gray-400 block text-right mt-1">10:00 • Nexus IA</span>
-              </div>
-
-              <div className="bg-[#DCF8C6] p-2.5 rounded-xl rounded-tr-xs shadow-2xs max-w-[80%] ml-auto text-gray-800">
-                <p>Confirmadíssimo! Preciso levar algum exame anterior?</p>
-                <span className="text-[9px] text-gray-500 block text-right mt-1">10:02 • Mariana</span>
-              </div>
-
-              <div className="bg-white p-2.5 rounded-xl rounded-tl-xs shadow-2xs max-w-[85%] text-gray-800">
-                <p>Se tiver exames dos últimos 6 meses pode trazer sim! Qualquer dúvida estou aqui ou posso chamar nossa recepcionista agora mesmo. 😊</p>
-                <span className="text-[9px] text-gray-400 block text-right mt-1">10:03 • Nexus IA</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => showToast(`Agendamento de ${activeChat.nome} aberto no calendário.`)}
+                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-[11px] font-bold text-gray-700"
+              >
+                Ver Agenda
+              </button>
+              <button
+                onClick={() => showToast(`Prontuário de ${activeChat.nome} sincronizado no OneDrive.`)}
+                className="px-2.5 py-1 bg-black text-white hover:bg-gray-800 rounded-lg text-[11px] font-bold"
+              >
+                Prontuário
+              </button>
             </div>
           </div>
 
-          <div className="mt-3 p-2.5 bg-gray-50 rounded-xl text-[11px] text-gray-500 border border-gray-100 flex items-center justify-between">
-            <span>Transição Humana Imediata</span>
-            <span className="text-emerald-700 font-bold">100% sem atrito</span>
+          {/* Área de Mensagens */}
+          <div className="flex-1 p-3 sm:p-4 space-y-3 overflow-y-auto max-h-[380px]">
+            {activeChat.messages.map((m) => {
+              if (m.cardType === 'agendamento') {
+                return (
+                  <div key={m.id} className="max-w-[85%] bg-white p-3 rounded-2xl border border-emerald-200 shadow-2xs space-y-2">
+                    <div className="flex items-center gap-2 text-emerald-800 text-xs font-bold pb-1 border-b border-gray-100">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Agendamento Registrado no CRM</span>
+                    </div>
+                    <div className="text-[11px] text-gray-600 space-y-0.5">
+                      <p><strong>Médico:</strong> {m.details.medico}</p>
+                      <p><strong>Horário:</strong> {m.details.data}</p>
+                      <p><strong>Local:</strong> {m.details.sala}</p>
+                    </div>
+                    <div className="pt-1 flex gap-2">
+                      <button 
+                        onClick={() => showToast('Horário confirmado com a recepção.')}
+                        className="flex-1 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold"
+                      >
+                        Confirmar
+                      </button>
+                      <button 
+                        onClick={() => showToast('Reagendamento solicitado para o Nexus.')}
+                        className="py-1 px-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-[10px] font-bold"
+                      >
+                        Reagendar
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+
+              if (m.isAudio) {
+                return (
+                  <div key={m.id} className="max-w-[85%] bg-white p-3 rounded-2xl rounded-tl-xs shadow-2xs space-y-2 border border-gray-200">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          setIsAudioPlaying(!isAudioPlaying);
+                          showToast(isAudioPlaying ? 'Áudio pausado.' : 'Reproduzindo áudio do paciente...');
+                        }}
+                        className="w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shrink-0"
+                      >
+                        {isAudioPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+                      </button>
+                      <div className="flex-1">
+                        <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-emerald-600 transition-all duration-300"
+                            style={{ width: `${isAudioPlaying ? audioProgress + 25 : audioProgress}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[9px] text-gray-400 mt-1">
+                          <span>{isAudioPlaying ? '0:18' : '0:00'}</span>
+                          <span>{m.duration}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {m.transcription && (
+                      <div className="bg-gray-50 p-2 rounded-lg text-[10px] text-gray-700 border border-gray-100">
+                        <strong className="text-emerald-700 block text-[9px] uppercase">Transcrição Automática Nexus:</strong>
+                        <span>"{m.transcription}"</span>
+                      </div>
+                    )}
+                    <span className="text-[9px] text-gray-400 block text-right">{m.time} • Paciente</span>
+                  </div>
+                );
+              }
+
+              const isUser = m.sender === 'user';
+              const isReception = m.sender === 'reception';
+              const isIa = m.sender === 'ia';
+
+              return (
+                <div
+                  key={m.id}
+                  className={`p-2.5 rounded-2xl text-xs max-w-[82%] shadow-2xs ${
+                    isUser
+                      ? 'bg-white rounded-tl-xs ml-0 text-gray-800 border border-gray-100'
+                      : isReception
+                      ? 'bg-[#E1F3FB] rounded-tr-xs ml-auto text-gray-900 border border-blue-200'
+                      : 'bg-[#DCF8C6] rounded-tr-xs ml-auto text-gray-900'
+                  }`}
+                >
+                  <p className="leading-relaxed">{m.text}</p>
+                  <div className="flex items-center justify-end gap-1 mt-1 text-[9px] text-gray-500">
+                    <span>{m.time}</span>
+                    <span>• {isUser ? activeChat.nome : isReception ? 'Recepção (Ana)' : 'Nexus IA'}</span>
+                    <CheckCheck className="w-3 h-3 text-emerald-600" />
+                  </div>
+                </div>
+              );
+            })}
           </div>
+
+          {/* Quick Action Badges */}
+          <div className="px-3 py-1.5 bg-white/80 border-t border-gray-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => setMessageInput('Por favor, confirme se comparecerá ao consultório amanhã.')}
+              className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-[10px] text-gray-700 whitespace-nowrap"
+            >
+              + Pedir Confirmação
+            </button>
+            <button
+              onClick={() => setMessageInput('Segue a chave PIX da clínica para liquidação: financeiro@multisaude.med.br')}
+              className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-[10px] text-gray-700 whitespace-nowrap"
+            >
+              + Enviar Chave PIX
+            </button>
+            <button
+              onClick={() => setMessageInput('Lembre-se de trazer os exames dos últimos 6 meses para análise.')}
+              className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 rounded text-[10px] text-gray-700 whitespace-nowrap"
+            >
+              + Solicitar Exames
+            </button>
+          </div>
+
+          {/* Input de Envio de Mensagem */}
+          <form onSubmit={handleSendMessage} className="p-2 sm:p-3 bg-white border-t border-gray-200 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => showToast('Anexo de laudo ou pedido de exame selecionado.')}
+              className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+              title="Anexar Arquivo"
+            >
+              <Paperclip className="w-4 h-4" />
+            </button>
+            <input
+              type="text"
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              placeholder={isHumanControl ? "Digite como Recepcionista Ana..." : "Digite uma mensagem ou comando..."}
+              className="flex-1 py-1.5 px-3 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-black"
+            />
+            <button
+              type="submit"
+              className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-all shadow-2xs hover:scale-105"
+              title="Enviar Mensagem"
+            >
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </form>
         </div>
       </div>
     </div>
@@ -2413,6 +3197,348 @@ const CRMEquipe = () => {
   );
 };
 
+const CRMHistorico = ({ onShowToast }) => {
+  const [filterModule, setFilterModule] = useState('todos');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const logs = [
+    { id: 1, hora: '16:42:10', op: 'Agente Nexus IA', cargo: 'Autônomo', modulo: 'WhatsApp / Triagem', acao: 'Agendamento confirmado para Mariana Silva (Ortopedia)', ip: '177.136.24.12', lgpd: 'Conforme' },
+    { id: 2, hora: '16:35:04', op: 'Recepcionista Ana', cargo: 'Recepção', modulo: 'Pacientes', acao: 'Ficha médica e termo de consentimento LGPD arquivados', ip: '192.168.1.45', lgpd: 'Conforme' },
+    { id: 3, hora: '16:15:22', op: 'Agente Nexus IA', cargo: 'Autônomo', modulo: 'Convênios / TISS', acao: 'Pré-auditoria de 14 guias Amil concluída sem apontamentos', ip: '177.136.24.12', lgpd: 'Conforme' },
+    { id: 4, hora: '15:50:18', op: 'Gestor Bernardo', cargo: 'Administração', modulo: 'Repasses / Financeiro', acao: 'Disparo de lote PIX para 4 médicos do corpo clínico', ip: '189.120.30.88', lgpd: 'Conforme' },
+    { id: 5, hora: '15:30:00', op: 'Sistema Automático', cargo: 'Backup Cloud', modulo: 'OneDrive / Nuvem', acao: 'Sincronização de 128 MB de laudos e prontuários criptografados', ip: '10.0.0.1', lgpd: 'Conforme' },
+    { id: 6, hora: '14:20:11', op: 'Dr. Gabriel Magri', cargo: 'Médico RT', modulo: 'Prontuários', acao: 'Evolução clínica e prescrição digital assinadas com ICP-Brasil', ip: '192.168.1.60', lgpd: 'Conforme' },
+    { id: 7, hora: '13:45:50', op: 'Agente Nexus IA', cargo: 'Autônomo', modulo: 'Notas Fiscais', acao: 'Transmissão de NFS-e #884120 à SEFAZ/SP com RPS homologado', ip: '177.136.24.12', lgpd: 'Conforme' }
+  ];
+
+  const filteredLogs = logs.filter(l => {
+    const matchMod = filterModule === 'todos' || l.modulo.toLowerCase().includes(filterModule);
+    const matchSearch = l.op.toLowerCase().includes(searchTerm.toLowerCase()) || l.acao.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchMod && matchSearch;
+  });
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+        <div>
+          <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
+            <History className="w-5 h-5 text-gray-700" />
+            <span>Trilha de Auditoria & Conformidade LGPD</span>
+          </h3>
+          <p className="text-xs text-gray-500">
+            Registro imutável de todas as ações de usuários, acessos a prontuários e automações da IA.
+          </p>
+        </div>
+        <button
+          onClick={() => onShowToast && onShowToast('Relatório de Auditoria LGPD exportado em CSV/PDF.')}
+          className="px-3 py-1.5 bg-black hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 self-start sm:self-auto"
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span>Exportar Trilha (.CSV)</span>
+        </button>
+      </div>
+
+      <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="relative w-full sm:w-72">
+          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por operador ou ação..."
+            className="w-full pl-8 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black"
+          />
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+          {['todos', 'whatsapp', 'prontuários', 'repasses', 'tiss', 'notas'].map((mod) => (
+            <button
+              key={mod}
+              onClick={() => setFilterModule(mod)}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold capitalize transition-colors ${
+                filterModule === mod ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {mod}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[700px]">
+            <thead>
+              <tr className="border-b border-gray-100 text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50/60">
+                <th className="py-2.5 px-3">Horário</th>
+                <th className="py-2.5 px-3">Operador / Cargo</th>
+                <th className="py-2.5 px-3">Módulo</th>
+                <th className="py-2.5 px-3">Ação Registrada</th>
+                <th className="py-2.5 px-3">IP Origem</th>
+                <th className="py-2.5 px-3 text-right">LGPD</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50 text-xs">
+              {filteredLogs.map((log) => (
+                <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-2.5 px-3 font-mono text-[11px] text-gray-500">{log.hora}</td>
+                  <td className="py-2.5 px-3">
+                    <span className="font-bold text-gray-900 block">{log.op}</span>
+                    <span className="text-[10px] text-gray-400">{log.cargo}</span>
+                  </td>
+                  <td className="py-2.5 px-3">
+                    <span className="px-2 py-0.5 bg-gray-100 text-gray-700 font-semibold rounded text-[10px]">
+                      {log.modulo}
+                    </span>
+                  </td>
+                  <td className="py-2.5 px-3 font-medium text-gray-800">{log.acao}</td>
+                  <td className="py-2.5 px-3 font-mono text-[10px] text-gray-400">{log.ip}</td>
+                  <td className="py-2.5 px-3 text-right">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-bold">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" /> Auditado
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const CRMSuporte = ({ onShowToast }) => {
+  const [openFaq, setOpenFaq] = useState(null);
+  const [searchFaq, setSearchFaq] = useState('');
+
+  const faqs = [
+    {
+      q: 'Como a IA do Nexus apoia o atendimento sem substituir a recepção?',
+      a: 'O Agente Nexus opera como uma linha de frente para triagem em horários de pico e fora do expediente comercial. Ele responde dúvidas sobre valores, horários e localização, pré-qualifica o paciente e passa a conversa instantaneamente para a recepção sempre que solicitado ou em casos complexos.'
+    },
+    {
+      q: 'Como funciona o cálculo e liquidação de repasses médicos via PIX?',
+      a: 'O módulo financeiro calcula automaticamente a fatia contratual de cada médico (ex: 70% particular, 65% convênio) após a baixa da consulta no prontuário. Na data de corte, o gestor pode pagar médico por médico com 1 clique usando a chave PIX já cadastrada.'
+    },
+    {
+      q: 'O que o sistema faz quando uma operadora aplica glosa em uma guia TISS?',
+      a: 'O validador autônomo audita códigos CBHPM, CID-10 e anexos antes do envio. Caso haja recusa da operadora, o sistema sinaliza a guia e gera a petição de recurso de glosa com a documentação clínica comprobatória.'
+    },
+    {
+      q: 'Como emitir notas fiscais (NFS-e) em lote para a Prefeitura?',
+      a: 'No módulo Notas Fiscais, você seleciona o período e clica em "Emitir Lote". O sistema gera os RPS homologados, assina com certificado digital e transmite via webservice oficial da Prefeitura.'
+    },
+    {
+      q: 'Os prontuários e dados dos pacientes cumprem a LGPD e resoluções do CFM?',
+      a: 'Sim. Todo o armazenamento é criptografado de ponta a ponta, com trilha de auditoria para cada acesso de recepcionistas ou médicos, e consentimento explícito do paciente.'
+    }
+  ];
+
+  const filteredFaqs = faqs.filter(f => f.q.toLowerCase().includes(searchFaq.toLowerCase()) || f.a.toLowerCase().includes(searchFaq.toLowerCase()));
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+        <div>
+          <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-gray-700" />
+            <span>Central de Ajuda & Base de Conhecimento Clínica</span>
+          </h3>
+          <p className="text-xs text-gray-500">
+            Guias operacionais, status de infraestrutura e suporte contínuo da Bio Mind.
+          </p>
+        </div>
+        <button
+          onClick={() => onShowToast && onShowToast('Suporte técnico prioritário acionado. Resposta em até 5 minutos.')}
+          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-2xs flex items-center gap-1.5 self-start sm:self-auto"
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          <span>Falar com Especialista</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="p-3.5 bg-white rounded-xl border border-gray-100 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-700">Webhook n8n</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </div>
+          <p className="text-sm font-black text-gray-900 mt-1">100% Online</p>
+          <span className="text-[10px] text-gray-400">Latência: 12ms</span>
+        </div>
+        <div className="p-3.5 bg-white rounded-xl border border-gray-100 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-700">WhatsApp Meta Cloud</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+          <p className="text-sm font-black text-gray-900 mt-1">Conectado (99.98%)</p>
+          <span className="text-[10px] text-gray-400">Canal verificado</span>
+        </div>
+        <div className="p-3.5 bg-white rounded-xl border border-gray-100 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-700">Gateway SEFAZ / NFS-e</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+          <p className="text-sm font-black text-gray-900 mt-1">Homologado</p>
+          <span className="text-[10px] text-gray-400">Prefeitura SP v2.04</span>
+        </div>
+      </div>
+
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs space-y-3">
+        <div className="relative">
+          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchFaq}
+            onChange={(e) => setSearchFaq(e.target.value)}
+            placeholder="Pesquise sobre repasses, glosas, atendimento IA, emissão de notas..."
+            className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none focus:border-black"
+          />
+        </div>
+
+        <div className="space-y-2 pt-1">
+          {filteredFaqs.map((faq, i) => (
+            <div key={i} className="border border-gray-100 rounded-xl overflow-hidden bg-gray-50/50">
+              <button
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                className="w-full p-3 text-left font-bold text-xs text-gray-900 flex justify-between items-center hover:bg-gray-100/60 transition-colors"
+              >
+                <span>{faq.q}</span>
+                <span className="text-gray-400 text-sm">{openFaq === i ? '▲' : '▼'}</span>
+              </button>
+              {openFaq === i && (
+                <div className="p-3 pt-0 text-xs text-gray-600 leading-relaxed border-t border-gray-100/60 bg-white">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const CRMConfiguracoes = ({ onShowToast }) => {
+  const [formData, setFormData] = useState({
+    clinicaNome: 'Multi Saúde Medicina Integrada',
+    cnpj: '34.567.890/0001-12',
+    rtMedico: 'Dr. Gabriel Magri • CRM/SP 142.890',
+    issAliquota: '2.0',
+    pixMaster: 'financeiro@multisaude.med.br',
+    n8nWebhook: 'https://n8n.multisaude.med.br/webhook/triagem-clinica',
+    diasFechamento: 'Sexta-feira (Semanal)'
+  });
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    if (onShowToast) {
+      onShowToast('Configurações da clínica salvas com sucesso!');
+    }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+        <div>
+          <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
+            <Settings className="w-5 h-5 text-gray-700" />
+            <span>Configurações & Parâmetros da Clínica</span>
+          </h3>
+          <p className="text-xs text-gray-500">
+            Regras de repasse, integração com Webhooks n8n, alíquotas fiscais e dados cadastrais.
+          </p>
+        </div>
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 bg-black hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-all shadow-2xs self-start sm:self-auto hover:scale-105"
+        >
+          Salvar Alterações
+        </button>
+      </div>
+
+      <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs space-y-3">
+          <h4 className="font-bold text-xs uppercase tracking-wider text-gray-800 pb-2 border-b border-gray-100">
+            Dados Institucionais & RT Médico
+          </h4>
+          <div>
+            <label className="text-[11px] font-semibold text-gray-600 block mb-1">Razão Social / Nome da Clínica</label>
+            <input
+              type="text"
+              value={formData.clinicaNome}
+              onChange={(e) => setFormData({...formData, clinicaNome: e.target.value})}
+              className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black font-medium"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-semibold text-gray-600 block mb-1">CNPJ</label>
+            <input
+              type="text"
+              value={formData.cnpj}
+              onChange={(e) => setFormData({...formData, cnpj: e.target.value})}
+              className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black font-mono"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-semibold text-gray-600 block mb-1">Responsável Técnico (RT Médico / CRM)</label>
+            <input
+              type="text"
+              value={formData.rtMedico}
+              onChange={(e) => setFormData({...formData, rtMedico: e.target.value})}
+              className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black"
+            />
+          </div>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs space-y-3">
+          <h4 className="font-bold text-xs uppercase tracking-wider text-gray-800 pb-2 border-b border-gray-100">
+            Parâmetros Fiscais & Chave PIX Master
+          </h4>
+          <div>
+            <label className="text-[11px] font-semibold text-gray-600 block mb-1">Chave PIX Master da Clínica (Recebimento)</label>
+            <input
+              type="text"
+              value={formData.pixMaster}
+              onChange={(e) => setFormData({...formData, pixMaster: e.target.value})}
+              className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black font-mono"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Alíquota ISS (%)</label>
+              <input
+                type="text"
+                value={formData.issAliquota}
+                onChange={(e) => setFormData({...formData, issAliquota: e.target.value})}
+                className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black font-bold"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Fechamento de Repasses</label>
+              <input
+                type="text"
+                value={formData.diasFechamento}
+                onChange={(e) => setFormData({...formData, diasFechamento: e.target.value})}
+                className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="text-[11px] font-semibold text-gray-600 block mb-1">Webhook URL n8n (Orquestração)</label>
+            <input
+              type="text"
+              value={formData.n8nWebhook}
+              onChange={(e) => setFormData({...formData, n8nWebhook: e.target.value})}
+              className="w-full px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs outline-none focus:border-black font-mono text-[10px]"
+            />
+          </div>
+        </div>
+      </form>
+    </motion.div>
+  );
+};
+
 const NexusAgentDrawer = ({ showAI, onClose }) => {
   const [messages, setMessages] = useState([
     {
@@ -2661,18 +3787,34 @@ const InteractiveCRM = () => {
   const [showAI, setShowAI] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
+  const [isSoundMuted, setIsSoundMuted] = useState(false);
+  const [isCrmDarkMode, setIsCrmDarkMode] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const showToast = (msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3500);
   };
 
+  const notifications = [
+    { id: 1, title: 'Repasses Médicos', desc: 'Lote de R$ 14.810 liberado para envio PIX.', time: 'Há 5 min' },
+    { id: 2, title: 'Auditoria TISS', desc: '14 guias Amil aprovadas com 0 glosas pelo Nexus.', time: 'Há 25 min' },
+    { id: 3, title: 'OneDrive Clínico', desc: 'Sincronização de prontuários concluída (128 MB).', time: 'Há 1 hora' },
+  ];
+
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'agenda', label: 'Agendamentos', icon: CalendarDays },
     { id: 'pacientes', label: 'Pacientes', icon: Users },
-    { id: 'comunicacao', label: 'Comunicação', icon: MessageSquare },
-    { id: 'conexoes', label: 'Conexões', icon: Plug },
+    { id: 'convenios', label: 'Convênios & TISS', icon: ShieldCheck },
+    { id: 'faturamento', label: 'Faturamento & Repasses', icon: Banknote },
+    { id: 'notas', label: 'Notas Fiscais', icon: Receipt },
+    { id: 'equipe', label: 'Corpo Clínico & PIX', icon: Stethoscope },
+    { id: 'conexoes', label: 'Conexões & Documentos', icon: Plug },
+    { id: 'comunicacao', label: 'WhatsApp & Mensagens', icon: MessageSquare },
+    { id: 'historico', label: 'Histórico & Auditoria', icon: History },
+    { id: 'suporte', label: 'Central de Suporte', icon: HelpCircle },
+    { id: 'configuracoes', label: 'Configurações', icon: Settings },
   ];
 
   const handleTabChange = (tabId) => {
@@ -2684,6 +3826,16 @@ const InteractiveCRM = () => {
     setTopTab(tTab);
     setActiveTab('dashboard');
     setShowAI(false); // Fecha o Nexus imediatamente
+  };
+
+  const toggleSound = () => {
+    setIsSoundMuted(!isSoundMuted);
+    showToast(isSoundMuted ? 'Áudio ativado: alertas sonoros ligados.' : 'Áudio mutado: modo silencioso ativado.');
+  };
+
+  const toggleDarkMode = () => {
+    setIsCrmDarkMode(!isCrmDarkMode);
+    showToast(isCrmDarkMode ? 'Modo Claro ativado no CRM.' : 'Modo Noturno Clínico ativado no CRM.');
   };
 
   return (
@@ -2704,10 +3856,14 @@ const InteractiveCRM = () => {
           </p>
         </motion.div>
 
-        {/* Moldura do CRM (Firme, sem parallax 3D, com rolagem interna fluida no mouse via data-lenis-prevent) */}
+        {/* Moldura do CRM */}
         <div 
           data-lenis-prevent="true"
-          className="w-full bg-white rounded-3xl shadow-2xl border border-gray-200/90 overflow-hidden flex flex-col md:flex-row min-h-[580px] h-[720px] md:h-[780px] relative"
+          className={`w-full rounded-3xl shadow-2xl border overflow-hidden flex flex-col md:flex-row min-h-[600px] h-[750px] md:h-[820px] relative transition-colors duration-300 ${
+            isCrmDarkMode 
+              ? 'bg-[#111215] border-gray-800 text-gray-100' 
+              : 'bg-white border-gray-200/90 text-gray-900'
+          }`}
         >
           
           {/* Toast Notificação de Ações Rápidas */}
@@ -2718,19 +3874,24 @@ const InteractiveCRM = () => {
             </div>
           )}
 
-          {/* Sidebar Estilo Panacea - Retrátil / Móvel com Transição Suave */}
+          {/* Sidebar - Retrátil / Móvel com 12 Módulos + 2 Portais Externos */}
           <div 
-            className={`bg-white md:bg-[#FAFAFB] border-b md:border-b-0 md:border-r border-gray-200 p-2 sm:p-3 md:p-4 flex flex-row md:flex-col justify-between flex-shrink-0 z-20 overflow-x-auto md:overflow-visible custom-scrollbar transition-all duration-300 ease-in-out ${
-              isSidebarCollapsed ? 'md:w-20' : 'md:w-60'
+            className={`border-b md:border-b-0 md:border-r p-2 sm:p-3 md:p-3.5 flex flex-row md:flex-col justify-between flex-shrink-0 z-20 overflow-x-auto md:overflow-y-auto custom-scrollbar transition-all duration-300 ease-in-out ${
+              isCrmDarkMode ? 'bg-[#16181D] border-gray-800' : 'bg-white md:bg-[#FAFAFB] border-gray-200'
+            } ${
+              isSidebarCollapsed ? 'md:w-20' : 'md:w-64'
             }`}
           >
-            {/* Topo da Sidebar: Apenas Texto BIO MIND + Botão de Recolher/Expandir */}
+            {/* Topo da Sidebar: BIO MIND + Botão de Recolher/Expandir */}
             <div>
-              <div className="hidden md:flex items-center justify-between px-2 py-2 mb-4">
+              <div className="hidden md:flex items-center justify-between px-2 py-2 mb-3">
                 {!isSidebarCollapsed ? (
-                  <span className="font-black text-xl tracking-tighter text-black notranslate">
-                    BIO MIND
-                  </span>
+                  <div>
+                    <span className="font-black text-lg tracking-tighter text-black notranslate block leading-none">
+                      BIO MIND
+                    </span>
+                    <span className="text-[10px] text-gray-400 font-medium">Multi Saúde • Jardins</span>
+                  </div>
                 ) : (
                   <span className="font-black text-sm tracking-tighter text-black notranslate">
                     BM
@@ -2746,8 +3907,8 @@ const InteractiveCRM = () => {
                 </button>
               </div>
 
-              {/* Lista de Navegação com Pill Verde Pastel (Panacea style) */}
-              <nav className="flex flex-row md:flex-col gap-1 w-max md:w-auto">
+              {/* 12 Módulos da Sidebar */}
+              <nav className="flex flex-row md:flex-col gap-1 w-max md:w-auto pb-1">
                 {tabs.map((tab) => {
                   const isActive = activeTab === tab.id;
                   const Icon = tab.icon;
@@ -2756,7 +3917,7 @@ const InteractiveCRM = () => {
                       key={tab.id}
                       onClick={() => handleTabChange(tab.id)}
                       title={isSidebarCollapsed ? tab.label : undefined}
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs sm:text-sm transition-all whitespace-nowrap text-left ${
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs sm:text-[13px] transition-all whitespace-nowrap text-left ${
                         isSidebarCollapsed ? 'md:justify-center md:px-2' : ''
                       } ${
                         isActive 
@@ -2765,25 +3926,25 @@ const InteractiveCRM = () => {
                       }`}
                     >
                       <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#0A6E3F]' : 'text-gray-400'}`} />
-                      {!isSidebarCollapsed && <span>{tab.label}</span>}
+                      {!isSidebarCollapsed && <span className="truncate">{tab.label}</span>}
                     </button>
                   );
                 })}
               </nav>
             </div>
 
-            {/* Rodapé da Sidebar: Agente Nexus com Ícone Vetorial Minimalista */}
-            <div className="hidden md:block pt-3 border-t border-gray-200/80">
+            {/* Rodapé da Sidebar: Agente Nexus + 2 Portais Externos */}
+            <div className="hidden md:block pt-3 border-t border-gray-200/80 space-y-2">
               <button 
                 onClick={() => setShowAI(!showAI)}
                 title={isSidebarCollapsed ? "Agente Nexus (Suporte 24h)" : undefined}
-                className={`w-full flex items-center justify-between gap-2 p-2.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-900 rounded-2xl transition-all shadow-xs group ${
+                className={`w-full flex items-center justify-between gap-2 p-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-900 rounded-xl transition-all shadow-xs group ${
                   isSidebarCollapsed ? 'justify-center p-2' : ''
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
-                    <NexusBotIcon className="w-5 h-5 text-emerald-700" />
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200/80 flex items-center justify-center p-1 shrink-0">
+                    <NexusBotIcon className="w-4 h-4 text-emerald-700" />
                   </div>
                   {!isSidebarCollapsed && (
                     <div className="text-left">
@@ -2796,19 +3957,45 @@ const InteractiveCRM = () => {
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 )}
               </button>
+
+              {/* 2 Portais Externos */}
+              {!isSidebarCollapsed && (
+                <div className="pt-2 border-t border-gray-100 space-y-1">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 block px-1">
+                    Portais Externos
+                  </span>
+                  <button
+                    onClick={() => showToast('Portal TISS ANS sincronizado. 0 lotes rejeitados.')}
+                    className="w-full text-left px-2 py-1 rounded text-[11px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                  >
+                    <span>Portal TISS ANS</span>
+                    <ExternalLink className="w-3 h-3 text-gray-400" />
+                  </button>
+                  <button
+                    onClick={() => showToast('Sincronização de 8 operadoras e guias concluída.')}
+                    className="w-full text-left px-2 py-1 rounded text-[11px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-between"
+                  >
+                    <span>Guias & Operadoras</span>
+                    <ExternalLink className="w-3 h-3 text-gray-400" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Área Principal de Conteúdo */}
           <div className="flex-1 bg-[#F9FAFB] flex flex-col min-w-0 h-full overflow-hidden relative">
             
-            {/* Topbar com Abas de Navegador Vivas (Panacea style) */}
-            <header className="h-14 sm:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-6 flex-shrink-0 z-10">
-              {/* Browser-style Breadcrumb Tabs (Com Vida & Ação) */}
-              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
+            {/* Topbar Completa com Controles Clínicos */}
+            <header className="h-14 sm:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-6 flex-shrink-0 z-10 gap-3">
+              {/* Esquerda: Breadcrumb Tabs & Saudação */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <span className="text-xs font-bold text-gray-900 hidden lg:inline mr-1">
+                  Boa tarde, Dr(a).
+                </span>
                 <button 
                   onClick={() => handleTopTabChange('diretorio')}
-                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all whitespace-nowrap ${
                     topTab === 'diretorio' && activeTab === 'dashboard'
                       ? 'bg-gray-900 text-white border-gray-900 shadow-2xs'
                       : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'
@@ -2841,8 +4028,74 @@ const InteractiveCRM = () => {
                 </button>
               </div>
 
-              {/* Lado Direito: Acesso Rápido Nexus & Perfil do Gestor */}
-              <div className="flex items-center gap-2 sm:gap-3">
+              {/* Direita: Controles de Som, Modo Escuro, Webhook, Notificações e Perfil */}
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                {/* Status Webhook n8n */}
+                <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-lg text-[10px] font-bold text-emerald-800">
+                  <Activity className="w-3 h-3 text-emerald-600 animate-pulse" />
+                  <span>Webhook n8n: 12ms</span>
+                </div>
+
+                {/* Toggle Som */}
+                <button
+                  onClick={toggleSound}
+                  className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  title={isSoundMuted ? "Ativar som" : "Desativar som"}
+                >
+                  {isSoundMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4" />}
+                </button>
+
+                {/* Toggle Dark Mode */}
+                <button
+                  onClick={toggleDarkMode}
+                  className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  title={isCrmDarkMode ? "Modo Claro" : "Modo Noturno"}
+                >
+                  {isCrmDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}
+                </button>
+
+                {/* Atalho de Histórico */}
+                <button
+                  onClick={() => handleTabChange('historico')}
+                  className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Ver Trilha de Auditoria LGPD"
+                >
+                  <History className="w-4 h-4" />
+                </button>
+
+                {/* Sininho de Notificações com Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors relative"
+                    title="Notificações"
+                  >
+                    <Bell className="w-4 h-4" />
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+                  </button>
+
+                  {showNotifications && (
+                    <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 z-50 text-xs animate-in fade-in slide-in-from-top-2 text-gray-800">
+                      <div className="flex items-center justify-between pb-2 border-b border-gray-100 mb-2">
+                        <span className="font-bold text-gray-900">Notificações Recentes</span>
+                        <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">3 novas</span>
+                      </div>
+                      <div className="space-y-2">
+                        {notifications.map((n) => (
+                          <div key={n.id} className="p-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                            <div className="flex justify-between items-baseline">
+                              <strong className="text-gray-900 text-[11px]">{n.title}</strong>
+                              <span className="text-[9px] text-gray-400">{n.time}</span>
+                            </div>
+                            <p className="text-[10px] text-gray-600 mt-0.5 leading-snug">{n.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Botão Mobile Nexus */}
                 <button 
                   onClick={() => setShowAI(true)}
                   className="md:hidden flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-200 text-gray-900 rounded-xl text-xs font-bold shadow-2xs"
@@ -2853,6 +4106,7 @@ const InteractiveCRM = () => {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </button>
 
+                {/* Perfil do Gestor */}
                 <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 text-white font-black text-xs flex items-center justify-center">
                     B
@@ -2867,7 +4121,7 @@ const InteractiveCRM = () => {
               </div>
             </header>
 
-            {/* CONTEÚDO ROLÁVEL COM O SCROLL DO MOUSE (data-lenis-prevent impede travamento pelo Lenis) */}
+            {/* CONTEÚDO ROLÁVEL COM O SCROLL DO MOUSE COM TODOS OS 12 MÓDULOS */}
             <div 
               data-lenis-prevent="true"
               className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-3 sm:p-5 md:p-8"
@@ -2884,8 +4138,15 @@ const InteractiveCRM = () => {
                 )}
                 {activeTab === 'agenda' && <CRMAgenda key="agenda" />}
                 {activeTab === 'pacientes' && <CRMPacientes key="pacientes" />}
-                {activeTab === 'comunicacao' && <CRMComunicacao key="comunicacao" />}
+                {activeTab === 'convenios' && <CRMConvenios key="convenios" />}
+                {activeTab === 'faturamento' && <CRMFaturamento key="faturamento" onShowToast={showToast} />}
+                {activeTab === 'notas' && <CRMNotas key="notas" />}
+                {activeTab === 'equipe' && <CRMEquipe key="equipe" onShowToast={showToast} />}
                 {activeTab === 'conexoes' && <CRMConexoes key="conexoes" />}
+                {activeTab === 'comunicacao' && <CRMComunicacao key="comunicacao" onShowToast={showToast} />}
+                {activeTab === 'historico' && <CRMHistorico key="historico" onShowToast={showToast} />}
+                {activeTab === 'suporte' && <CRMSuporte key="suporte" onShowToast={showToast} />}
+                {activeTab === 'configuracoes' && <CRMConfiguracoes key="configuracoes" onShowToast={showToast} />}
               </AnimatePresence>
             </div>
 
