@@ -7,7 +7,7 @@ export default function InvisibleCost() {
         <div className="animate-fade-in">
           <h2 className="text-gradient" style={{ fontSize: '2.5rem', marginBottom: '1.5rem', lineHeight: '1.2' }}>O Gargalo Invisível<br/>na sua Clínica</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-            Enquanto sua equipe tenta oferecer um cuidado materno-infantil e humanizado como o foco da <strong>Clínica Loris</strong>, horas preciosas são perdidas nos bastidores com tarefas operacionais.
+            Enquanto sua equipe tenta oferecer um atendimento de excelência e humanizado, horas preciosas são perdidas nos bastidores com tarefas operacionais e retrabalho manual.
           </p>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1.5rem', color: 'var(--text-secondary)' }}>
             <li style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>

@@ -8,7 +8,8 @@ import {
   Bell, FileText, Stethoscope, Briefcase, ChevronRight, ChevronLeft, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
   CheckCircle2, Download, ExternalLink, FileSpreadsheet, Sparkles, Award, Star, Building2, HelpCircle, Bot, Share2, CheckCircle,
-  SlidersHorizontal, Layers, Plug, Cloud, Grid, Infinity, List, Mail, Menu, Printer, RotateCcw, Settings, Sidebar, Table, User, Volume
+  SlidersHorizontal, Layers, Plug, Cloud, Grid, Infinity, List, Mail, Menu, Printer, RotateCcw, Settings, Sidebar, Table, User, Volume,
+  Lock, Folder, PanelLeftClose
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -347,7 +348,402 @@ const mockContacts = [
   }
 ];
 
-const CRMDashboard = () => {
+// Ícone vetorial minimalista e nítido do Agente Nexus (substituindo o antigo mascot raster)
+const NexusBotIcon = ({ className = "w-5 h-5" }) => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect x="3" y="6" width="18" height="14" rx="4" stroke="currentColor" strokeWidth="1.8" className="fill-emerald-500/10" />
+    <circle cx="8.5" cy="12" r="1.5" className="fill-emerald-500" />
+    <circle cx="15.5" cy="12" r="1.5" className="fill-emerald-500" />
+    <path d="M10 16H14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M12 2V6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <circle cx="12" cy="2" r="1.2" className="fill-emerald-400" />
+    <path d="M2 13H3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M21 13H22" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+// Aba 2: Prontuários & OneDrive (inspirado na arquitetura Multi Saúde)
+const CRMProntuariosOneDrive = ({ onShowToast }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const prontuariosList = [
+    {
+      id: 1,
+      paciente: 'Maria Eduarda Silva',
+      tipo: 'Evolução Diária • Ansiedade & Pânico',
+      resumo: 'Paciente apresentou melhora clínica significativa no quadro de ansiedade após ajuste posológico. Sono regularizado, relata ausência de crises de taquicardia nesta semana.',
+      profissional: 'Dra. Júlia Matos (Psiquiatria)',
+      data: 'Hoje, 10:30',
+      locked: true,
+      oneDriveFile: 'Evolucao_MariaEduarda_2026.pdf'
+    },
+    {
+      id: 2,
+      paciente: 'Roberto Alves de Toledo',
+      tipo: 'Avaliação Inicial • Ortopedia',
+      resumo: 'Primeiro contato clínico. Queixa de dor articular crônica no joelho direito após esforço físico. Solicitada ressonância magnética e indicado repouso relativo.',
+      profissional: 'Dr. Marcos Valente (Ortopedia)',
+      data: 'Ontem, 15:00',
+      locked: false,
+      oneDriveFile: 'Ficha_RobertoAlves_Avaliacao.pdf'
+    },
+    {
+      id: 3,
+      paciente: 'Sofia Mendes Camargo',
+      tipo: 'Encaminhamento Médico • Cardiologia',
+      resumo: 'Paciente encaminhada para ecocardiograma com Doppler de controle. Teste ergométrico prévio evidenciou resposta pressórica adequada sem sinais isquêmicos.',
+      profissional: 'Dra. Beatriz Albuquerque (Cardio)',
+      data: '20 Out, 11:20',
+      locked: true,
+      oneDriveFile: 'Laudo_SofiaMendes_Cardio.pdf'
+    },
+    {
+      id: 4,
+      paciente: 'Carlos Eduardo da Silva',
+      tipo: 'Retorno Clínico • Dermatologia',
+      resumo: 'Lesão epidérmica em dorso com cicatrização completa pós-procedimento. Alta do tratamento tópico prescrito, orientado uso contínuo de fotoprotetor FPS 60.',
+      profissional: 'Dra. Juliana Silveira (Dermato)',
+      data: '19 Out, 14:15',
+      locked: false,
+      oneDriveFile: 'Prontuario_CarlosEduardo.pdf'
+    }
+  ];
+
+  const filtered = prontuariosList.filter(p => 
+    p.paciente.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.tipo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+      {/* Header com Busca & Nuvem OneDrive */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+            <h3 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
+              Prontuários Eletrônicos & OneDrive
+            </h3>
+            <span className="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-md border border-blue-200">
+              NUVEM ATIVA
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Backup automático em nuvem Microsoft OneDrive e controle de sigilo médico LGPD.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input 
+              type="text" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar prontuário ou paciente..."
+              className="pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-black w-48 sm:w-64"
+            />
+          </div>
+          <button 
+            onClick={() => onShowToast('Editor de nova evolução médica aberto com template clínico!')}
+            className="px-3 py-1.5 bg-black hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Nova Evolução</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Status da Sincronização em Nuvem (OneDrive) */}
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-950 p-4 sm:p-5 rounded-2xl text-white shadow-md flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
+            <Cloud className="w-5 h-5 text-blue-300" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-bold">Microsoft OneDrive Corporativo Integrado</h4>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
+            <p className="text-xs text-blue-200/80 mt-0.5">
+              2.418 documentos médicos criptografados em nuvem com conformidade CFM & LGPD.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-lg">
+            Sincronizado há 42s
+          </span>
+          <button 
+            onClick={() => onShowToast('Varredura completa do OneDrive realizada: 0 pendências.')}
+            className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+            title="Sincronizar Agora"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Grid de Pastas OneDrive & Timeline de Evoluções */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Pastas em Nuvem */}
+        <div className="lg:col-span-4 space-y-3">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">Pastas no OneDrive</h4>
+          {[
+            { name: '/Prontuarios_2026', count: '1.840 arquivos', icon: Folder, size: '4.2 GB' },
+            { name: '/Laudos_Exames_PDF', count: '412 arquivos', icon: FileText, size: '1.8 GB' },
+            { name: '/Guias_TISS_Xml', count: '166 arquivos', icon: Receipt, size: '240 MB' },
+            { name: '/Termos_Consentimento', count: '98 arquivos', icon: FileSignature, size: '85 MB' }
+          ].map((f, i) => (
+            <div 
+              key={i} 
+              onClick={() => onShowToast(`Pasta ${f.name} aberta no OneDrive corporativo.`)}
+              className="p-3 bg-white rounded-xl border border-gray-100 hover:border-gray-200 shadow-2xs hover:shadow-xs transition-all flex items-center justify-between cursor-pointer group"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                  <f.icon className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-gray-900 font-mono block leading-tight">{f.name}</span>
+                  <span className="text-[10px] text-gray-400">{f.count}</span>
+                </div>
+              </div>
+              <span className="text-[10px] text-gray-500 font-mono">{f.size}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Timeline de Prontuários */}
+        <div className="lg:col-span-8 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700">
+              Evoluções Médicas Recentes (Timeline)
+            </h4>
+            <span className="text-[11px] text-gray-400">{filtered.length} registros</span>
+          </div>
+
+          <div className="space-y-3">
+            {filtered.map((item) => (
+              <div key={item.id} className="p-3.5 bg-gray-50/70 hover:bg-gray-100/70 rounded-xl border border-gray-200/70 transition-all space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <strong className="text-xs font-bold text-gray-900">{item.paciente}</strong>
+                    {item.locked && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 border border-rose-200 text-rose-700 text-[9px] font-bold uppercase tracking-wider rounded-md">
+                        <Lock className="w-2.5 h-2.5" /> Sigilo CFM
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-mono text-gray-400">{item.data}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+                    {item.tipo}
+                  </span>
+                  <span className="text-[10px] text-gray-500">• {item.profissional}</span>
+                </div>
+
+                <p className="text-xs text-gray-600 leading-relaxed font-light">
+                  {item.resumo}
+                </p>
+
+                <div className="pt-2 border-t border-gray-200/60 flex items-center justify-between text-[10px]">
+                  <span className="text-blue-600 font-mono flex items-center gap-1 truncate max-w-[200px]">
+                    <Cloud className="w-3 h-3 text-blue-500 shrink-0" /> {item.oneDriveFile}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => onShowToast(`Download do arquivo ${item.oneDriveFile} concluído!`)}
+                      className="text-gray-600 hover:text-black font-bold flex items-center gap-1 hover:underline"
+                    >
+                      <Download className="w-3 h-3" /> Baixar
+                    </button>
+                    <button 
+                      onClick={() => onShowToast(`Prontuário de ${item.paciente} enviado para impressão térmica!`)}
+                      className="text-gray-600 hover:text-black font-bold flex items-center gap-1 hover:underline"
+                    >
+                      <Printer className="w-3 h-3" /> Imprimir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Aba 3: Operações Médicas, Salas & Repasses (Multi Saúde)
+const CRMOperacoesMedicas = ({ onShowToast }) => {
+  const medicos = [
+    {
+      nome: 'Dr. Gabriel Arantes',
+      especialidade: 'Ortopedia & Traumatologia',
+      crm: 'CRM/SP 142.890',
+      sala: 'Consultório 03',
+      status: 'Em Atendimento',
+      pacienteAtual: 'Carlos Eduardo Silva',
+      atendidos: 8,
+      repasse: '70%',
+      faturamento: 'R$ 2.450,00',
+      statusBadge: 'bg-amber-100 text-amber-800 border-amber-200',
+      dotColor: 'bg-amber-500'
+    },
+    {
+      nome: 'Dra. Juliana Silveira',
+      especialidade: 'Dermatologia Clínica & Cirúrgica',
+      crm: 'CRM/SP 168.420',
+      sala: 'Consultório 01',
+      status: 'Agenda Livre',
+      pacienteAtual: 'Próximo: 15:30 (Mariana A.)',
+      atendidos: 6,
+      repasse: '75%',
+      faturamento: 'R$ 2.520,00',
+      statusBadge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      dotColor: 'bg-emerald-500'
+    },
+    {
+      nome: 'Dr. Julio Ramos Samos',
+      especialidade: 'Neurologia Clínica & Neurofisiologia',
+      crm: 'CRM/SP 115.304',
+      sala: 'Consultório 02',
+      status: 'Em Atendimento',
+      pacienteAtual: 'Roberto Mendes',
+      atendidos: 7,
+      repasse: '70%',
+      faturamento: 'R$ 2.800,00',
+      statusBadge: 'bg-amber-100 text-amber-800 border-amber-200',
+      dotColor: 'bg-amber-500'
+    },
+    {
+      nome: 'Dra. Camila Meirelles',
+      especialidade: 'Psicologia Clínica & TCC',
+      crm: 'CRP 06/138.992',
+      sala: 'Consultório 04',
+      status: 'Em Atendimento',
+      pacienteAtual: 'Fernanda Lima',
+      atendidos: 9,
+      repasse: '80%',
+      faturamento: 'R$ 1.980,00',
+      statusBadge: 'bg-amber-100 text-amber-800 border-amber-200',
+      dotColor: 'bg-amber-500'
+    }
+  ];
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <h3 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
+              Operações Clínicas, Salas & Repasses
+            </h3>
+            <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md border border-emerald-200">
+              4 SALAS ATIVAS
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Status dos consultórios médicos em tempo real, conciliação TISS e comissões automáticas.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => onShowToast('Escala médica do dia sincronizada com a recepção.')}
+            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition-colors"
+          >
+            Atualizar Escala
+          </button>
+          <button 
+            onClick={() => onShowToast('Relatório de repasses médicos gerado em PDF.')}
+            className="px-3 py-1.5 bg-black hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Fechar Caixa</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Cards de Métricas Operacionais */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-gray-100 shadow-2xs">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Ocupação Hoje</span>
+          <p className="text-xl sm:text-2xl font-black text-gray-900 mt-1">79% <span className="text-xs font-bold text-emerald-600">Alta</span></p>
+          <span className="text-[10px] text-gray-400">Capacidade: 24 atend/dia</span>
+        </div>
+        <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-gray-100 shadow-2xs">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Glosas Convênio</span>
+          <p className="text-xl sm:text-2xl font-black text-emerald-600 mt-1">0% <span className="text-xs font-bold text-gray-500">Zero</span></p>
+          <span className="text-[10px] text-gray-400">Auditoria TISS ativa</span>
+        </div>
+        <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-gray-100 shadow-2xs">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Repasses Pagos</span>
+          <p className="text-xl sm:text-2xl font-black text-gray-900 mt-1">R$ 9.750<span className="text-xs font-bold text-gray-400">,00</span></p>
+          <span className="text-[10px] text-gray-400">4 especialistas</span>
+        </div>
+        <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-gray-100 shadow-2xs">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">NFS-e Emitidas</span>
+          <p className="text-xl sm:text-2xl font-black text-blue-600 mt-1">100% <span className="text-xs font-bold text-gray-500">Lote</span></p>
+          <span className="text-[10px] text-gray-400">Prefeitura SP Integrada</span>
+        </div>
+      </div>
+
+      {/* Grid dos Médicos & Consultórios */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {medicos.map((m, i) => (
+          <div key={i} className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs space-y-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-[10px] font-mono text-gray-400">{m.crm} • {m.sala}</span>
+                <h4 className="text-sm font-bold text-gray-900 mt-0.5">{m.nome}</h4>
+                <p className="text-xs text-gray-500">{m.especialidade}</p>
+              </div>
+              <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border flex items-center gap-1.5 ${m.statusBadge}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${m.dotColor}`}></span>
+                {m.status}
+              </span>
+            </div>
+
+            <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-100 text-xs flex items-center justify-between">
+              <div>
+                <span className="text-[10px] text-gray-400 block">Status de Atendimento:</span>
+                <strong className="text-gray-800 text-[11px]">{m.pacienteAtual}</strong>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] text-gray-400 block">Atendidos Hoje:</span>
+                <strong className="text-emerald-700 text-[11px]">{m.atendidos} pacientes</strong>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+              <div>
+                <span className="text-[10px] text-gray-400 block">Repasse Contratual:</span>
+                <strong className="text-gray-900">{m.repasse}</strong>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] text-gray-400 block">Faturamento Hoje:</span>
+                <strong className="text-gray-900 font-mono font-bold">{m.faturamento}</strong>
+              </div>
+              <button 
+                onClick={() => onShowToast(`Extrato detalhado de repasse de ${m.nome} baixado em Excel.`)}
+                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-[11px] font-bold rounded-lg transition-colors"
+              >
+                Extrato
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+const CRMDashboard = ({ onShowToast, isStarred, setIsStarred }) => {
   const [selectedContact, setSelectedContact] = useState(mockContacts[0]);
   const [fields, setFields] = useState(mockContacts[0].fields);
 
@@ -379,18 +775,39 @@ const CRMDashboard = () => {
           </p>
         </div>
 
-        {/* Action Pill Top-Right (Salesforce style) */}
+        {/* Action Pill Top-Right (Salesforce style com funções reais) */}
         <div className="flex items-center gap-1.5 self-start sm:self-auto bg-gray-50 border border-gray-200 p-1 rounded-xl">
-          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Favoritar">
-            <Star className="w-4 h-4" />
+          <button 
+            onClick={() => {
+              setIsStarred(!isStarred);
+              onShowToast(isStarred ? 'Clínica desmarcada dos favoritos.' : '⭐ Clínica favoritada na sua barra de acesso rápido!');
+            }}
+            className={`p-1.5 rounded-lg transition-colors ${
+              isStarred ? 'bg-amber-100 text-amber-600' : 'hover:bg-white text-gray-500 hover:text-gray-900'
+            }`} 
+            title={isStarred ? "Favoritado" : "Favoritar"}
+          >
+            <Star className={`w-4 h-4 ${isStarred ? 'fill-amber-400 text-amber-500' : ''}`} />
           </button>
-          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Compartilhar">
+          <button 
+            onClick={() => onShowToast('Link seguro do prontuário copiado para a área de transferência!')}
+            className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" 
+            title="Compartilhar Link"
+          >
             <Share2 className="w-4 h-4" />
           </button>
-          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Exportar Dados">
+          <button 
+            onClick={() => onShowToast('Gerando prontuário e relatório de atendimento em PDF...')}
+            className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" 
+            title="Exportar PDF"
+          >
             <Download className="w-4 h-4" />
           </button>
-          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Configurações">
+          <button 
+            onClick={() => onShowToast('Painel de configurações: backup OneDrive ativo e WhatsApp conectado.')}
+            className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" 
+            title="Configurações"
+          >
             <Settings className="w-4 h-4" />
           </button>
         </div>
@@ -2129,8 +2546,8 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
           {/* Header */}
           <div className="p-3 sm:p-4 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0">
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-xs p-1.5 overflow-hidden">
-                <img src="/agente-mascote-icon-dark.png" alt="Agente Nexus" className="w-full h-full object-contain" />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center flex-shrink-0 shadow-xs p-1.5">
+                <NexusBotIcon className="w-5 h-5 text-emerald-700" />
               </div>
               <div>
                 <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-tight">Agente Nexus</h4>
@@ -2170,8 +2587,8 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
                 </div>
               ) : (
                 <div key={m.id} className="flex gap-2 items-start">
-                  <div className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center shadow-xs shrink-0 mt-0.5 p-1 overflow-hidden">
-                    <img src="/agente-mascote-icon-dark.png" alt="Nexus" className="w-full h-full object-contain" />
+                  <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200/60 flex items-center justify-center shadow-xs shrink-0 mt-0.5 p-1">
+                    <NexusBotIcon className="w-4 h-4 text-emerald-700" />
                   </div>
                   <div className="bg-white p-3 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-gray-800 shadow-sm border border-gray-100 max-w-[88%] leading-relaxed break-words">
                     <span dangerouslySetInnerHTML={{ __html: m.text }} />
@@ -2239,7 +2656,16 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
 
 const InteractiveCRM = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [topTab, setTopTab] = useState('diretorio'); // 'diretorio' | 'prontuarios' | 'operacoes'
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [showAI, setShowAI] = useState(false);
+  const [isStarred, setIsStarred] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3500);
+  };
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -2249,36 +2675,75 @@ const InteractiveCRM = () => {
     { id: 'conexoes', label: 'Conexões', icon: Plug },
   ];
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setShowAI(false); // Fecha o Nexus imediatamente ao trocar de aba
+  };
+
+  const handleTopTabChange = (tTab) => {
+    setTopTab(tTab);
+    setActiveTab('dashboard');
+    setShowAI(false); // Fecha o Nexus imediatamente
+  };
+
   return (
-    <section id="crm" className="w-full bg-[#F4F5F7] py-16 md:py-24 px-4 sm:px-6 md:px-10 border-t border-gray-200">
+    <section id="crm" className="w-full bg-[#F4F5F7] py-12 md:py-20 px-3 sm:px-6 md:px-10 border-t border-gray-200">
       <div className="max-w-[1440px] mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-8 md:mb-12"
+          className="text-center mb-6 md:mb-10"
         >
           <div className="inline-block px-4 py-1 mb-3 text-[10px] md:text-xs font-bold tracking-widest text-black uppercase bg-white border border-gray-200 rounded-full shadow-2xs">
             RÉPLICA FUNCIONAL DO SISTEMA
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-3">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-2 sm:mb-3">
             O coração da sua operação.
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
+          <p className="text-xs sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
             Desenvolvido sob medida para valorizar a atenção humana da recepção. Conecta planilhas, médicos, repasses, notas e dados legados em uma única tela.
           </p>
         </motion.div>
 
-        {/* Moldura do CRM (Firme, sem parallax 3D incômodo, com rolagem interna suave) */}
-        <div className="w-full bg-white rounded-3xl shadow-2xl border border-gray-200/90 overflow-hidden flex flex-col md:flex-row min-h-[640px] h-[720px] md:h-[780px] relative">
+        {/* Moldura do CRM (Firme, sem parallax 3D, com rolagem interna fluida no mouse via data-lenis-prevent) */}
+        <div 
+          data-lenis-prevent="true"
+          className="w-full bg-white rounded-3xl shadow-2xl border border-gray-200/90 overflow-hidden flex flex-col md:flex-row min-h-[580px] h-[720px] md:h-[780px] relative"
+        >
           
-          {/* Sidebar Estilo Panacea (Clean, fundo claro suave, abas com pill pastel) */}
-          <div className="w-full md:w-60 bg-white md:bg-[#FAFAFB] border-b md:border-b-0 md:border-r border-gray-200 p-3 sm:p-4 flex flex-row md:flex-col justify-between flex-shrink-0 z-20 overflow-x-auto md:overflow-visible custom-scrollbar">
-            
-            {/* Topo da Sidebar: Apenas Texto BIO MIND (sem logo mascote ao lado) */}
+          {/* Toast Notificação de Ações Rápidas */}
+          {toastMsg && (
+            <div className="absolute top-16 right-6 z-50 bg-gray-900 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2.5 border border-gray-700 animate-in fade-in slide-in-from-top-2 text-xs font-semibold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{toastMsg}</span>
+            </div>
+          )}
+
+          {/* Sidebar Estilo Panacea - Retrátil / Móvel com Transição Suave */}
+          <div 
+            className={`bg-white md:bg-[#FAFAFB] border-b md:border-b-0 md:border-r border-gray-200 p-2 sm:p-3 md:p-4 flex flex-row md:flex-col justify-between flex-shrink-0 z-20 overflow-x-auto md:overflow-visible custom-scrollbar transition-all duration-300 ease-in-out ${
+              isSidebarCollapsed ? 'md:w-20' : 'md:w-60'
+            }`}
+          >
+            {/* Topo da Sidebar: Apenas Texto BIO MIND + Botão de Recolher/Expandir */}
             <div>
-              <div className="hidden md:flex items-center px-2 py-3 mb-4">
-                <span className="font-black text-xl tracking-tighter text-black notranslate">
-                  BIO MIND
-                </span>
+              <div className="hidden md:flex items-center justify-between px-2 py-2 mb-4">
+                {!isSidebarCollapsed ? (
+                  <span className="font-black text-xl tracking-tighter text-black notranslate">
+                    BIO MIND
+                  </span>
+                ) : (
+                  <span className="font-black text-sm tracking-tighter text-black notranslate">
+                    BM
+                  </span>
+                )}
+                <button 
+                  onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-700 transition-colors"
+                  title={isSidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+                  aria-label="Alternar menu"
+                >
+                  <PanelLeftClose className={`w-4 h-4 transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-180' : ''}`} />
+                </button>
               </div>
 
               {/* Lista de Navegação com Pill Verde Pastel (Panacea style) */}
@@ -2289,37 +2754,47 @@ const InteractiveCRM = () => {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => handleTabChange(tab.id)}
+                      title={isSidebarCollapsed ? tab.label : undefined}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs sm:text-sm transition-all whitespace-nowrap text-left ${
+                        isSidebarCollapsed ? 'md:justify-center md:px-2' : ''
+                      } ${
                         isActive 
                           ? 'bg-[#E8F8F0] text-[#0A6E3F] font-bold shadow-2xs border border-emerald-200/60' 
                           : 'text-gray-600 hover:bg-gray-100 hover:text-black font-semibold'
                       }`}
                     >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-[#0A6E3F]' : 'text-gray-400'}`} />
-                      <span>{tab.label}</span>
+                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#0A6E3F]' : 'text-gray-400'}`} />
+                      {!isSidebarCollapsed && <span>{tab.label}</span>}
                     </button>
                   );
                 })}
               </nav>
             </div>
 
-            {/* Rodapé da Sidebar: Agente Nexus com Card/Botão Branco */}
-            <div className="hidden md:block pt-4 border-t border-gray-200/80">
+            {/* Rodapé da Sidebar: Agente Nexus com Ícone Vetorial Minimalista */}
+            <div className="hidden md:block pt-3 border-t border-gray-200/80">
               <button 
                 onClick={() => setShowAI(!showAI)}
-                className="w-full flex items-center justify-between gap-2.5 p-3 bg-white hover:bg-gray-50 border border-gray-200 text-gray-900 rounded-2xl transition-all shadow-xs group"
+                title={isSidebarCollapsed ? "Agente Nexus (Suporte 24h)" : undefined}
+                className={`w-full flex items-center justify-between gap-2 p-2.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-900 rounded-2xl transition-all shadow-xs group ${
+                  isSidebarCollapsed ? 'justify-center p-2' : ''
+                }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center p-1 shadow-2xs">
-                    <img src="/agente-mascote-icon-dark.png" alt="Nexus" className="w-full h-full object-contain" />
+                  <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
+                    <NexusBotIcon className="w-5 h-5 text-emerald-700" />
                   </div>
-                  <div className="text-left">
-                    <span className="font-bold text-xs text-gray-900 block leading-tight">Agente Nexus</span>
-                    <span className="text-[10px] text-emerald-700 font-semibold">Suporte 24h</span>
-                  </div>
+                  {!isSidebarCollapsed && (
+                    <div className="text-left">
+                      <span className="font-bold text-xs text-gray-900 block leading-tight">Agente Nexus</span>
+                      <span className="text-[10px] text-emerald-700 font-semibold">Suporte 24h</span>
+                    </div>
+                  )}
                 </div>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                {!isSidebarCollapsed && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                )}
               </button>
             </div>
           </div>
@@ -2327,29 +2802,53 @@ const InteractiveCRM = () => {
           {/* Área Principal de Conteúdo */}
           <div className="flex-1 bg-[#F9FAFB] flex flex-col min-w-0 h-full overflow-hidden relative">
             
-            {/* Topbar com Abas de Navegador (Panacea style) */}
-            <header className="h-14 sm:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 flex-shrink-0 z-10">
-              {/* Browser-style Breadcrumb Tabs (Panacea) */}
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-xl text-xs font-bold text-gray-800 border border-gray-200 shadow-2xs whitespace-nowrap">
+            {/* Topbar com Abas de Navegador Vivas (Panacea style) */}
+            <header className="h-14 sm:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-6 flex-shrink-0 z-10">
+              {/* Browser-style Breadcrumb Tabs (Com Vida & Ação) */}
+              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
+                <button 
+                  onClick={() => handleTopTabChange('diretorio')}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all whitespace-nowrap ${
+                    topTab === 'diretorio' && activeTab === 'dashboard'
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-2xs'
+                      : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'
+                  }`}
+                >
                   <span className="text-gray-400">✕</span>
                   <span>Diretório da Clínica</span>
-                </div>
-                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-500 cursor-pointer whitespace-nowrap">
+                </button>
+                <button 
+                  onClick={() => handleTopTabChange('prontuarios')}
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all whitespace-nowrap ${
+                    topTab === 'prontuarios' && activeTab === 'dashboard'
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-2xs font-bold'
+                      : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <Cloud className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                   <span>Prontuários & OneDrive</span>
-                </div>
-                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-500 cursor-pointer whitespace-nowrap">
+                </button>
+                <button 
+                  onClick={() => handleTopTabChange('operacoes')}
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all whitespace-nowrap ${
+                    topTab === 'operacoes' && activeTab === 'dashboard'
+                      ? 'bg-gray-900 text-white border-gray-900 shadow-2xs font-bold'
+                      : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <Stethoscope className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                   <span>Operações Médicas</span>
-                </div>
+                </button>
               </div>
 
-              {/* Lado Direito: Busca & Perfil (Salesforce style) */}
-              <div className="flex items-center gap-3">
+              {/* Lado Direito: Acesso Rápido Nexus & Perfil do Gestor */}
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button 
                   onClick={() => setShowAI(true)}
                   className="md:hidden flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-200 text-gray-900 rounded-xl text-xs font-bold shadow-2xs"
+                  aria-label="Abrir Nexus"
                 >
-                  <img src="/agente-mascote-icon-dark.png" alt="Nexus" className="w-3.5 h-3.5 object-contain" />
+                  <NexusBotIcon className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Nexus</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </button>
@@ -2358,15 +2857,31 @@ const InteractiveCRM = () => {
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 text-white font-black text-xs flex items-center justify-center">
                     B
                   </div>
-                  <span className="text-xs font-bold text-gray-800 hidden sm:inline">Coordenação</span>
+                  <div className="hidden sm:block text-left">
+                    <span className="text-xs font-bold text-gray-900 block leading-tight">Bernardo</span>
+                    <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Gestão Ativa
+                    </span>
+                  </div>
                 </div>
               </div>
             </header>
 
-            {/* CONTEÚDO ROLÁVEL COM O SCROLL DO MOUSE (Dentro do CRM, sem mexer a moldura) */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-6 md:p-8">
+            {/* CONTEÚDO ROLÁVEL COM O SCROLL DO MOUSE (data-lenis-prevent impede travamento pelo Lenis) */}
+            <div 
+              data-lenis-prevent="true"
+              className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-3 sm:p-5 md:p-8"
+            >
               <AnimatePresence mode="wait">
-                {activeTab === 'dashboard' && <CRMDashboard key="dashboard" />}
+                {activeTab === 'dashboard' && topTab === 'diretorio' && (
+                  <CRMDashboard key="dashboard-diretorio" onShowToast={showToast} isStarred={isStarred} setIsStarred={setIsStarred} />
+                )}
+                {activeTab === 'dashboard' && topTab === 'prontuarios' && (
+                  <CRMProntuariosOneDrive key="dashboard-prontuarios" onShowToast={showToast} />
+                )}
+                {activeTab === 'dashboard' && topTab === 'operacoes' && (
+                  <CRMOperacoesMedicas key="dashboard-operacoes" onShowToast={showToast} />
+                )}
                 {activeTab === 'agenda' && <CRMAgenda key="agenda" />}
                 {activeTab === 'pacientes' && <CRMPacientes key="pacientes" />}
                 {activeTab === 'comunicacao' && <CRMComunicacao key="comunicacao" />}
