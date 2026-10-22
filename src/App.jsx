@@ -779,61 +779,140 @@ const CRMComunicacao = () => {
 };
 
 const CRMConexoes = () => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {/* OneDrive */}
-      <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between h-48 hover:shadow-md transition-shadow">
-        <div className="flex justify-between items-start">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
-            <Cloud className="w-6 h-6 text-blue-500" />
-          </div>
-          <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">CONECTADO</span>
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 md:space-y-6">
+    {/* Banner Filosofia Bio Mind */}
+    <div className="bg-gradient-to-r from-gray-900 to-black text-white p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+          <img src="/agente-mascote-icon-white.png" alt="Nexus" className="w-6 h-6 object-contain" />
         </div>
         <div>
-          <h3 className="font-bold text-gray-900">Microsoft OneDrive</h3>
-          <p className="text-xs text-gray-500 mt-1">Armazenamento em nuvem de laudos e exames</p>
-        </div>
-        <div className="mt-4 flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-[10px] text-gray-400">Sincronizado há 1 min</span>
+          <h4 className="font-bold text-sm sm:text-base text-white">Integração Total Sob Medida</h4>
+          <p className="text-xs text-gray-300 mt-0.5 leading-relaxed max-w-2xl">
+            O carinho e a atenção humana na recepção são <strong>insubstituíveis</strong>. O CRM Bio Mind conecta tudo o que sua clínica usa em uma única plataforma — agindo nos bastidores para que sua equipe foque 100% no acolhimento do paciente.
+          </p>
         </div>
       </div>
-      
-      {/* Banco de Dados Antigo */}
-      <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between h-48 hover:shadow-md transition-shadow">
+      <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 rounded-full text-[10px] font-bold tracking-wider uppercase shrink-0">
+        6 Conexões Ativas
+      </span>
+    </div>
+
+    {/* Grid de Conexões Inteligentes */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+      {/* 1. Comunicação Interna Médico ↔ Recepção */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
         <div className="flex justify-between items-start">
-          <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-200">
-            <Database className="w-6 h-6 text-gray-600" />
+          <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100">
+            <Workflow className="w-5 h-5 text-purple-600" />
           </div>
-          <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">SINCRONIZANDO</span>
+          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">TEMPO REAL</span>
         </div>
-        <div>
-          <h3 className="font-bold text-gray-900">PostgreSQL (Sistema Antigo)</h3>
-          <p className="text-xs text-gray-500 mt-1">Migração automática e bidirecional de dados</p>
+        <div className="my-3">
+          <h3 className="font-bold text-gray-900 text-sm sm:text-base">Médicos ↔ Recepção</h3>
+          <p className="text-xs text-gray-500 mt-1">Chamada silenciosa de pacientes, status de consultório e avisos sem interfone</p>
         </div>
-        <div className="mt-4 flex items-center gap-2">
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
-            <div className="bg-emerald-500 h-1.5 rounded-full w-[85%]"></div>
-          </div>
-          <span className="text-[10px] text-gray-400">85%</span>
+        <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[10px]">
+          <span className="text-gray-400">9 consultórios interligados</span>
+          <span className="text-emerald-600 font-semibold flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 0 ruído
+          </span>
         </div>
       </div>
 
-      {/* WhatsApp */}
-      <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between h-48 hover:shadow-md transition-shadow">
+      {/* 2. Planilhas & Nuvem (OneDrive / Excel) */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
         <div className="flex justify-between items-start">
-          <div className="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center">
-            <MessageSquare className="w-6 h-6 text-[#25D366]" />
+          <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100">
+            <Cloud className="w-5 h-5 text-blue-500" />
           </div>
-          <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">ATIVO</span>
+          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">SINCRONIZADO</span>
         </div>
-        <div>
-          <h3 className="font-bold text-gray-900">WhatsApp Oficial API</h3>
-          <p className="text-xs text-gray-500 mt-1">Canal de comunicação omnichannel com a IA</p>
+        <div className="my-3">
+          <h3 className="font-bold text-gray-900 text-sm sm:text-base">Planilhas & OneDrive</h3>
+          <p className="text-xs text-gray-500 mt-1">Unificação de tabelas antigas e laudos em nuvem em banco estruturado</p>
         </div>
-        <div className="mt-4 flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-[10px] text-gray-400">124 mensagens/hora</span>
+        <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[10px]">
+          <span className="text-gray-400">Excel / Google Sheets</span>
+          <span className="text-emerald-600 font-semibold flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Atualizado há 1m
+          </span>
+        </div>
+      </div>
+
+      {/* 3. Cálculo de Repasses & TISS / Convênios */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-start">
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100">
+            <Calculator className="w-5 h-5 text-emerald-600" />
+          </div>
+          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">100% AUTOMÁTICO</span>
+        </div>
+        <div className="my-3">
+          <h3 className="font-bold text-gray-900 text-sm sm:text-base">Repasses & Guias TISS</h3>
+          <p className="text-xs text-gray-500 mt-1">Cálculo de comissões médicas e pré-auditoria de glosas sem conciliação manual</p>
+        </div>
+        <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[10px]">
+          <span className="text-gray-400">8 convênios auditados</span>
+          <span className="text-emerald-600 font-semibold">0.5% glosa</span>
+        </div>
+      </div>
+
+      {/* 4. Emissão Fiscal NFS-e Prefeitura */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-start">
+          <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100">
+            <Receipt className="w-5 h-5 text-amber-600" />
+          </div>
+          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">HOMOLOGADO</span>
+        </div>
+        <div className="my-3">
+          <h3 className="font-bold text-gray-900 text-sm sm:text-base">NFS-e Prefeitura SP</h3>
+          <p className="text-xs text-gray-500 mt-1">Geração automática de notas fiscais após atendimento sem retrabalho contábil</p>
+        </div>
+        <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[10px]">
+          <span className="text-gray-400">Webservice v2.04</span>
+          <span className="text-emerald-600 font-semibold">142 notas emitidas</span>
+        </div>
+      </div>
+      
+      {/* 5. Banco de Dados Legado */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-start">
+          <div className="w-11 h-11 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-200">
+            <Database className="w-5 h-5 text-gray-600" />
+          </div>
+          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold">SINCRONIZANDO</span>
+        </div>
+        <div className="my-3">
+          <h3 className="font-bold text-gray-900 text-sm sm:text-base">Sistema Legado (SQL)</h3>
+          <p className="text-xs text-gray-500 mt-1">Conexão bidirecional com o banco de dados antigo sem perder nenhum prontuário</p>
+        </div>
+        <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[10px]">
+          <div className="w-24 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            <div className="bg-emerald-500 h-1.5 rounded-full w-[88%]"></div>
+          </div>
+          <span className="text-gray-400 font-medium">88% migrado</span>
+        </div>
+      </div>
+
+      {/* 6. WhatsApp Oficial (Canal Opcional e Modular) */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div className="flex justify-between items-start">
+          <div className="w-11 h-11 rounded-xl bg-[#25D366]/10 flex items-center justify-center border border-[#25D366]/20">
+            <MessageSquare className="w-5 h-5 text-[#25D366]" />
+          </div>
+          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md text-[10px] font-bold">OPCIONAL • MODULAR</span>
+        </div>
+        <div className="my-3">
+          <h3 className="font-bold text-gray-900 text-sm sm:text-base">WhatsApp com IA</h3>
+          <p className="text-xs text-gray-500 mt-1">Assistente de apoio fora do horário e em picos de confirmação sem substituir o humano</p>
+        </div>
+        <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[10px]">
+          <span className="text-gray-400">Suporte 24h</span>
+          <span className="text-emerald-600 font-semibold flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Ativo
+          </span>
         </div>
       </div>
     </div>
@@ -1739,7 +1818,7 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
       id: 'init-1',
       sender: 'ai',
       time: 'Agora',
-      text: 'Olá! Sou o <strong>Agente Nexus</strong>, o cérebro operacional da sua clínica. Identifiquei <strong>4 faturamentos pendentes</strong> de ontem e um choque de horário na agenda da Dra. Juliana às 15:30.<br/><br/>Clique em uma das dúvidas abaixo para ver a demonstração da IA em tempo real:'
+      text: 'Olá! Sou o <strong>Agente Nexus</strong>, assistente de apoio operacional da sua clínica. Meu papel é atuar nos bastidores conectando planilhas, comunicação interna e repasses para que sua recepção foque 100% no acolhimento humano do paciente.<br/><br/>Clique em uma das dúvidas abaixo para ver a demonstração da IA em tempo real:'
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
@@ -1866,8 +1945,8 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
           {/* Header */}
           <div className="p-3 sm:p-4 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0">
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0 shadow-sm">
-                <BotMessageSquare className="w-5 h-5 text-emerald-600" />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center flex-shrink-0 shadow-sm p-1.5 overflow-hidden">
+                <img src="/agente-mascote-icon-white.png" alt="Agente Nexus" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-tight">Agente Nexus</h4>
@@ -1907,8 +1986,8 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
                 </div>
               ) : (
                 <div key={m.id} className="flex gap-2 items-start">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center shadow-sm shrink-0 mt-0.5">
-                    <BotMessageSquare className="w-4 h-4 text-white" />
+                  <div className="w-7 h-7 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center shadow-sm shrink-0 mt-0.5 p-1 overflow-hidden">
+                    <img src="/agente-mascote-icon-white.png" alt="Nexus" className="w-full h-full object-contain" />
                   </div>
                   <div className="bg-white p-3 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-gray-800 shadow-sm border border-gray-100 max-w-[88%] leading-relaxed break-words">
                     <span dangerouslySetInnerHTML={{ __html: m.text }} />
@@ -2004,7 +2083,7 @@ const InteractiveCRM = () => {
             O coração da sua operação.
           </h2>
           <p className="text-sm sm:text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-            Mais do que um CRM, um ecossistema vivo. Gerencie agendas, emita notas e interaja com a Inteligência Artificial no mesmo ambiente.
+            Desenvolvido sob medida para valorizar a atenção humana da recepção. Conecta planilhas, médicos, repasses, notas e dados legados em uma única tela — com IA trabalhando nos bastidores para poupar o tempo da sua equipe.
           </p>
         </motion.div>
 
@@ -2018,7 +2097,7 @@ const InteractiveCRM = () => {
               onClick={() => setShowAI(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm transition-all"
             >
-              <BotMessageSquare className="w-3.5 h-3.5" />
+              <img src="/agente-mascote-icon-white.png" alt="Nexus" className="w-3.5 h-3.5 object-contain" />
               <span>Nexus IA</span>
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
             </button>
@@ -2060,7 +2139,7 @@ const InteractiveCRM = () => {
                 className="w-full flex items-center justify-between gap-3 px-4 py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] group whitespace-nowrap"
               >
                 <div className="flex items-center gap-3">
-                  <BotMessageSquare className="w-5 h-5" />
+                  <img src="/agente-mascote-icon-white.png" alt="Nexus" className="w-5 h-5 object-contain" />
                   <span className="font-bold text-sm">Abrir Nexus</span>
                 </div>
                 <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
@@ -2421,11 +2500,12 @@ const LeadQuizModal = ({ isOpen, onClose }) => {
 
             <div className="space-y-2.5">
               {[
-                { id: 'WhatsApp lento e perda de pacientes por demora', label: 'WhatsApp congestionado & demora de resposta aos pacientes' },
-                { id: 'Faltas e desmarcações de última hora (no-show)', label: 'Faltas na agenda (no-show) sem preenchimento ágil da vaga' },
-                { id: 'Glosas de convênios e conferência manual de guias', label: 'Glosas de convênios e conferência manual de guias TISS' },
-                { id: 'Recepção sobrecarregada com digitação e notas fiscais', label: 'Recepção sobrecarregada com digitação e notas fiscais' },
-                { id: 'Todos os gargalos acima juntos', label: 'Todos os gargalos acima juntos' }
+                { id: 'Planilhas soltas (OneDrive/Excel) e falta de integração', label: 'Planilhas soltas (OneDrive/Excel) e dados descentralizados' },
+                { id: 'Comunicação truncada entre recepção e corpo clínico', label: 'Comunicação interna truncada entre consultórios e recepção' },
+                { id: 'Recepção sobrecarregada com rotinas repetitivas e notas', label: 'Recepção sobrecarregada com rotinas repetitivas e notas fiscais' },
+                { id: 'Glosas de convênios e conferência manual de guias TISS', label: 'Glosas de convênios e cálculo manual de repasses médicos' },
+                { id: 'WhatsApp congestionado & faltas na agenda (no-show)', label: 'WhatsApp congestionado & faltas na agenda de última hora' },
+                { id: 'Todos os gargalos operacionais acima juntos', label: 'Todos os gargalos operacionais acima juntos' }
               ].map(opt => (
                 <button
                   key={opt.id}
@@ -2489,7 +2569,7 @@ const LeadQuizModal = ({ isOpen, onClose }) => {
             <div className="p-3.5 bg-emerald-950/30 border border-emerald-500/30 rounded-2xl text-xs text-emerald-300">
               <p className="font-semibold">Resumo do Foco:</p>
               <p className="text-gray-300 mt-1">
-                Automação para eliminar o gargalo: <strong className="text-white">"{bottleneck}"</strong>, unificando WhatsApp, agendas e notas em tempo real.
+                Conexões inteligentes e automação para eliminar o gargalo: <strong className="text-white">"{bottleneck}"</strong>, unificando planilhas, corpo clínico e rotinas no mesmo ecossistema.
               </p>
             </div>
 
