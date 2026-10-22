@@ -7,8 +7,8 @@ import {
   Users, BotMessageSquare, Search, MoreVertical, Banknote,
   Bell, FileText, Stethoscope, Briefcase, ChevronRight, ChevronLeft, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
-  Zap, Settings, Mail, MapPin, Globe, Printer, MessageSquare, ShieldAlert, User, Fingerprint, Plug, Cloud, Send, RotateCcw,
-  CheckCircle2, Download, ExternalLink, FileSpreadsheet, Sparkles, Award, Star, Building2, HelpCircle, Bot, Share2, CheckCircle
+  CheckCircle2, Download, ExternalLink, FileSpreadsheet, Sparkles, Award, Star, Building2, HelpCircle, Bot, Share2, CheckCircle,
+  SlidersHorizontal, Layers
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -134,11 +134,14 @@ const HowItWorksSection = () => (
         initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         className="text-center mb-16 md:mb-24"
       >
+        <div className="inline-block px-4 py-1.5 mb-3 text-[10px] md:text-xs font-bold tracking-widest text-black uppercase bg-gray-100 rounded-full">
+          ARQUITETURA & BASTIDORES
+        </div>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-6">
           O verdadeiro poder de um Agente.
         </h2>
         <p className="text-lg md:text-xl text-gray-500 max-w-3xl mx-auto font-light leading-relaxed">
-          Esqueça os horários comerciais e os altos custos de pessoal dedicado apenas a tarefas braçais. Um Agente de IA oferece <strong>suporte 24 horas por dia, 7 dias por semana</strong>, mantendo o histórico inteligente de cada conversa e reduzindo o tempo de resposta a meros segundos.
+          Esqueça os horários comerciais e os custos de tarefas manuais repetitivas. Um Agente de Apoio atua silenciosamente nos bastidores da sua clínica — organizando planilhas, agilizando confirmações e permitindo que sua recepção foque no olho no olho com o paciente.
         </p>
       </motion.div>
 
@@ -146,21 +149,44 @@ const HowItWorksSection = () => (
         <div className="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gray-200 -translate-y-1/2 z-0"></div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative z-10">
           {[
-            { step: '01', icon: Zap, title: "Captura Invisível", desc: "O paciente entra em contato via WhatsApp, Instagram ou formulário. A IA entende a intenção, qualifica o lead e coleta os dados sem exigir que sua recepção digite uma palavra." },
-            { step: '02', icon: Workflow, title: "Orquestração Ativa", desc: "O Agente Nexus encontra o melhor horário na agenda médica, cruza com as regras de convênio da sua clínica e bloqueia o horário no CRM de forma autônoma." },
-            { step: '03', icon: BarChart3, title: "Resultado Executado", desc: "No momento do atendimento, o financeiro já contabiliza o valor. E no fim do dia, as notas fiscais são emitidas em lote. Você apenas visualiza o dashboard." }
+            { 
+              step: '01', 
+              badge: 'INGESTÃO UNIFICADA',
+              icon: FileSpreadsheet, 
+              title: "Centralização Imediata", 
+              desc: "Mensagens de pacientes, planilhas antigas e novos contatos são estruturados diretamente no prontuário. Zero digitação duplicada para a equipe de recepção." 
+            },
+            { 
+              step: '02', 
+              badge: 'REGRAS DE BASTIDORES',
+              icon: SlidersHorizontal, 
+              title: "Orquestração Clínica", 
+              desc: "O Agente Nexus consulta agendas médicas, cruza regras de convênio e valida horários disponíveis de forma autônoma, sem interrupções nem ruídos na sala de espera." 
+            },
+            { 
+              step: '03', 
+              badge: 'AUDITORIA & LIQUIDAÇÃO',
+              icon: Receipt, 
+              title: "Repasses & Notas em 1 Clique", 
+              desc: "Ao encerrar a consulta, o CRM calcula a comissão médica na hora, audita guias TISS contra glosas e transmite notas fiscais em lote com conformidade total." 
+            }
           ].map((item, idx) => (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: idx * 0.2 }} viewport={{ once: true }}
-              className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl flex flex-col items-center text-center relative"
+              className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl flex flex-col items-center text-center relative group hover:border-gray-300 transition-all"
             >
-              <div className="absolute -top-6 bg-black text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">Passo {item.step}</div>
-              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-6 mt-4 border border-gray-100">
-                <item.icon className="w-8 h-8 text-black" />
+              <div className="absolute -top-6 bg-black text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
+                Passo {item.step}
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
-              <p className="text-gray-500 leading-relaxed">{item.desc}</p>
+              <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mb-4 mt-3 shadow-md group-hover:scale-105 transition-transform">
+                <item.icon className="w-8 h-8 text-white" />
+              </div>
+              <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-600 mb-2">
+                {item.badge}
+              </span>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
+              <p className="text-gray-500 leading-relaxed text-sm md:text-base">{item.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -2056,6 +2082,8 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
 const InteractiveCRM = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAI, setShowAI] = useState(false);
+  const cardRef = React.useRef(null);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -2063,14 +2091,25 @@ const InteractiveCRM = () => {
     { id: 'pacientes', label: 'Pacientes', icon: Users },
     { id: 'comunicacao', label: 'Comunicação', icon: MessageSquare },
     { id: 'conexoes', label: 'Conexões', icon: Plug },
-    { id: 'convenios', label: 'Convênios', icon: FileSignature },
-    { id: 'faturamento', label: 'Faturamento', icon: Banknote },
-    { id: 'notas', label: 'Notas', icon: Receipt },
-    { id: 'equipe', label: 'Equipe', icon: Briefcase },
   ];
 
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({
+      rx: y * -6,
+      ry: x * 6
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ rx: 0, ry: 0 });
+  };
+
   return (
-    <section id="crm" className="w-full bg-[#f4f5f7] py-16 sm:py-20 md:py-32 px-2 sm:px-4 md:px-8 border-t border-gray-200">
+    <section id="crm" className="w-full bg-[#f4f5f7] py-16 sm:py-20 md:py-32 px-2 sm:px-4 md:px-8 border-t border-gray-200 overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -2087,9 +2126,17 @@ const InteractiveCRM = () => {
           </p>
         </motion.div>
 
-        {/* Browser Mockup Wrapper */}
-        <div className="w-full bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row min-h-[640px] h-[660px] sm:h-[720px] md:h-[800px] relative">
-          
+        {/* Browser Mockup Wrapper com Parallax 3D */}
+        <div 
+          ref={cardRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            transform: `perspective(1200px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+            transition: 'transform 0.15s ease-out'
+          }}
+          className="w-full bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row min-h-[640px] h-[660px] sm:h-[720px] md:h-[780px] relative will-change-transform"
+        >
           {/* Mobile Top Header (Somente telas pequenas) */}
           <div className="flex md:hidden items-center justify-between w-full px-3 py-2 bg-[#0D0E10] border-b border-white/10 flex-shrink-0">
             <span className="font-black text-lg tracking-tighter text-white notranslate">BIO MIND</span>
@@ -2106,28 +2153,29 @@ const InteractiveCRM = () => {
           {/* Sidebar (Desktop) / Abas Roláveis (Mobile) */}
           <div className="w-full md:w-64 bg-[#0D0E10] text-gray-400 p-2 md:p-4 flex flex-row md:flex-col flex-shrink-0 relative z-20 overflow-x-auto md:overflow-visible custom-scrollbar border-b md:border-b-0 border-white/10 scroll-smooth">
             {/* Logo Desktop - Sem quadradinho */}
-            <div className="hidden md:flex items-center px-2 py-4 mb-6">
+            <div className="hidden md:flex items-center gap-2 px-2 py-4 mb-4">
+              <img src="/agente-mascote-icon-white.png" alt="Bio Mind" className="w-6 h-6 object-contain" />
               <span className="font-black text-2xl tracking-tighter text-white">
                 <span translate="no" className="notranslate">BIO MIND</span>
               </span>
             </div>
             
-            <nav className="flex flex-row md:flex-col gap-1.5 md:gap-1 w-max md:w-auto p-1 md:p-0">
+            <nav className="flex flex-row md:flex-col gap-1.5 md:gap-1.5 w-max md:w-auto p-1 md:p-0">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-auto md:w-full flex items-center md:justify-between px-3 py-2 md:py-3 rounded-lg md:rounded-xl transition-all text-xs md:text-sm font-semibold whitespace-nowrap ${
+                  className={`w-auto md:w-full flex items-center md:justify-between px-3 py-2.5 rounded-xl transition-all text-xs md:text-sm font-semibold whitespace-nowrap ${
                     activeTab === tab.id 
-                      ? 'bg-white/10 text-white shadow-inner' 
+                      ? 'bg-white/15 text-white shadow-inner font-bold' 
                       : 'hover:bg-white/5 hover:text-gray-200'
                   }`}
                 >
                   <div className="flex items-center gap-2 md:gap-3">
-                    <tab.icon className="w-4 h-4" />
-                    {tab.label}
+                    <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-emerald-400' : 'text-gray-400'}`} />
+                    <span>{tab.label}</span>
                   </div>
-                  {activeTab === tab.id && <ChevronRight className="hidden md:block w-4 h-4 opacity-50"/>}
+                  {activeTab === tab.id && <ChevronRight className="hidden md:block w-4 h-4 text-emerald-400"/>}
                 </button>
               ))}
             </nav>
@@ -2158,28 +2206,24 @@ const InteractiveCRM = () => {
                 <Search className="hidden sm:block w-4 h-4 md:w-5 md:h-5 hover:text-gray-800 cursor-pointer transition-colors" />
                 <div className="relative">
                   <Bell className="w-4 h-4 md:w-5 md:h-5 hover:text-gray-800 cursor-pointer transition-colors" />
-                  <div className="absolute -top-1 -right-1 w-2 h-2 md:w-2.5 md:h-2.5 bg-red-500 rounded-full border-2 border-white"></div>
+                  <div className="absolute -top-1 -right-1 w-2 h-2 md:w-2.5 md:h-2.5 bg-emerald-500 rounded-full border-2 border-white"></div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
-                  <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gray-200 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="Admin" className="w-full h-full object-cover"/>
+                  <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gray-900 border border-gray-800 shadow-sm overflow-hidden flex items-center justify-center p-1">
+                    <img src="/agente-mascote-icon-white.png" alt="Admin" className="w-full h-full object-contain"/>
                   </div>
                 </div>
               </div>
             </header>
 
             {/* Scrollable Content */}
-            <div className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${activeTab === 'comunicacao' ? 'p-1.5 sm:p-3 md:p-6' : activeTab === 'equipe' ? 'p-3 sm:p-4 md:p-6' : 'p-3 sm:p-4 md:p-8'}`}>
+            <div className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${activeTab === 'comunicacao' ? 'p-1.5 sm:p-3 md:p-6' : 'p-3 sm:p-4 md:p-8'}`}>
               <AnimatePresence mode="wait">
                 {activeTab === 'dashboard' && <CRMDashboard key="dashboard" />}
                 {activeTab === 'agenda' && <CRMAgenda key="agenda" />}
                 {activeTab === 'pacientes' && <CRMPacientes key="pacientes" />}
                 {activeTab === 'comunicacao' && <CRMComunicacao key="comunicacao" />}
                 {activeTab === 'conexoes' && <CRMConexoes key="conexoes" />}
-                {activeTab === 'convenios' && <CRMConvenios key="convenios" />}
-                {activeTab === 'faturamento' && <CRMFaturamento key="faturamento" />}
-                {activeTab === 'notas' && <CRMNotas key="notas" />}
-                {activeTab === 'equipe' && <CRMEquipe key="equipe" />}
               </AnimatePresence>
             </div>
 
