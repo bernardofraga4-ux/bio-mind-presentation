@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Lenis from 'lenis';
 import { 
   ArrowRight, Clock, ShieldCheck, Activity, Check, X, 
-  Database, Workflow, Calculator, LayoutDashboard, CalendarDays,
-  Users, BotMessageSquare, Search, MoreVertical, Banknote,
+  Database, Workflow, Calculator, LayoutDashboard, CalendarDays, Calendar,
+  Users, BotMessageSquare, MessageSquare, Search, MoreVertical, Banknote,
   Bell, FileText, Stethoscope, Briefcase, ChevronRight, ChevronLeft, PieChart,
   BarChart3, Upload, Filter, Plus, Phone, FileSignature, Receipt,
   CheckCircle2, Download, ExternalLink, FileSpreadsheet, Sparkles, Award, Star, Building2, HelpCircle, Bot, Share2, CheckCircle,
-  SlidersHorizontal, Layers
+  SlidersHorizontal, Layers, Plug, Cloud, Grid, Infinity, List, Mail, Menu, Printer, RotateCcw, Settings, Sidebar, Table, User, Volume
 } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
@@ -251,65 +251,432 @@ const CustomizationSection = () => (
 
 // --- CRM REPLICA COMPONENTS ---
 
-const CRMDashboard = () => (
-  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
-    <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-4">
-      <div>
-        <h3 className="text-lg md:text-xl font-bold text-gray-800">Boa tarde, Dr(a).</h3>
-        <p className="text-xs md:text-sm text-gray-500">Visão geral da clínica e agendamentos de hoje.</p>
-      </div>
-      <div className="flex bg-gray-100 p-1 rounded-lg overflow-x-auto w-full sm:w-auto">
-        {['Hoje', '7 Dias', 'Este Mês', 'Tudo'].map((f, i) => (
-          <button key={i} className={`whitespace-nowrap px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md ${i === 1 ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-black'}`}>
-            {f}
-          </button>
-        ))}
-      </div>
-    </div>
+// --- DADOS DOS CONTATOS / PACIENTES (SALESFORCE) ---
+const mockContacts = [
+  {
+    id: 1,
+    name: 'Mariana Alcantara',
+    role: 'Dermatologia • Consulta Geral',
+    score: 92,
+    scoreColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    origin: 'WhatsApp',
+    phone: '+55 11 98452-3310',
+    email: 'mariana.alcantara@gmail.com',
+    convenio: 'Bradesco Saúde (Top Nacional)',
+    medico: 'Dr. Henrique Vasconcelos',
+    sala: 'Consultório 02',
+    horario: '14:30 (Hoje)',
+    status: 'Confirmado via WhatsApp',
+    stage: 'qualified',
+    fields: [
+      { id: 'f1', label: 'Elegibilidade do convênio confirmada', checked: true },
+      { id: 'f2', label: 'Prontuário no OneDrive sincronizado', checked: true },
+      { id: 'f3', label: 'Horário do Dr. Henrique reservado', checked: true },
+      { id: 'f4', label: 'Repasse médico auditado (R$ 180,00)', checked: true }
+    ],
+    nextAction: 'Paciente já confirmou presença. Chamar silenciosamente para o Consultório 2 ao chegar.'
+  },
+  {
+    id: 2,
+    name: 'Carlos Eduardo Silva',
+    role: 'Cardiologia • Retorno Exames',
+    score: 88,
+    scoreColor: 'bg-blue-100 text-blue-800 border-blue-200',
+    origin: 'Formulário Site',
+    phone: '+55 11 97120-4590',
+    email: 'carlos.silva@corp.com.br',
+    convenio: 'Unimed Pleno',
+    medico: 'Dra. Beatriz Mendes',
+    sala: 'Consultório 04',
+    horario: '15:15 (Hoje)',
+    status: 'Exames Anexados na Nuvem',
+    stage: 'working',
+    fields: [
+      { id: 'f1', label: 'Elegibilidade do convênio confirmada', checked: true },
+      { id: 'f2', label: 'Eletrocardiograma anexado na pasta', checked: true },
+      { id: 'f3', label: 'Horário reservado com Dra. Beatriz', checked: true },
+      { id: 'f4', label: 'Repasse médico auditado (R$ 160,00)', checked: false }
+    ],
+    nextAction: 'Revisar laudo do ECG recebido no OneDrive antes de liberar entrada na sala.'
+  },
+  {
+    id: 3,
+    name: 'Fernanda Lima',
+    role: 'Ortopedia • Avaliação Inicial',
+    score: 76,
+    scoreColor: 'bg-purple-100 text-purple-800 border-purple-200',
+    origin: 'Telefone / Recepção',
+    phone: '+55 11 96340-8821',
+    email: 'fernanda.lima@uol.com.br',
+    convenio: 'Particular (PIX/Cartão)',
+    medico: 'Dr. Roberto Faro',
+    sala: 'Consultório 01',
+    horario: '16:00 (Hoje)',
+    status: 'Aguardando Pagamento',
+    stage: 'lead',
+    fields: [
+      { id: 'f1', label: 'Ficha cadastral preenchida na recepção', checked: true },
+      { id: 'f2', label: 'Pagamento particular confirmado', checked: false },
+      { id: 'f3', label: 'Horário com Dr. Roberto alocado', checked: true },
+      { id: 'f4', label: 'Emissão da NFS-e na prefeitura', checked: false }
+    ],
+    nextAction: 'Apresentar QR Code do PIX na recepção e emitir recibo automático com 1 clique.'
+  },
+  {
+    id: 4,
+    name: 'Roberto Mendes',
+    role: 'Oftalmologia • Fundo de Olho',
+    score: 65,
+    scoreColor: 'bg-amber-100 text-amber-800 border-amber-200',
+    origin: 'Indicação Médica',
+    phone: '+55 11 99812-1144',
+    email: 'roberto.mendes@adv.br',
+    convenio: 'SulAmérica Especial',
+    medico: 'Dr. Alexandre Rios',
+    sala: 'Consultório 03',
+    horario: '16:45 (Hoje)',
+    status: 'Aguardando Dilatação',
+    stage: 'converted',
+    fields: [
+      { id: 'f1', label: 'Guia de autorização SulAmérica emitida', checked: true },
+      { id: 'f2', label: 'Termo de colírio assinado digitalmente', checked: true },
+      { id: 'f3', label: 'Horário com Dr. Alexandre alocado', checked: true },
+      { id: 'f4', label: 'Repasse médico liquidado', checked: true }
+    ],
+    nextAction: 'Encaminhar paciente para a sala de pré-exame com colírio aplicado.'
+  }
+];
 
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-      {[
-        { label: 'Contatos', value: '452', color: 'text-blue-600' },
-        { label: 'Resp. (IA)', value: '389', color: 'text-emerald-600' },
-        { label: 'Recepção', value: '51', color: 'text-orange-500' },
-        { label: 'Em Espera', value: '12', color: 'text-red-600' }
-      ].map((kpi, i) => (
-        <div key={i} className="p-3 md:p-5 border border-gray-100 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all flex flex-col gap-1 md:gap-2">
-          <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">{kpi.label}</span>
-          <span className={`text-2xl md:text-3xl font-black ${kpi.color}`}>{kpi.value}</span>
+const CRMDashboard = () => {
+  const [selectedContact, setSelectedContact] = useState(mockContacts[0]);
+  const [fields, setFields] = useState(mockContacts[0].fields);
+
+  const handleSelectContact = (c) => {
+    setSelectedContact(c);
+    setFields(c.fields);
+  };
+
+  const toggleField = (id) => {
+    setFields(prev => prev.map(f => f.id === id ? { ...f, checked: !f.checked } : f));
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Top Header da Dashboard Salesforce */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <h3 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
+              Engajamento & Gestão Clínica
+            </h3>
+            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-md">
+              PAINEL SALESFORCE / PANACEA
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Fluxo operacional unificado: triagem, agenda médica, repasses e conexão com planilhas.
+          </p>
         </div>
-      ))}
-    </div>
-    
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="col-span-1 lg:col-span-2 border border-gray-100 rounded-2xl bg-white p-4 md:p-6 shadow-sm overflow-hidden">
-        <h4 className="text-xs md:text-sm font-bold text-gray-800 mb-6 flex items-center gap-2"><BarChart3 className="w-4 h-4"/> Fluxo (7 Dias)</h4>
-        <div className="w-full h-32 md:h-48 flex items-end gap-2 md:gap-3">
-          {[30, 40, 20, 50, 70, 90, 80].map((h, i) => (
-            <div key={i} className="flex-1 flex flex-col justify-end group">
-              <div className="w-full bg-black/10 rounded-t-md group-hover:bg-black/20 transition-colors relative" style={{ height: `${h}%` }}></div>
-              <span className="text-[8px] md:text-[10px] text-gray-400 text-center mt-2 font-medium">Dia {i+1}</span>
-            </div>
-          ))}
+
+        {/* Action Pill Top-Right (Salesforce style) */}
+        <div className="flex items-center gap-1.5 self-start sm:self-auto bg-gray-50 border border-gray-200 p-1 rounded-xl">
+          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Favoritar">
+            <Star className="w-4 h-4" />
+          </button>
+          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Compartilhar">
+            <Share2 className="w-4 h-4" />
+          </button>
+          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Exportar Dados">
+            <Download className="w-4 h-4" />
+          </button>
+          <button className="p-1.5 hover:bg-white rounded-lg text-gray-500 hover:text-gray-900 transition-colors" title="Configurações">
+            <Settings className="w-4 h-4" />
+          </button>
         </div>
       </div>
-      <div className="col-span-1 border border-gray-100 rounded-2xl bg-white p-4 md:p-6 shadow-sm flex flex-col items-center lg:items-start text-center lg:text-left">
-        <h4 className="text-xs md:text-sm font-bold text-gray-800 mb-6 flex items-center gap-2 w-full"><PieChart className="w-4 h-4"/> Base</h4>
-        <div className="flex-1 flex items-center justify-center relative w-full">
-          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-[6px] md:border-8 border-gray-100 border-t-emerald-400 border-r-blue-400 border-b-emerald-400 border-l-purple-400"></div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-xl md:text-2xl font-black text-gray-800">41%</span>
-            <span className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase">Part.</span>
+
+      {/* Régua / Esteira de Atendimento (Salesforce Pipeline Bar) */}
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
+        <div className="flex items-center justify-between text-xs font-bold text-gray-600 mb-2">
+          <span>Esteira de Atendimento em Tempo Real</span>
+          <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[10px]">
+            Etapa Atual: {selectedContact.status}
+          </span>
+        </div>
+
+        {/* Segmented Rainbow Progress Bar */}
+        <div className="grid grid-cols-4 gap-1.5 bg-gray-100 p-1 rounded-xl">
+          <div className="bg-gradient-to-r from-emerald-500 to-emerald-400 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
+            <Check className="w-3 h-3" />
+            <span className="truncate">1. Contato</span>
+          </div>
+          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
+            <Check className="w-3 h-3" />
+            <span className="truncate">2. Triagem IA</span>
+          </div>
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1 shadow-2xs">
+            <Check className="w-3 h-3" />
+            <span className="truncate">3. Confirmado</span>
+          </div>
+          <div className="bg-gray-200 text-gray-600 text-[10px] font-bold py-1.5 px-2 rounded-lg text-center flex items-center justify-center gap-1">
+            <span className="truncate">4. Concluído</span>
           </div>
         </div>
-        <div className="mt-6 flex justify-center lg:justify-between w-full gap-4 text-[10px] md:text-xs font-medium text-gray-500">
-          <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> Amil (51%)</span>
-          <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400"></div> Sobam (5%)</span>
+      </div>
+
+      {/* Grid Central de 3 Colunas (Salesforce Dashboard Layout) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        {/* Coluna 1: Fila de Atendimento (Work Queue) */}
+        <div className="lg:col-span-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-gray-500" />
+                <span className="font-bold text-xs uppercase tracking-wider text-gray-700">Fila da Recepção</span>
+              </div>
+              <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                4 Prioritários
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {mockContacts.map((c) => {
+                const isSelected = selectedContact.id === c.id;
+                return (
+                  <div
+                    key={c.id}
+                    onClick={() => handleSelectContact(c)}
+                    className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                      isSelected 
+                        ? 'border-gray-900 bg-gray-50/80 shadow-2xs' 
+                        : 'border-gray-100 hover:border-gray-200 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-gray-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                        {c.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-gray-900 leading-tight">{c.name}</h4>
+                        <p className="text-[10px] text-gray-500 truncate max-w-[140px]">{c.role}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border ${c.scoreColor}`}>
+                        {c.score}
+                      </span>
+                      <span className="text-[9px] text-gray-400">{c.origin}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 flex items-center justify-between">
+            <span>Sincronizado via OneDrive</span>
+            <span className="text-emerald-700 font-bold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online
+            </span>
+          </div>
+        </div>
+
+        {/* Coluna 2: Informações do Paciente Selecionado & Checklist */}
+        <div className="lg:col-span-5 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs space-y-4">
+          <div className="flex items-start justify-between pb-3 border-b border-gray-100">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                Ficha Rápida do Paciente
+              </span>
+              <h3 className="text-base font-black text-gray-900 mt-1">{selectedContact.name}</h3>
+              <p className="text-xs text-gray-500">{selectedContact.role}</p>
+            </div>
+            <button className="px-3 py-1.5 bg-black text-white rounded-lg text-xs font-bold hover:bg-neutral-800 transition-colors shadow-2xs flex items-center gap-1.5">
+              <Stethoscope className="w-3.5 h-3.5" />
+              <span>Chamar</span>
+            </button>
+          </div>
+
+          {/* Dados Rápidos */}
+          <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
+            <div>
+              <span className="text-[10px] text-gray-400 block font-medium">Convênio / Pagamento:</span>
+              <strong className="text-gray-800 text-[11px]">{selectedContact.convenio}</strong>
+            </div>
+            <div>
+              <span className="text-[10px] text-gray-400 block font-medium">Médico / Sala:</span>
+              <strong className="text-gray-800 text-[11px]">{selectedContact.medico} ({selectedContact.sala})</strong>
+            </div>
+            <div className="mt-2">
+              <span className="text-[10px] text-gray-400 block font-medium">WhatsApp:</span>
+              <strong className="text-gray-800 text-[11px]">{selectedContact.phone}</strong>
+            </div>
+            <div className="mt-2">
+              <span className="text-[10px] text-gray-400 block font-medium">Horário Marcado:</span>
+              <strong className="text-emerald-700 text-[11px]">{selectedContact.horario}</strong>
+            </div>
+          </div>
+
+          {/* Checklist Campos Chave (Key Fields Salesforce) */}
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+              Campos Chave da Recepção (Checklist)
+            </h4>
+            <div className="space-y-1.5">
+              {fields.map((f) => (
+                <div 
+                  key={f.id}
+                  onClick={() => toggleField(f.id)}
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors border border-transparent hover:border-gray-200"
+                >
+                  <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
+                    f.checked ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-gray-300 bg-white'
+                  }`}>
+                    {f.checked && <Check className="w-3 h-3" />}
+                  </div>
+                  <span className={`text-xs ${f.checked ? 'text-gray-800 font-semibold' : 'text-gray-500'}`}>
+                    {f.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Coluna 3: AI Scoring Gauge (Salesforce) & Diretrizes */}
+        <div className="lg:col-span-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between space-y-4">
+          <div>
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100 mb-3">
+              <span className="font-bold text-xs uppercase tracking-wider text-gray-700">AI Scoring</span>
+              <Sparkles className="w-4 h-4 text-amber-500" />
+            </div>
+
+            {/* Circular Gauge Salesforce Rainbow */}
+            <div className="flex flex-col items-center justify-center my-2">
+              <div 
+                className="w-24 h-24 rounded-full flex items-center justify-center p-2 shadow-inner"
+                style={{
+                  background: 'conic-gradient(#10b981 0% 35%, #06b6d4 35% 65%, #8b5cf6 65% 85%, #f59e0b 85% 100%)'
+                }}
+              >
+                <div className="w-full h-full bg-white rounded-full flex flex-col items-center justify-center shadow-xs">
+                  <span className="text-2xl font-black text-gray-900 leading-none">{selectedContact.score}</span>
+                  <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">SCORE IA</span>
+                </div>
+              </div>
+              <span className="text-[11px] font-bold text-gray-700 mt-2">Pontualidade & Eficiência</span>
+            </div>
+
+            {/* Top Positivos */}
+            <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-100 space-y-1.5 text-[11px]">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Top Indicadores:</span>
+              <p className="text-gray-700 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Confirmação em 12s
+              </p>
+              <p className="text-gray-700 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 0 glosas no convênio
+              </p>
+              <p className="text-gray-700 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span> OneDrive sincronizado
+              </p>
+            </div>
+          </div>
+
+          {/* Diretrizes para Sucesso */}
+          <div className="bg-emerald-50/60 border border-emerald-100 p-3 rounded-xl space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
+              Próxima Ação da Recepção:
+            </span>
+            <p className="text-xs text-emerald-900 leading-snug">
+              {selectedContact.nextAction}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Seção Inferior: Appointment Overview & Calendário (Panacea style) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
+        {/* Tabela de Consultas do Dia */}
+        <div className="lg:col-span-8 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+            <div>
+              <h4 className="text-sm font-bold text-gray-900">Visão Geral de Agendamentos (Hoje)</h4>
+              <p className="text-xs text-gray-500">98 agendados • 87 atendidos • 8 na recepção • 3 desmarcados</p>
+            </div>
+            <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+              Taxa de Comparecimento: 97%
+            </span>
+          </div>
+
+          <div className="space-y-2.5">
+            {[
+              { time: '08:00', patient: 'Lucas Antunes', spec: 'Clínica Geral', doctor: 'Dr. Henrique', status: 'Concluído', color: 'bg-gray-100 text-gray-700' },
+              { time: '09:30', patient: 'Mariana Alcantara', spec: 'Dermatologia', doctor: 'Dr. Henrique', status: 'Em Atendimento', color: 'bg-emerald-100 text-emerald-800' },
+              { time: '11:00', patient: 'Carlos Eduardo', spec: 'Cardiologia', doctor: 'Dra. Beatriz', status: 'Aguardando Sala', color: 'bg-blue-100 text-blue-800' },
+              { time: '14:00', patient: 'Fernanda Lima', spec: 'Ortopedia', doctor: 'Dr. Roberto', status: 'Confirmado WhatsApp', color: 'bg-purple-100 text-purple-800' },
+              { time: '15:30', patient: 'Roberto Mendes', spec: 'Oftalmologia', doctor: 'Dr. Alexandre', status: 'Confirmado WhatsApp', color: 'bg-purple-100 text-purple-800' }
+            ].map((row, idx) => (
+              <div key={idx} className="flex items-center justify-between p-2.5 sm:p-3 bg-gray-50/70 hover:bg-gray-100/70 rounded-xl transition-colors border border-gray-100 text-xs">
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-gray-900 w-12">{row.time}</span>
+                  <div>
+                    <strong className="text-gray-900 block">{row.patient}</strong>
+                    <span className="text-gray-500 text-[11px]">{row.spec} • {row.doctor}</span>
+                  </div>
+                </div>
+                <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${row.color}`}>
+                  {row.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mini Calendário e Estatísticas Rápidas (Panacea style) */}
+        <div className="lg:col-span-4 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-3">
+              <span className="font-bold text-xs uppercase tracking-wider text-gray-700">Calendário de Consultórios</span>
+              <Calendar className="w-4 h-4 text-gray-400" />
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 text-center text-xs mb-3 font-semibold text-gray-400">
+              <span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span><span>DOM</span>
+            </div>
+            <div className="grid grid-cols-7 gap-1 text-center text-xs">
+              {[19, 20, 21, 22, 23, 24, 25].map((d, i) => (
+                <div 
+                  key={i} 
+                  className={`py-2 rounded-lg font-bold transition-all ${
+                    d === 22 
+                      ? 'bg-black text-white shadow-2xs' 
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {d}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 mt-4 space-y-1.5 text-xs">
+            <div className="flex justify-between text-gray-600">
+              <span>Capacidade Total:</span>
+              <strong className="text-gray-900">8 Salas Ativas</strong>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Tempo Médio Recepção:</span>
+              <strong className="text-emerald-700 font-bold">1 min 40s</strong>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </motion.div>
-);
+  );
+};
 
 const CRMAgenda = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 md:space-y-6 h-full flex flex-col">
@@ -486,321 +853,112 @@ const CRMFaturamento = () => (
 );
 
 const CRMComunicacao = () => {
-  const [commsTab, setCommsTab] = useState('ativas'); // ativas, programadas
-  const [commsFilter, setCommsFilter] = useState('pacientes'); // pacientes, profissionais
-  const [activeChatId, setActiveChatId] = useState('AC');
-  const [mobileChatOpen, setMobileChatOpen] = useState(false);
-  const [typedMessage, setTypedMessage] = useState('');
-
-  const [chatList, setChatList] = useState([
-    { 
-      id: 'AC', name: 'Ana Clara', time: '08:16', msg: 'Pode confirmar sim. 🙏', initials: 'AC', color: 'bg-emerald-100 text-emerald-700',
-      messages: [
-        { sender: 'user', time: '08:14', text: 'Bom dia! Tive uma crise de dor nas costas ontem, queria agendar com o Dr. Gabriel de novo.' },
-        { sender: 'ai', time: '08:15', text: 'Olá, Ana Clara! Sinto muito pela sua dor. Como foi exatamente no mesmo local da sua cirurgia de 3 meses atrás, acabei de <strong>liberar um encaixe de emergência</strong> às 10:30 de hoje para você.<br/><br/>Já informei a recepção e atualizei sua ficha no sistema com esse novo sintoma. Posso confirmar o horário?' },
-        { sender: 'user', time: '08:16', text: 'Nossa, muito obrigada! Pode confirmar sim. 🙏' },
-        { sender: 'ai', time: '08:16', text: 'Agendamento confirmado com sucesso! O Dr. Gabriel já está ciente.', isAppointment: true }
-      ]
-    },
-    { 
-      id: 'CE', name: 'Carlos Eduardo', time: '15:02', msg: '30 minutos R$130,00 com desconto', initials: 'CE', color: 'bg-blue-100 text-blue-700',
-      messages: [
-        { sender: 'ai', time: '14:50', text: 'Olá, Carlos! O seu retorno nutricional está agendado para amanhã às 14h. Para otimizar o seu tempo, gostaria de adiantar a consulta para hoje às 17h, já que abriu uma vaga?' },
-        { sender: 'user', time: '15:00', text: 'Pode ser, mas qual o valor do retorno?' },
-        { sender: 'ai', time: '15:01', text: 'Como você está no pacote trimestral, a consulta de 30 minutos fica por R$ 130,00 (já com desconto aplicado na sua ficha).' },
-        { sender: 'user', time: '15:02', text: 'Perfeito, pode confirmar.' }
-      ]
-    },
-    { 
-      id: 'MO', name: 'Monique', time: '15:00', msg: 'Ta bom', initials: 'MO', color: 'bg-purple-100 text-purple-700',
-      messages: [
-        { sender: 'ai', time: '14:30', text: 'Oi Monique! O seu exame de sangue ficou pronto. Os níveis de vitamina D estão abaixo do ideal. A Dra. Juliana já deixou uma prescrição eletrônica no seu aplicativo e pediu para você iniciar hoje mesmo.' },
-        { sender: 'user', time: '15:00', text: 'Ta bom, muito obrigada por avisar! Já vou acessar a receita.' }
-      ]
-    },
-    { 
-      id: 'LR', name: 'Luiza Rodrigues', time: '15:00', msg: 'Boa tarde! Aconteceu um imprevisto', initials: 'LR', color: 'bg-orange-100 text-orange-700',
-      messages: [
-        { sender: 'user', time: '15:00', text: 'Boa tarde! Aconteceu um imprevisto e não vou conseguir chegar a tempo para minha consulta das 16h.' },
-        { sender: 'ai', time: '15:01', text: 'Sem problemas, Luiza. Entendemos! Para não prejudicar seu tratamento, encontrei um horário amanhã às 09h da manhã com o mesmo especialista. Podemos reagendar para esse horário?' }
-      ]
-    },
-    { 
-      id: 'DS', name: 'Dr Julio Samos', time: '14:51', msg: 'Ok', initials: 'DS', color: 'bg-gray-100 text-gray-700',
-      messages: [
-        { sender: 'ai', time: '14:45', text: 'Dr. Julio, o paciente Marcos V. acaba de chegar na recepção e preencheu o formulário de triagem. A queixa principal é enxaqueca com aura (frequência aumentada nos últimos 3 dias). A ficha médica já foi atualizada e está na sua tela.' },
-        { sender: 'user', time: '14:51', text: 'Ok, pode mandar entrar em 5 minutos.' }
-      ]
-    }
-  ]);
-
-  const scheduledList = [
-    { id: '1', name: 'Maria Fernandes', trigger: 'Amanhã, 08:00', msg: 'Olá Maria! Passando para lembrar do seu jejum de 12h para o exame de ultrassom amanhã às 08:00. Qualquer dúvida estou por aqui.', initials: 'MF', color: 'bg-pink-100 text-pink-700' },
-    { id: '2', name: 'João Pedro', trigger: 'Sexta, 14:30', msg: 'Olá João! Sua consulta com o cardiologista está confirmada para sexta-feira. Não esqueça de trazer seus últimos exames.', initials: 'JP', color: 'bg-indigo-100 text-indigo-700' },
-    { id: '3', name: 'Campanha Checkup', trigger: 'Dia 20, 09:00', msg: 'Olá! Já faz 6 meses desde o seu último checkup preventivo. Que tal agendar um horário para colocar a saúde em dia?', initials: 'CC', color: 'bg-amber-100 text-amber-700' },
-  ];
-
-  const activeChat = chatList.find(c => c.id === activeChatId);
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!typedMessage.trim() || !activeChat) return;
-
-    const newMsg = {
-      sender: 'user',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      text: typedMessage
-    };
-
-    setChatList(prev => prev.map(chat => {
-      if (chat.id === activeChat.id) {
-        return {
-          ...chat,
-          msg: typedMessage,
-          messages: [...chat.messages, newMsg]
-        };
-      }
-      return chat;
-    }));
-
-    setTypedMessage('');
-
-    // Resposta automática da IA após 1s
-    setTimeout(() => {
-      setChatList(prev => prev.map(chat => {
-        if (chat.id === activeChat.id) {
-          return {
-            ...chat,
-            messages: [
-              ...chat.messages,
-              {
-                sender: 'ai',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                text: 'Perfeito! Mensagem recebida e registrada no prontuário do paciente.'
-              }
-            ]
-          };
-        }
-        return chat;
-      }));
-    }, 1000);
-  };
-
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full w-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
-      {/* Sidebar Left (Lista de Conversas / Mensagens Programadas) */}
-      <div className={`${mobileChatOpen && commsTab === 'ativas' ? 'hidden md:flex' : 'flex'} w-full md:w-80 md:min-w-[280px] md:max-w-xs border-r border-gray-100 flex-col h-full bg-white flex-shrink-0`}>
-        <div className="p-2 sm:p-3 border-b border-gray-100 flex gap-2 sm:gap-4 overflow-x-auto">
-          <button 
-            onClick={() => { setCommsTab('ativas'); setMobileChatOpen(false); }}
-            className={`text-xs font-bold pb-1 whitespace-nowrap transition-colors ${commsTab === 'ativas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
-          >
-            Conversas Ativas
-          </button>
-          <button 
-            onClick={() => { setCommsTab('programadas'); setMobileChatOpen(false); }}
-            className={`text-xs font-bold pb-1 whitespace-nowrap transition-colors ${commsTab === 'programadas' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
-          >
-            Mensagens Programadas
-          </button>
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
+        <div>
+          <h3 className="text-lg font-black text-gray-900">Central de Comunicação & Automações</h3>
+          <p className="text-xs text-gray-500">
+            Mensagens programadas, confirmações de presença e simulador em tempo real.
+          </p>
         </div>
-        
-        {commsTab === 'ativas' && (
-          <div className="p-2 sm:p-3 flex gap-2">
-            <button 
-              onClick={() => setCommsFilter('pacientes')}
-              className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'pacientes' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
-            >
-              Pacientes
-            </button>
-            <button 
-              onClick={() => setCommsFilter('profissionais')}
-              className={`flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors ${commsFilter === 'profissionais' ? 'bg-gray-100 text-gray-800 border border-gray-200' : 'text-gray-500 hover:bg-gray-50'}`}
-            >
-              Profissionais
-            </button>
-          </div>
-        )}
-
-        <div className="px-2 sm:px-3 pb-2 sm:pb-3 pt-2">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder={commsTab === 'programadas' ? "Buscar agendadas..." : "Buscar contato..."} 
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-            />
-          </div>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          {commsTab === 'programadas' ? (
-            <div className="divide-y divide-gray-50">
-              {scheduledList.map((sch) => (
-                <div key={sch.id} className="p-3 sm:p-3.5 flex items-start gap-3 hover:bg-gray-50 transition-colors cursor-default">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] ${sch.color} shrink-0 shadow-sm`}>
-                    {sch.initials}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline mb-0.5">
-                      <h4 className="text-xs font-bold text-gray-800 truncate">{sch.name}</h4>
-                      <span className="text-[9px] text-emerald-600 font-bold flex-shrink-0 flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 rounded">
-                        <Clock className="w-2.5 h-2.5"/> {sch.trigger}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed break-words">
-                      "{sch.msg}"
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : commsFilter === 'profissionais' ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400 p-6 text-center space-y-2">
-              <Users className="w-8 h-8 opacity-40 text-gray-400" />
-              <p className="text-xs font-medium">Nenhum profissional com chamado aberto.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-50">
-              {chatList.map((chat) => (
-                <div 
-                  key={chat.id} 
-                  onClick={() => {
-                    setActiveChatId(chat.id);
-                    setMobileChatOpen(true);
-                  }}
-                  className={`p-3 sm:p-3.5 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${activeChatId === chat.id ? 'bg-emerald-50/60 md:border-l-4 md:border-emerald-500' : ''}`}
-                >
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${chat.color} shrink-0 shadow-sm`}>
-                    {chat.initials}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <h4 className="text-xs sm:text-sm font-bold text-gray-800 truncate">{chat.name}</h4>
-                      <span className="text-[10px] text-gray-400 flex-shrink-0 ml-1">{chat.time}</span>
-                    </div>
-                    <p className="text-[11px] text-gray-500 truncate flex items-center gap-1.5">
-                      <BotMessageSquare className="w-3 h-3 text-emerald-500 shrink-0" />
-                      <span className="truncate">{chat.msg}</span>
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <span className="px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-full border border-emerald-200">
+          ● 4 Automações Ativas
+        </span>
       </div>
-      
-      {/* Main Chat Area / Programmed Messages Details */}
-      <div className={`${commsTab === 'programadas' ? 'hidden md:flex' : (!mobileChatOpen ? 'hidden md:flex' : 'flex')} flex-1 flex-col h-full bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-cover bg-center min-w-0`}>
-        {commsTab === 'programadas' ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/70 backdrop-blur-md">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4 border border-emerald-100 shadow-sm">
-              <Clock className="w-8 h-8 text-emerald-600" />
-            </div>
-            <h3 className="text-lg md:text-xl font-bold text-gray-800">Automação de Relacionamento Ativa</h3>
-            <p className="text-xs md:text-sm text-gray-500 max-w-md mt-2 leading-relaxed">
-              O Agente Nexus dispara mensagens e lembretes com base em regras clínicas (jejum, exames, confirmações e pós-consulta). Zero trabalho para a recepção.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-2 justify-center">
-              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold">Lembretes 24h antes</span>
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-[10px] font-bold">Confirmação de Retorno</span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-[10px] font-bold">Instruções de Exames</span>
-            </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Coluna 1: Painel de Automações & Mensagens Programadas */}
+        <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-gray-100 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-gray-700">Automações Clínicas Programadas</h4>
+            <span className="text-[11px] text-gray-400">Ativado via n8n</span>
           </div>
-        ) : activeChat ? (
-          <>
-            {/* Header da conversa com botão de voltar no mobile */}
-            <div className="p-3 md:p-4 bg-white/95 backdrop-blur-md border-b border-gray-200 flex items-center justify-between shadow-sm flex-shrink-0">
-              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <button 
-                  onClick={() => setMobileChatOpen(false)}
-                  className="md:hidden p-1.5 -ml-1 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors flex items-center gap-0.5 text-xs font-bold"
-                  aria-label="Voltar para a lista de conversas"
-                >
-                  <ChevronLeft className="w-5 h-5 text-gray-700" />
-                  <span className="text-gray-700">Voltar</span>
-                </button>
-                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm ${activeChat.color} shrink-0 shadow-sm`}>
-                  {activeChat.initials}
+
+          <div className="space-y-3">
+            {[
+              {
+                title: "Confirmação D-1 (24h de antecedência)",
+                desc: "Envia o lembrete com nome do especialista, endereço e botão de confirmação.",
+                stat: "98,4% presença",
+                active: true
+              },
+              {
+                title: "Lembrete D-0 (2 horas antes da consulta)",
+                desc: "Alerta com rota Google Maps para evitar atrasos e esquecimentos no trânsito.",
+                stat: "0 atrasos hoje",
+                active: true
+              },
+              {
+                title: "Orientações Pós-Procedimento & Receita",
+                desc: "Disparo automático dos cuidados pós-consulta e link do documento digital.",
+                stat: "Instantâneo",
+                active: true
+              },
+              {
+                title: "Reativação Preventiva (Retorno 6 Meses)",
+                desc: "Convite personalizado para exames periódicos e check-ups preventivos.",
+                stat: "+34% retornos",
+                active: true
+              }
+            ].map((item, idx) => (
+              <div key={idx} className="p-3.5 bg-gray-50 rounded-xl border border-gray-200/70 hover:border-gray-300 transition-all">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      <h5 className="font-bold text-xs text-gray-900">{item.title}</h5>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">{item.desc}</p>
+                  </div>
+                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-md shrink-0">
+                    {item.stat}
+                  </span>
                 </div>
-                <div className="min-w-0">
-                  <h3 className="font-bold text-xs sm:text-sm text-gray-800 truncate">{activeChat.name}</h3>
-                  <p className="text-[10px] text-gray-500 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span> 
-                    <span className="truncate">IA Nexus em atendimento autônomo</span>
-                  </p>
-                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Coluna 2: Simulador do WhatsApp da Clínica */}
+        <div className="lg:col-span-5 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-3 pb-3 border-b border-gray-100 mb-3 bg-[#075E54] text-white p-3 rounded-xl -m-1">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs">
+                🏥
+              </div>
+              <div>
+                <h5 className="font-bold text-xs text-white leading-tight">Clínica Bio Mind • Recepção</h5>
+                <span className="text-[10px] text-emerald-200">Online • Agente Nexus + Equipe</span>
+              </div>
+            </div>
+
+            {/* Balões de conversa WhatsApp */}
+            <div className="space-y-2.5 text-xs p-2 bg-[#ECE5DD]/60 rounded-xl border border-gray-200 min-h-[220px]">
+              <div className="bg-white p-2.5 rounded-xl rounded-tl-xs shadow-2xs max-w-[85%] text-gray-800">
+                <p>Olá, Mariana! Tudo bem? Passando para confirmar sua consulta com o <strong>Dr. Henrique Vasconcelos</strong> amanhã às <strong>14:30</strong>.</p>
+                <span className="text-[9px] text-gray-400 block text-right mt-1">10:00 • Nexus IA</span>
               </div>
 
-              <div className="hidden sm:flex items-center gap-2 text-gray-400">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
-                  WhatsApp Conectado
-                </span>
+              <div className="bg-[#DCF8C6] p-2.5 rounded-xl rounded-tr-xs shadow-2xs max-w-[80%] ml-auto text-gray-800">
+                <p>Confirmadíssimo! Preciso levar algum exame anterior?</p>
+                <span className="text-[9px] text-gray-500 block text-right mt-1">10:02 • Mariana</span>
+              </div>
+
+              <div className="bg-white p-2.5 rounded-xl rounded-tl-xs shadow-2xs max-w-[85%] text-gray-800">
+                <p>Se tiver exames dos últimos 6 meses pode trazer sim! Qualquer dúvida estou aqui ou posso chamar nossa recepcionista agora mesmo. 😊</p>
+                <span className="text-[9px] text-gray-400 block text-right mt-1">10:03 • Nexus IA</span>
               </div>
             </div>
-            
-            {/* Lista de Mensagens */}
-            <div className="flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col gap-3 sm:gap-4 custom-scrollbar">
-              <div className="text-center text-[10px] text-gray-500 my-1 sm:my-2">
-                <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm text-gray-600 font-medium">Hoje</span>
-              </div>
-              
-              {activeChat.messages.map((m, i) => (
-                m.sender === 'user' ? (
-                  <div key={i} className="flex justify-end">
-                    <div className="bg-[#D9FDD3] p-2.5 sm:p-3 rounded-2xl rounded-tr-sm text-xs sm:text-sm text-gray-800 shadow-sm max-w-[88%] sm:max-w-[80%] break-words">
-                      {m.text}
-                      <span className="text-[9px] text-gray-500 block text-right mt-1">{m.time}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div key={i} className="flex gap-2 items-end">
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-600 flex items-center justify-center shadow-sm flex-shrink-0 mb-1">
-                       <BotMessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-                    </div>
-                    <div className="bg-white p-2.5 sm:p-3 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-gray-800 shadow-sm max-w-[88%] sm:max-w-[80%] border border-gray-100 break-words">
-                      {m.isAppointment ? (
-                        <div className="flex flex-col gap-2">
-                          <span dangerouslySetInnerHTML={{ __html: m.text }} />
-                          <div className="bg-emerald-50 p-2 sm:p-2.5 rounded-xl border border-emerald-100 flex items-center gap-2 mt-1">
-                            <CalendarDays className="w-4 h-4 text-emerald-600 shrink-0" />
-                            <span className="text-[11px] sm:text-xs font-bold text-gray-800">Hoje, 10:30 - Retorno Emergência</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <span dangerouslySetInnerHTML={{ __html: m.text }} />
-                      )}
-                      <span className="text-[9px] text-gray-400 block text-right mt-1">{m.time}</span>
-                    </div>
-                  </div>
-                )
-              ))}
-            </div>
-            
-            {/* Canal autônomo monitorado pelo Agente Nexus (desativado para digitação humana desnecessária) */}
-            <div className="p-2 sm:p-3 bg-gray-50/95 backdrop-blur-sm border-t border-gray-200 flex items-center justify-between gap-2 sm:gap-3">
-              <div className="flex-1 flex items-center gap-2 bg-gray-100/90 border border-gray-200 rounded-full px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-gray-500">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                <span className="truncate">Nexus respondendo autonomamente no WhatsApp</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[11px] sm:text-xs font-semibold rounded-full border border-emerald-200/60 shrink-0">
-                <Bot className="w-3.5 h-3.5 text-emerald-600" />
-                <span>IA Ativa 24h</span>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-white/60 backdrop-blur-sm">
-            <BotMessageSquare className="w-12 h-12 text-gray-300 mb-3" />
-            <h3 className="text-base font-bold text-gray-700">Central de Comunicação IA</h3>
-            <p className="text-xs text-gray-500 max-w-xs mt-1">
-              Selecione uma conversa ao lado para visualizar a triagem automática do Nexus.
-            </p>
           </div>
-        )}
+
+          <div className="mt-3 p-2.5 bg-gray-50 rounded-xl text-[11px] text-gray-500 border border-gray-100 flex items-center justify-between">
+            <span>Transição Humana Imediata</span>
+            <span className="text-emerald-700 font-bold">100% sem atrito</span>
+          </div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -1971,8 +2129,8 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
           {/* Header */}
           <div className="p-3 sm:p-4 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0">
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center flex-shrink-0 shadow-sm p-1.5 overflow-hidden">
-                <img src="/agente-mascote-icon-white.png" alt="Agente Nexus" className="w-full h-full object-contain" />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-xs p-1.5 overflow-hidden">
+                <img src="/agente-mascote-icon-dark.png" alt="Agente Nexus" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-tight">Agente Nexus</h4>
@@ -2012,8 +2170,8 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
                 </div>
               ) : (
                 <div key={m.id} className="flex gap-2 items-start">
-                  <div className="w-7 h-7 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center shadow-sm shrink-0 mt-0.5 p-1 overflow-hidden">
-                    <img src="/agente-mascote-icon-white.png" alt="Nexus" className="w-full h-full object-contain" />
+                  <div className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center shadow-xs shrink-0 mt-0.5 p-1 overflow-hidden">
+                    <img src="/agente-mascote-icon-dark.png" alt="Nexus" className="w-full h-full object-contain" />
                   </div>
                   <div className="bg-white p-3 rounded-2xl rounded-tl-sm text-xs sm:text-sm text-gray-800 shadow-sm border border-gray-100 max-w-[88%] leading-relaxed break-words">
                     <span dangerouslySetInnerHTML={{ __html: m.text }} />
@@ -2082,142 +2240,131 @@ const NexusAgentDrawer = ({ showAI, onClose }) => {
 const InteractiveCRM = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAI, setShowAI] = useState(false);
-  const cardRef = React.useRef(null);
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'agenda', label: 'Agenda', icon: CalendarDays },
+    { id: 'agenda', label: 'Agendamentos', icon: CalendarDays },
     { id: 'pacientes', label: 'Pacientes', icon: Users },
     { id: 'comunicacao', label: 'Comunicação', icon: MessageSquare },
     { id: 'conexoes', label: 'Conexões', icon: Plug },
   ];
 
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({
-      rx: y * -6,
-      ry: x * 6
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setTilt({ rx: 0, ry: 0 });
-  };
-
   return (
-    <section id="crm" className="w-full bg-[#f4f5f7] py-16 sm:py-20 md:py-32 px-2 sm:px-4 md:px-8 border-t border-gray-200 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto">
+    <section id="crm" className="w-full bg-[#F4F5F7] py-16 md:py-24 px-4 sm:px-6 md:px-10 border-t border-gray-200">
+      <div className="max-w-[1440px] mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-8 md:mb-16"
+          className="text-center mb-8 md:mb-12"
         >
-          <div className="inline-block px-4 py-1.5 mb-3 md:mb-6 text-[10px] md:text-xs font-bold tracking-widest text-black uppercase bg-white border border-gray-200 rounded-full shadow-sm">
-            RÉPLICA FUNCIONAL
+          <div className="inline-block px-4 py-1 mb-3 text-[10px] md:text-xs font-bold tracking-widest text-black uppercase bg-white border border-gray-200 rounded-full shadow-2xs">
+            RÉPLICA FUNCIONAL DO SISTEMA
           </div>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-3 md:mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-black mb-3">
             O coração da sua operação.
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-            Desenvolvido sob medida para valorizar a atenção humana da recepção. Conecta planilhas, médicos, repasses, notas e dados legados em uma única tela — com IA trabalhando nos bastidores para poupar o tempo da sua equipe.
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
+            Desenvolvido sob medida para valorizar a atenção humana da recepção. Conecta planilhas, médicos, repasses, notas e dados legados em uma única tela.
           </p>
         </motion.div>
 
-        {/* Browser Mockup Wrapper com Parallax 3D */}
-        <div 
-          ref={cardRef}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{
-            transform: `perspective(1200px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
-            transition: 'transform 0.15s ease-out'
-          }}
-          className="w-full bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col md:flex-row min-h-[640px] h-[660px] sm:h-[720px] md:h-[780px] relative will-change-transform"
-        >
-          {/* Mobile Top Header (Somente telas pequenas) */}
-          <div className="flex md:hidden items-center justify-between w-full px-3 py-2 bg-[#0D0E10] border-b border-white/10 flex-shrink-0">
-            <span className="font-black text-lg tracking-tighter text-white notranslate">BIO MIND</span>
-            <button 
-              onClick={() => setShowAI(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-sm transition-all"
-            >
-              <img src="/agente-mascote-icon-white.png" alt="Nexus" className="w-3.5 h-3.5 object-contain" />
-              <span>Nexus IA</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-            </button>
-          </div>
-
-          {/* Sidebar (Desktop) / Abas Roláveis (Mobile) */}
-          <div className="w-full md:w-64 bg-[#0D0E10] text-gray-400 p-2 md:p-4 flex flex-row md:flex-col flex-shrink-0 relative z-20 overflow-x-auto md:overflow-visible custom-scrollbar border-b md:border-b-0 border-white/10 scroll-smooth">
-            {/* Logo Desktop - Sem quadradinho */}
-            <div className="hidden md:flex items-center gap-2 px-2 py-4 mb-4">
-              <img src="/agente-mascote-icon-white.png" alt="Bio Mind" className="w-6 h-6 object-contain" />
-              <span className="font-black text-2xl tracking-tighter text-white">
-                <span translate="no" className="notranslate">BIO MIND</span>
-              </span>
-            </div>
+        {/* Moldura do CRM (Firme, sem parallax 3D incômodo, com rolagem interna suave) */}
+        <div className="w-full bg-white rounded-3xl shadow-2xl border border-gray-200/90 overflow-hidden flex flex-col md:flex-row min-h-[640px] h-[720px] md:h-[780px] relative">
+          
+          {/* Sidebar Estilo Panacea (Clean, fundo claro suave, abas com pill pastel) */}
+          <div className="w-full md:w-60 bg-white md:bg-[#FAFAFB] border-b md:border-b-0 md:border-r border-gray-200 p-3 sm:p-4 flex flex-row md:flex-col justify-between flex-shrink-0 z-20 overflow-x-auto md:overflow-visible custom-scrollbar">
             
-            <nav className="flex flex-row md:flex-col gap-1.5 md:gap-1.5 w-max md:w-auto p-1 md:p-0">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-auto md:w-full flex items-center md:justify-between px-3 py-2.5 rounded-xl transition-all text-xs md:text-sm font-semibold whitespace-nowrap ${
-                    activeTab === tab.id 
-                      ? 'bg-white/15 text-white shadow-inner font-bold' 
-                      : 'hover:bg-white/5 hover:text-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-emerald-400' : 'text-gray-400'}`} />
-                    <span>{tab.label}</span>
-                  </div>
-                  {activeTab === tab.id && <ChevronRight className="hidden md:block w-4 h-4 text-emerald-400"/>}
-                </button>
-              ))}
-            </nav>
+            {/* Topo da Sidebar: Apenas Texto BIO MIND (sem logo mascote ao lado) */}
+            <div>
+              <div className="hidden md:flex items-center px-2 py-3 mb-4">
+                <span className="font-black text-xl tracking-tighter text-black notranslate">
+                  BIO MIND
+                </span>
+              </div>
 
-            {/* Botão Desktop do Nexus */}
-            <div className="hidden md:flex mt-auto pt-4 relative items-center">
+              {/* Lista de Navegação com Pill Verde Pastel (Panacea style) */}
+              <nav className="flex flex-row md:flex-col gap-1 w-max md:w-auto">
+                {tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs sm:text-sm transition-all whitespace-nowrap text-left ${
+                        isActive 
+                          ? 'bg-[#E8F8F0] text-[#0A6E3F] font-bold shadow-2xs border border-emerald-200/60' 
+                          : 'text-gray-600 hover:bg-gray-100 hover:text-black font-semibold'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-[#0A6E3F]' : 'text-gray-400'}`} />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Rodapé da Sidebar: Agente Nexus com Card/Botão Branco */}
+            <div className="hidden md:block pt-4 border-t border-gray-200/80">
               <button 
                 onClick={() => setShowAI(!showAI)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] group whitespace-nowrap"
+                className="w-full flex items-center justify-between gap-2.5 p-3 bg-white hover:bg-gray-50 border border-gray-200 text-gray-900 rounded-2xl transition-all shadow-xs group"
               >
-                <div className="flex items-center gap-3">
-                  <img src="/agente-mascote-icon-white.png" alt="Nexus" className="w-5 h-5 object-contain" />
-                  <span className="font-bold text-sm">Abrir Nexus</span>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center p-1 shadow-2xs">
+                    <img src="/agente-mascote-icon-dark.png" alt="Nexus" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="text-left">
+                    <span className="font-bold text-xs text-gray-900 block leading-tight">Agente Nexus</span>
+                    <span className="text-[10px] text-emerald-700 font-semibold">Suporte 24h</span>
+                  </div>
                 </div>
-                <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               </button>
             </div>
           </div>
 
-          {/* Main Content Area */}
-          <div className="flex-1 bg-[#FAFAFA] relative flex flex-col overflow-hidden min-w-0 h-full">
-            {/* Topbar */}
-            <header className="h-14 sm:h-16 md:h-20 border-b border-gray-100 flex items-center justify-between px-3 sm:px-4 md:px-8 bg-white/90 backdrop-blur-md z-10 flex-shrink-0">
-              <h2 className="text-base sm:text-lg md:text-xl font-black text-gray-800 tracking-tight">
-                {tabs.find(t => t.id === activeTab)?.label}
-              </h2>
-              <div className="flex items-center gap-3 md:gap-6 text-gray-400">
-                <Search className="hidden sm:block w-4 h-4 md:w-5 md:h-5 hover:text-gray-800 cursor-pointer transition-colors" />
-                <div className="relative">
-                  <Bell className="w-4 h-4 md:w-5 md:h-5 hover:text-gray-800 cursor-pointer transition-colors" />
-                  <div className="absolute -top-1 -right-1 w-2 h-2 md:w-2.5 md:h-2.5 bg-emerald-500 rounded-full border-2 border-white"></div>
+          {/* Área Principal de Conteúdo */}
+          <div className="flex-1 bg-[#F9FAFB] flex flex-col min-w-0 h-full overflow-hidden relative">
+            
+            {/* Topbar com Abas de Navegador (Panacea style) */}
+            <header className="h-14 sm:h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 flex-shrink-0 z-10">
+              {/* Browser-style Breadcrumb Tabs (Panacea) */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-xl text-xs font-bold text-gray-800 border border-gray-200 shadow-2xs whitespace-nowrap">
+                  <span className="text-gray-400">✕</span>
+                  <span>Diretório da Clínica</span>
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
-                  <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-gray-900 border border-gray-800 shadow-sm overflow-hidden flex items-center justify-center p-1">
-                    <img src="/agente-mascote-icon-white.png" alt="Admin" className="w-full h-full object-contain"/>
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-500 cursor-pointer whitespace-nowrap">
+                  <span>Prontuários & OneDrive</span>
+                </div>
+                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-50 rounded-xl text-xs font-semibold text-gray-500 cursor-pointer whitespace-nowrap">
+                  <span>Operações Médicas</span>
+                </div>
+              </div>
+
+              {/* Lado Direito: Busca & Perfil (Salesforce style) */}
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setShowAI(true)}
+                  className="md:hidden flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-200 text-gray-900 rounded-xl text-xs font-bold shadow-2xs"
+                >
+                  <img src="/agente-mascote-icon-dark.png" alt="Nexus" className="w-3.5 h-3.5 object-contain" />
+                  <span>Nexus</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                </button>
+
+                <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 text-white font-black text-xs flex items-center justify-center">
+                    B
                   </div>
+                  <span className="text-xs font-bold text-gray-800 hidden sm:inline">Coordenação</span>
                 </div>
               </div>
             </header>
 
-            {/* Scrollable Content */}
-            <div className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${activeTab === 'comunicacao' ? 'p-1.5 sm:p-3 md:p-6' : 'p-3 sm:p-4 md:p-8'}`}>
+            {/* CONTEÚDO ROLÁVEL COM O SCROLL DO MOUSE (Dentro do CRM, sem mexer a moldura) */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-6 md:p-8">
               <AnimatePresence mode="wait">
                 {activeTab === 'dashboard' && <CRMDashboard key="dashboard" />}
                 {activeTab === 'agenda' && <CRMAgenda key="agenda" />}
@@ -2227,9 +2374,10 @@ const InteractiveCRM = () => {
               </AnimatePresence>
             </div>
 
-            {/* AI Assistant Drawer Interativo */}
+            {/* Drawer do Agente Nexus */}
             <NexusAgentDrawer showAI={showAI} onClose={() => setShowAI(false)} />
           </div>
+
         </div>
       </div>
     </section>
